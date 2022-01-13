@@ -1,0 +1,24 @@
+Issues
+===================================
+
+
+Apple steps
+===================================
+Remove iosMain, iosTest sourcesets.  Empty anyway
+add macX64 main and test sourcesets
+create nativeInterop/cinterop, copy .def file from SqlCipher intellij project. All targets should use
+    same def file
+add iosArm64, iosX64, macosX64 targets all as static libraries
+add cinterop clause to macosx64
+change sqlcipher gradle config to build apple targets, point cinterop clause
+    at includes and static libs from builds by platform
+commit changes.
+Copy project to apple
+sync, run cinterop for at least MacOs
+use native code from old SqlCipher, populate macOs actual class SqlCipherApi.kt with native code
+make a macOS unit test, see the basic tests class for the required functional tests
+Verify/debug until tests pass for macOS
+populate cinterop and SqlCipherApi.kt of iosX64Main, make sure all builds
+work through Apple Framework support to make a static library Framework callable from swift
+make an Xcode text project, have a simple swift program do open database and basic tests
+run on simulator to see if all works.
