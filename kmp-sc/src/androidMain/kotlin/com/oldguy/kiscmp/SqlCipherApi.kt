@@ -2,6 +2,7 @@ package com.oldguy.kiscmp
 
 actual class SqliteDatabase {
     internal val shim = Sqlite3JniShim()
+    actual var encoding = SqliteEncoding.Utf_8
 
     actual fun error(): String {
         return shim.error()
@@ -104,17 +105,13 @@ actual class SqliteStatement actual constructor(val db: SqliteDatabase) {
         return shim.bindBytes(index, array)
     }
 
-    actual enum class StepResult {
-        Done, Row, Busy, Error
-    }
-
-    actual fun step(): StepResult {
+    actual fun step(): SqliteStepResult {
         val rc = shim.stepInt()
         return when (rc) {
-            1 -> StepResult.Error
-            2 -> StepResult.Done
-            3 -> StepResult.Row
-            4 -> StepResult.Busy
+            1 -> SqliteStepResult.Error
+            2 -> SqliteStepResult.Done
+            3 -> SqliteStepResult.Row
+            4 -> SqliteStepResult.Busy
             else -> throw SqliteException("Unsupported return from StepInt(): $rc")
         }
     }
@@ -162,18 +159,14 @@ actual class SqliteStatement actual constructor(val db: SqliteDatabase) {
         return shim.columnDeclaredType(index)
     }
 
-    actual enum class ColumnType {
-        Null, Integer, Text, Float, Blob
-    }
-
-    actual fun columnType(index: Int): ColumnType {
+    actual fun columnType(index: Int): SqliteColumnType {
         val rc = shim.columnTypeInt(index)
         return when (rc) {
-            1 -> ColumnType.Null
-            2 -> ColumnType.Text
-            3 -> ColumnType.Integer
-            4 -> ColumnType.Float
-            5 -> ColumnType.Blob
+            1 -> SqliteColumnType.Null
+            2 -> SqliteColumnType.Text
+            3 -> SqliteColumnType.Integer
+            4 -> SqliteColumnType.Float
+            5 -> SqliteColumnType.Blob
             else -> throw SqliteException("Unsupported return from columnTypeInt($index): $rc")
         }
     }

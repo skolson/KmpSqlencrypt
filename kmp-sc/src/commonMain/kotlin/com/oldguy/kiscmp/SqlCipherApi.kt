@@ -11,7 +11,19 @@ class SqliteException(message: String, apiName: String = "", result: Int = 0)
     }
 }
 
+/**
+ * See Sqlite "PRAGMA encoding;" doc
+ */
+enum class SqliteEncoding(val pragma: String) {
+    Utf_8("UTF-8"),
+    Utf_16("UTF-16"),
+    Utf16LittleEndian("UTF-16le"),
+    Utf16BigEndian("UTF-16be");
+}
+
 expect class SqliteDatabase() {
+    var encoding: SqliteEncoding
+
     fun error(): String
 
     fun fileName(): String
@@ -44,6 +56,14 @@ expect class SqliteDatabase() {
     fun sleep(millis: Int)
 }
 
+enum class SqliteColumnType {
+    Null, Integer, Text, Float, Blob
+}
+
+enum class SqliteStepResult {
+    Done, Row, Busy, Error
+}
+
 expect class SqliteStatement(db: SqliteDatabase) {
     fun parameterCount(): Int
 
@@ -65,11 +85,7 @@ expect class SqliteStatement(db: SqliteDatabase) {
 
     fun bindBytes(index:Int, array: ByteArray): Int
 
-    enum class StepResult {
-        Done, Row, Busy, Error
-    }
-
-    fun step(): StepResult
+    fun step(): SqliteStepResult
 
     fun changes(): Int
 
@@ -94,11 +110,7 @@ expect class SqliteStatement(db: SqliteDatabase) {
 
     fun columnDeclaredType(index: Int): String
 
-    enum class ColumnType {
-        Null, Integer, Text, Float, Blob
-    }
-
-    fun columnType(index: Int): ColumnType
+    fun columnType(index: Int): SqliteColumnType
 
     fun columnText(index: Int): String
 

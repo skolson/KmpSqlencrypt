@@ -1,6 +1,6 @@
 ## KotlinSqlCipherMP
 
-This project is a Kotlin multi-platform library for using Zetetic's SqlCipher encrypted Sqlite as an embedded SQL database, with an API that is intended to be identical across Android, iOs or other platforms. It currently supports Android, and later will support iOS.
+This project is a Kotlin multi-platform library for using Zetetic's SqlCipher encrypted Sqlite as an embedded SQL database, with an API that is intended to be identical across Android, iOs or other platforms. It currently supports 64-bit platforms; Android, MacOS, and iOS.
 
 ## SqlCipher
 *From the SqlCipher site:*
@@ -28,7 +28,7 @@ Dependencies are intentionally kept to a minimum and only using Kotlin multi-pla
 
 - BigDecimal support using  [ionspin BigDecimal](https://github.com/skolson/kotlin-multiplatform-bignum)
 - Date and DateTime support using [Klock](https://github.com/korlibs/klock). Intent is to replace or add datetime support using Kotlinx-datetime once it has multi-platform support for parsing/formatting from/to strings built-in. As of this writing that's not there YET :-)
-- Kotlin 1.6.0 
+- Kotlin 1.6.10 
 - Kotlin atomicfu
  
 
@@ -64,6 +64,8 @@ DSL-like builder syntax for configuring a SqlCipher database
 Extensive use of functions as arguments (lambdas). Requirement to directly implement any interface in the library is rare.
 Kotlin-specific ease-of-use syntax for common operations.
 - database open/close with invalid password lambdas
+- passphrase support including raw and raw-with-hash
+- encoding query-at-open or set-on-create
 - system catalog metadata
 - type-safe insert/update/select
 - sql scripts support (multiple DDL and/or DML statements in a script)
@@ -80,11 +82,14 @@ Intent is to make Data Access Objects (DAOs) using this library convenient and s
 
 #Releases
 
-Version 0.3.7 is built with:
-- Kotlin 1.6.0
-- OpenSSL 3.0.0  
+Version 0.3.8 is built with:
+- Kotlin 1.6.10
+- OpenSSL 3.0.1  
 - SqlCipher 4.5.0
-- Android NDK 23.1.7779620. Minimum SDK 24, target SDK 31
+- Android NDK 24.0.7956693. Minimum SDK 24, target SDK 31
+
+#Examples
+
 
 #Internals
 Android and JVM-based platforms access the native libraries through a thin JNI layer written in C++. There is minimal logic in C++. For other platforms, Kotlin Native is used. 

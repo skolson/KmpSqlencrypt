@@ -1,7 +1,7 @@
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.gradle.kotlin.dsl.signing
 import com.oldguy.gradle.OpensslExtension
 import com.oldguy.gradle.SqlcipherExtension
+import com.oldguy.gradle.BuildType
 import org.gradle.internal.os.OperatingSystem
 
 plugins {
@@ -11,7 +11,7 @@ plugins {
     id("signing")
     id("kotlinx-atomicfu")
     id("org.jetbrains.dokka") version "1.6.0"
-    id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.2.0"
+    id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.3.2"
     id("com.github.ben-manes.versions") version "0.39.0"
 }
 
@@ -25,16 +25,37 @@ group = "com.oldguy"
 version = "0.3.7"
 val mavenArtifactId = "kmp-sc"
 
-val ndkVersionValue = "23.1.7779620"
+val ndkVersionValue = "24.0.7956693"
 val minSdk = 24
 val targetSdkVersion = 31
+
+val androidMainDirectory = projectDir.resolve("src").resolve("androidMain")
+val nativeInterop = projectDir.resolve("src/nativeInterop")
 
 sqlcipher {
     useGit = false
     version = "4.5.0"
-    compilerOptions = SqlcipherExtension.androidCompilerOptions
+    compilerOptions = SqlcipherExtension.defaultCompilerOptions
+    buildCompilerOptions = mapOf(
+        BuildType.androidX64 to SqlcipherExtension.androidCompilerOptions,
+        BuildType.androidArm64 to SqlcipherExtension.androidCompilerOptions,
+        BuildType.iosX64 to SqlcipherExtension.iosCompilerOptions,
+        BuildType.iosArm64 to SqlcipherExtension.iosCompilerOptions,
+        BuildType.macosX64 to SqlcipherExtension.macOsCompilerOptions
+    )
 
-    builds("x86_64", "arm64-v8a")
+    builds(BuildType.appleBuildTypes)
+    val abiMap = mapOf(
+        BuildType.androidX64 to "x86_64",
+        BuildType.androidArm64 to "arm64-v8a"
+    )
+    targetsCopyTo = { buildType ->
+        if (buildType.isAndroid)
+            androidMainDirectory.resolve("sqlcipher").resolve(abiMap[buildType]!!)
+        else
+            nativeInterop.resolve(buildType.name)
+    }
+    copyCinteropIncludes = true
 
     tools {
         windows {
@@ -44,29 +65,29 @@ sqlcipher {
             perlInstallDirectory = "D:\\SqlCipher\\Strawberry\\perl"
         }
         android {
-            sdkLocation = if (OperatingSystem.current().isLinux)
-                "/home/steve/Android/Sdk"
-            else
-                "D:\\Android\\sdk"
+            linuxSdkLocation = "/home/steve/Android/Sdk"
+            windowsSdkLocation = "D:\\Android\\sdk"
+            macosSdkLocation = "/Users/steve/Library/Android/sdk"
             ndkVersion = ndkVersionValue
             minimumSdk = minSdk
         }
+        apple {
+            sdkVersion = "15"
+            sdkVersionMinimum = "14"
+        }
     }
     openssl {
-        tagName = "openssl-3.0.0"
+        tagName = "openssl-3.0.1"
         useGit = false
         configureOptions = OpensslExtension.smallConfigureOptions
-        buildSpecificOptions = mapOf(
-            "arm64-v8a" to OpensslExtension.nonWindowsOptions,
-            "x86_64" to OpensslExtension.nonWindowsOptions)    }
+        buildSpecificOptions = OpensslExtension.buildOptionsMap
+    }
 }
-
-var androidMainDirectory = projectDir.resolve("src").resolve("androidMain")
 
 android {
     compileSdk = targetSdkVersion
     ndkVersion = ndkVersionValue
-    buildToolsVersion = "31.0.0"
+    buildToolsVersion = "32.0.0"
 
     sourceSets {
         getByName("main") {
@@ -98,8 +119,6 @@ android {
                     "-DANDROID_MAIN_PATH=${androidMainDirectory.absolutePath}",
                     "-DOSWINDOWS=$isWindowsOS"
                 )
-                //"-DCMAKE_MAKE_PROGRAM=ninja"
-
                 cppFlags("-std=c++17")
             }
         }
@@ -114,6 +133,7 @@ android {
 
     externalNativeBuild {
         cmake {
+            version = "3.18.1"
             path("src/androidMain/cpp/CMakeLists.txt")
         }
     }
@@ -133,10 +153,26 @@ kotlin {
     android {
         publishLibraryVariants("release", "debug")
     }
+    macosX64 {
+        binaries {
+            framework {
+                baseName = "kmp-sc-macosX64"
+            }
+        }
+        val main by this.compilations.getting {
+            val sqlcipherInterop by cinterops.creating {
+                defFile(nativeInterop.resolve("macosX64/SqlCipher.def"))
+                packageName("com.oldguy.sqlcipher")
+                includeDirs.apply {
+                    allHeaders(nativeInterop.resolve("macosX64"))
+                }
+            }
+        }
+    }
     iosX64 {
         binaries {
             framework {
-                baseName = "kmp-sc-x64"
+                baseName = "kmp-sc-iosX64"
             }
         }
     }
@@ -176,36 +212,41 @@ kotlin {
             dependsOn(commonMain)
             dependsOn(androidMain)
         }
-        val iosMain = create("iosMain") {
-            kotlin.srcDir("src/iosMain/kotlin")
+        val nativeMain = create("nativeMain") {
+            kotlin.srcDir("src/nativeMain/kotlin")
+        }
+        val nativeTest = create("nativeTest") {
+            kotlin.srcDir("src/nativeTest/kotlin")
         }
         val iosX64Main by getting {
-            dependsOn(iosMain)
+            dependsOn(nativeMain)
         }
-        //named("iosX64Test")
+        val iosX64Test by getting {
+            dependsOn(nativeTest)
+        }
         val iosArm64Main by getting {
-            dependsOn(iosMain)
+            dependsOn(nativeMain)
         }
-        //val iosArm64Test by getting
+        val macosX64Main by getting {
+            dependsOn(nativeMain)
+        }
+        val macosX64Test by getting {
+            dependsOn(nativeTest)
+            dependencies {
+                implementation(kotlin("test"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
+            }
+        }
+
+        all {
+            languageSettings {
+                optIn("kotlin.ExperimentalCoroutinesApi")
+            }
+        }
     }
 }
 
-val packForXcode by tasks.creating(Sync::class) {
-    group = "build"
-    val mode = System.getenv("CONFIGURATION") ?: "DEBUG"
-    val sdkName = System.getenv("SDK_NAME") ?: "iphonesimulator"
-    val targetName = "ios" + if (sdkName.startsWith("iphoneos")) "Arm64" else "X64"
-    val framework = kotlin.targets.getByName<KotlinNativeTarget>(targetName).binaries.getFramework(mode)
-    inputs.property("mode", mode)
-    dependsOn(framework.linkTask)
-    val targetDir = File(buildDir, "xcode-frameworks")
-    from({ framework.outputDirectory })
-    into(targetDir)
-}
-
 tasks {
-    getByName("build").dependsOn(packForXcode)
-
     dokkaGfm {
         moduleName.set("Kotlin Multiplatform SqlCipher/Sqlite")
         dokkaSourceSets {
@@ -219,27 +260,6 @@ tasks {
         dependsOn(dokkaGfm)
         archiveClassifier.set("javadoc")
         from(dokkaGfm.get().outputDirectory)
-    }
-
-    val libsDirectory = androidMainDirectory.resolve("sqlcipher")
-    val sqlcipherBuild = getByName("sqlcipherBuildAll")
-    val arm64v8aTask = getByName("sqlcipherBuildarm64-v8a") as com.oldguy.gradle.SqlcipherBuildTask
-    val copyArm = register<Copy>("copySqlcipherAndroidArm64v8a") {
-        group = "build"
-        dependsOn(sqlcipherBuild)
-        from(arm64v8aTask.targetDirectory)
-        into(libsDirectory.resolve("arm64-v8a"))
-    }
-    val x86Task = getByName("sqlcipherBuildx86_64") as com.oldguy.gradle.SqlcipherBuildTask
-    val copyX86 = register<Copy>("copySqlcipherAndroidX86") {
-        group = "build"
-        dependsOn(sqlcipherBuild)
-        from(x86Task.targetDirectory)
-        into(libsDirectory.resolve("x86_64"))
-    }
-    register("copySqlcipherAndroid") {
-        group = "build"
-        dependsOn(copyArm, copyX86)
     }
 }
 
@@ -262,7 +282,7 @@ afterEvaluate {
                 licenses {
                     license {
                         name.set("The Apache License, Version 2.0")
-                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
                     }
                 }
                 developers {

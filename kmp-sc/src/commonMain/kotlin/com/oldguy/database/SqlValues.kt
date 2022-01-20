@@ -113,13 +113,14 @@ sealed class SqlValue<T>(val name: String, var value: T?): Comparable<SqlValue<T
             const val isoFormat = "$isoFormatNoMillis.SSS"
             val isoFormatter = PatternDateFormat(isoFormat)
             val isoFormatterNoMillis = PatternDateFormat(isoFormatNoMillis)
-            private val formats = mutableListOf(isoFormatter, isoFormatterNoMillis)
+
+            private val formatsRef = atomic(listOf(isoFormatter, isoFormatterNoMillis))
 
             /**
              * List of the formatters currently defined, in the order they are tried when
              * invoking the static parse method
              */
-            val validFormats get() = formats.toList()
+            val validFormats get() = formatsRef.value.toList()
 
             /**
              * Push a new format string onto the stack to be tried.  If a formatter with this
@@ -127,8 +128,9 @@ sealed class SqlValue<T>(val name: String, var value: T?): Comparable<SqlValue<T
              * @param format a valid format string like [isoFormat] or [isoFormatNoMillis] or similar
              */
             fun addFormat(format: String) {
-                if (!formats.filter { it.format == format }.any())
-                    formats.add(0, PatternDateFormat(format))
+                if (!validFormats.filter { it.format == format }.any()) {
+                    formatsRef.value = listOf(PatternDateFormat(format)) + validFormats
+                }
             }
 
             /**
@@ -138,7 +140,9 @@ sealed class SqlValue<T>(val name: String, var value: T?): Comparable<SqlValue<T
              * @return true if success, false if none found.
              */
             fun removeFormat(format: String): Boolean {
-                return formats.remove(formats.first { it.format == format })
+                val rc = validFormats.any { it.format == format }
+                if (rc) formatsRef.value = validFormats.filter { it.format != format }
+                return rc
             }
 
             /**
@@ -150,6 +154,7 @@ sealed class SqlValue<T>(val name: String, var value: T?): Comparable<SqlValue<T
              */
             fun parse(dateTimeString: String, throws: Boolean = true): DateTime? {
                 var exc: Throwable? = null
+                val formats = validFormats
                 formats.forEach {
                     try {
                         return it.tryParse(dateTimeString, true)?.utc!!

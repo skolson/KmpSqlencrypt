@@ -32,15 +32,15 @@ class SelectStatement(private val db: SqlCipherDatabase, sql:String): Query(sql)
             val meta = if (type.isEmpty()) {
                 // check for an expression or subquery
                 when (shim.columnType(index)) {
-                    SqliteStatement.ColumnType.Null ->
+                    SqliteColumnType.Null ->
                         SqliteColumn.ColumnMetadata(ColumnType.Expression)
-                    SqliteStatement.ColumnType.Integer ->
+                    SqliteColumnType.Integer ->
                         SqliteColumn.ColumnMetadata(ColumnType.Long)
-                    SqliteStatement.ColumnType.Text ->
+                    SqliteColumnType.Text ->
                         SqliteColumn.ColumnMetadata(ColumnType.String)
-                    SqliteStatement.ColumnType.Float ->
+                    SqliteColumnType.Float ->
                         SqliteColumn.ColumnMetadata(ColumnType.Decimal)
-                    SqliteStatement.ColumnType.Blob ->
+                    SqliteColumnType.Blob ->
                         SqliteColumn.ColumnMetadata(ColumnType.Blob)
                 }
             } else {
@@ -69,7 +69,7 @@ class SelectStatement(private val db: SqlCipherDatabase, sql:String): Query(sql)
     override fun nextRow(): SqlValues {
         val row = SqlValues()
         val rc = shim.step()
-        if (rc == SqliteStatement.StepResult.Done) {
+        if (rc == SqliteStepResult.Done) {
             shim.reset()
             return row
         }
@@ -78,7 +78,7 @@ class SelectStatement(private val db: SqlCipherDatabase, sql:String): Query(sql)
             // possibly throw an exception or pass argument that indicates retry-ability, don't reset or close
         }
          */
-        if (rc != SqliteStatement.StepResult.Row) {
+        if (rc != SqliteStepResult.Row) {
             stmt.statementAbort("sqlite3_step error code: $rc")
         }
         if (targetTypes.isNotEmpty  && targetTypes.count() != columnCount) {
@@ -86,7 +86,7 @@ class SelectStatement(private val db: SqlCipherDatabase, sql:String): Query(sql)
         }
         for (index in 0 until columnCount) {
             val sqliteType = shim.columnType(index)
-            val isNull = sqliteType == SqliteStatement.ColumnType.Null
+            val isNull = sqliteType == SqliteColumnType.Null
             val name = columns[index].name
             val rv: SqlValue<out Any> =
                 if (targetTypes.isNotEmpty) {
@@ -108,7 +108,8 @@ class SelectStatement(private val db: SqlCipherDatabase, sql:String): Query(sql)
         index: Int,
         isNull: Boolean,
         name: String,
-        sqliteType: SqliteStatement.ColumnType): SqlValue<out Any>
+        sqliteType: SqliteColumnType
+    ): SqlValue<out Any>
     {
         val column = columns[index]
         return when (column.type) {
@@ -128,14 +129,14 @@ class SelectStatement(private val db: SqlCipherDatabase, sql:String): Query(sql)
             ColumnType.Clob -> getStringValue(name, isNull, index)
             ColumnType.Expression -> {
                 when (sqliteType) {
-                    SqliteStatement.ColumnType.Integer ->
+                    SqliteColumnType.Integer ->
                         getLongValue(name, isNull, index, sqliteType)
-                    SqliteStatement.ColumnType.Null,
-                    SqliteStatement.ColumnType.Text ->
+                    SqliteColumnType.Null,
+                    SqliteColumnType.Text ->
                         getStringValue(name, isNull, index)
-                    SqliteStatement.ColumnType.Float ->
+                    SqliteColumnType.Float ->
                         getDecimalValue(name, isNull, index)
-                    SqliteStatement.ColumnType.Blob ->
+                    SqliteColumnType.Blob ->
                         getBytesValue(name, isNull, index)
                 }
             }
@@ -149,7 +150,8 @@ class SelectStatement(private val db: SqlCipherDatabase, sql:String): Query(sql)
         index: Int,
         isNull:Boolean,
         name:String,
-        sqliteType: SqliteStatement.ColumnType): SqlValue<out Any> {
+        sqliteType: SqliteColumnType
+    ): SqlValue<out Any> {
         return when(targetTypes[index - 1]) {
             is SqlValue.StringValue -> getStringValue(name, isNull, index)
             is SqlValue.DateTimeValue -> getDateTimeValue(name, isNull, index)
@@ -243,21 +245,21 @@ class SelectStatement(private val db: SqlCipherDatabase, sql:String): Query(sql)
             SqlValue.BytesValue(name, getBytes(index))
     }
 
-    private fun getIntValue(name:String, isNull: Boolean, index: Int, sqliteType: SqliteStatement.ColumnType): SqlValue.IntValue {
+    private fun getIntValue(name:String, isNull: Boolean, index: Int, sqliteType: SqliteColumnType): SqlValue.IntValue {
         return if (isNull)
             SqlValue.IntValue(name)
         else {
-            if (sqliteType != SqliteStatement.ColumnType.Integer)
+            if (sqliteType != SqliteColumnType.Integer)
                 stmt.statementAbort("Column: $name, index: $index, declaration: ${columns[index].declaration} is not Integer")
             SqlValue.IntValue(name, shim.columnInt(index))
         }
     }
 
-    private fun getLongValue(name:String, isNull: Boolean, index: Int, sqliteType: SqliteStatement.ColumnType): SqlValue.LongValue {
+    private fun getLongValue(name:String, isNull: Boolean, index: Int, sqliteType: SqliteColumnType): SqlValue.LongValue {
         return if (isNull)
             SqlValue.LongValue(name)
         else {
-            if (sqliteType != SqliteStatement.ColumnType.Integer)
+            if (sqliteType != SqliteColumnType.Integer)
                 stmt.statementAbort("Column: $name, index: $index, declaration: ${columns[index].declaration} is not Integer")
             SqlValue.LongValue(name, shim.columnLong(index))
         }
@@ -271,11 +273,11 @@ class SelectStatement(private val db: SqlCipherDatabase, sql:String): Query(sql)
         }
     }
 
-    private fun getDoubleValue(name:String, isNull: Boolean, index: Int, sqliteType: SqliteStatement.ColumnType): SqlValue.DoubleValue {
+    private fun getDoubleValue(name:String, isNull: Boolean, index: Int, sqliteType: SqliteColumnType): SqlValue.DoubleValue {
         return if (isNull)
             SqlValue.DoubleValue(name)
         else {
-            if (sqliteType != SqliteStatement.ColumnType.Float)
+            if (sqliteType != SqliteColumnType.Float)
                 stmt.statementAbort("Column: $name, index: $index, declaration: ${columns[index].declaration} is not FLOAT")
             SqlValue.DoubleValue(name, shim.columnDouble(index))
         }
@@ -329,9 +331,5 @@ class SelectStatement(private val db: SqlCipherDatabase, sql:String): Query(sql)
             } else
                 SqlValue.DateTimeValue(name, dt)
         }
-    }
-
-    companion object {
-        private const val columnTypeError = "Unsupported columnType"
     }
 }

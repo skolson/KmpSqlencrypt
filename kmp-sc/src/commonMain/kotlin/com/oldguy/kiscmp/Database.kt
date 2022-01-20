@@ -89,7 +89,7 @@ class SqliteSystemCatalog(val db: SqlCipherDatabase): SystemCatalog() {
             if (row.size < columnNames.size)
                 throw SqliteException("$catalogTableName is missing expected columns: $row")
             add(Table(row.requireString(columnNames[1])))
-                .addProperty(row[3].name, row.requireLong(columnNames[3]).toString())
+                .addProperty(row[3].name, row.requireLong(columnNames[3], true).toString())
                 .addProperty(row[4].name, row.requireString(columnNames[4]))
             true
         }
@@ -249,8 +249,9 @@ class SqlCipherDatabase:
      *  <b>currentVersion</b> the integer value of the userVersion in the database just opened.
      *  <b>newVersion</b>  the integer value of the newUserVersion property.
      *  <b>true</b> if open process should change the version to newVersion, false if not
+     * [userVersionUpgrade] is a suspend function supporting script running or other DB activities
      */
-    var userVersionUpgrade: ((db: SqlCipherDatabase, currentVersion: Int, newVersion: Int) -> Boolean)? = null
+    var userVersionUpgrade: (suspend (db: SqlCipherDatabase, currentVersion: Int, newVersion: Int) -> Boolean)? = null
 
     override val catalog = SqliteSystemCatalog(this)
 
@@ -267,6 +268,13 @@ class SqlCipherDatabase:
      * create a new one.
      */
     var createOk: Boolean = false
+
+    /**
+     * For existing databases, is queried by pragma immediately after open. If createOk is true, and this is set by DSL to a non-
+     * default value, it will be set by pragma immediately after create.
+     */
+    var encoding: SqliteEncoding = SqliteEncoding.Utf_8
+
     /**
      * Set to true if the database to be opened should throw an exception if any DML that changes
      * the database is attempted.
@@ -293,7 +301,7 @@ class SqlCipherDatabase:
      * Open process steps:
      * 1) Use the specified arguments to perform an initial open operation on the specified path.
      * This basically only verifies the path is accessible consistent with the requested configuration.
-     * If any error occurs, and excetpion is thrown.
+     * If any error occurs, and exception is thrown.
      * 2) If a non-empty passphrase is specified, set the key
      * 3) invoke the onOpen lambda if specified.  Use this lambda to perform any pre-open pragmas
      * for querying or changing database configuration. Any SqlCipher or Sqlite supported pragma can
@@ -430,7 +438,7 @@ class SqlCipherDatabase:
         if (results == null)
             executeRaw(sqlScript)
         else {
-            executeRaw(sqlScript) { names: Array<String>, data: Array<String> ->
+            executeRaw(sqlScript) { data: Array<String>, names: Array<String> ->
                 val row = SqlValues()
                 for (i in names.indices) {
                     row.add(SqlValue.StringValue(names[i], data[i]))
@@ -562,6 +570,28 @@ class SqlCipherDatabase:
         }
     }
 
+    fun queryEncoding(): SqliteEncoding {
+        var enc = SqliteEncoding.Utf_8
+        pragma("encoding") {
+            if (it.size != 1)
+                throw SqliteException("Unexpected result from pragma encoding: $it")
+            val response = it.requireString(0)
+            try {
+                enc = SqliteEncoding.valueOf(response)
+            } catch (e: Exception) {
+                throw SqliteException("Unexpected result from pragma encoding: $response")
+            }
+            true
+        }
+        return enc
+    }
+
+    private fun encoding(encoding: SqliteEncoding) {
+        pragma("encoding = '${encoding.pragma}'") {
+            true
+        }
+    }
+
     /**
      * Convenience method for executing a PRAGMA. Some pragmas return small result sets, some just
      * indicate a change. This function can be used for any pragmas. Query-only pragmas can be run
@@ -644,6 +674,11 @@ class SqlCipherDatabase:
     private fun setup(passphrase: Passphrase) {
         softHeapLimit = defaultSoftHeapLimit
         sqliteDb.busyTimeout(defaultTimeout)
+        if (createOk)
+            encoding(encoding)
+        else
+            encoding = queryEncoding()
+        sqliteDb.encoding = encoding
         if (passphrase.passphrase.isNotEmpty()) {
             pragmaKey(passphrase)
         }
@@ -662,15 +697,14 @@ class SqlCipherDatabase:
 
     /**
      * Execute sql statement or statements,
-     * Used by JNI
      * @param sql one or more valid SQL statements separated by semicolons
+     * @param callback will be invoked once for each statement. If callback returns non 0 for any
+     * statements, then script execution stops at that statement. Returning 0 will invoke the next
+     * statement in the script.
      */
     private fun executeRaw(sql: String, callback: ((Array<String>, Array<String>)-> Int)? = null) {
-        sqliteDb.exec(sql) { values: Array<String>, columns: Array<String> ->
-            if (callback != null) {
-                callback(columns, values)
-            } else
-                0
+        sqliteDb.exec(sql) { values, columns ->
+            callback?.invoke(values, columns) ?: 0
         }
     }
 

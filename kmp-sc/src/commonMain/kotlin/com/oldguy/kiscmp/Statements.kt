@@ -29,23 +29,21 @@ class SqlCipherStatement(val db: SqlCipherDatabase, sql: String): PreparedStatem
     override fun execute(bindParameters: SqlValues): Int {
         bind(bindParameters)
         var rows = -1
-        when (val rc = sqliteStatement.step()) {
-            SqliteStatement.StepResult.Done -> {
+        when (sqliteStatement.step()) {
+            SqliteStepResult.Done -> {
                 retryable = false
                 rows = sqliteStatement.changes()
                 sqliteStatement.reset()
             }
-            SqliteStatement.StepResult.Error -> {
+            SqliteStepResult.Error -> {
                 throw SqliteException("Execute error: ${db.errorMessage}", "step")
             }
-            SqliteStatement.StepResult.Row -> {
+            SqliteStepResult.Row -> {
                 throw IllegalStateException("Row found, SQL should be DML only")
             }
-            SqliteStatement.StepResult.Busy -> {
+            SqliteStepResult.Busy -> {
                 retryable = true
             }
-            else ->
-                throw IllegalStateException("Bug: Unexpected StepResult $rc")
         }
         return rows
     }

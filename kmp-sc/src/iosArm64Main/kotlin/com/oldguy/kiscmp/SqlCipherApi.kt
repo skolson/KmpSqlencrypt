@@ -142,11 +142,7 @@ actual class SqliteStatement actual constructor(val db: SqliteDatabase) {
         TODO("Not yet implemented")
     }
 
-    actual enum class ColumnType {
-        Null, Integer, Text, Float, Blob
-    }
-
-    actual fun columnType(index: Int): ColumnType {
+    actual fun columnType(index: Int): com.oldguy.kiscmp.ColumnType {
         TODO("Not yet implemented")
     }
 

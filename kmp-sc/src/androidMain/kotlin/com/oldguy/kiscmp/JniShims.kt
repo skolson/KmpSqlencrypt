@@ -11,9 +11,9 @@ package com.oldguy.kiscmp
  *
  * Also to avoid kotlin release dependency issues as much as practical, only basic types are
  * passed back and forth; Int, Long, Double, etc, and String.  Any other usage (enums, sealed
- * classes lambdas, ...) are to be avoided here, just low-leve stuff.
+ * classes lambdas, ...) are to be avoided here, just low-level stuff.
  */
-class Sqlite3JniShim() {
+class Sqlite3JniShim {
     // will be changed by open function, if non-zero it was set by the open process and is the
     // pointer value used by all the sqlite3 apis that operate on an open database.
     var handle: Long = 0
@@ -88,7 +88,7 @@ class Sqlite3JniShim() {
  *  So worked around the issue by not return enum types from external functions.
  */
 
-class Sqlite3StatementJniShim() {
+class Sqlite3StatementJniShim {
     private var handle: Long = 0  // will be changed by statement prepare function
 
     external fun parameterCount(): Int
