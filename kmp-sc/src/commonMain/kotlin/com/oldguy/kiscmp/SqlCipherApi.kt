@@ -39,7 +39,8 @@ expect class SqliteDatabase() {
     fun exec(sql: String): Int
 
     fun exec(
-        sql: String, callback: ((
+        sql: String,
+        callback: ((
             values: Array<String>,
             columnNames: Array<String>
         ) -> Int)? = null

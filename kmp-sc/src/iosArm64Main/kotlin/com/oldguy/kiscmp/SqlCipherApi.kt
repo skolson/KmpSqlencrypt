@@ -1,6 +1,8 @@
 package com.oldguy.kiscmp
 
 actual class SqliteDatabase {
+    actual var encoding =  SqliteEncoding.Utf_8
+
     actual fun error(): String {
         TODO("Not yet implemented")
     }
@@ -28,9 +30,16 @@ actual class SqliteDatabase {
     actual fun busyTimeout(timeout: Int) {
     }
 
+    actual fun exec(sql: String): Int {
+        return exec(sql, null)
+    }
+
     actual fun exec(
         sql: String,
-        callback: ((numberColumns: Int, values: Array<String>, columnNames: Array<String>) -> Int)?
+        callback: (
+            (values: Array<String>,
+             columnNames: Array<String>
+        ) -> Int)?
     ): Int {
         TODO("Not yet implemented")
     }
@@ -93,11 +102,7 @@ actual class SqliteStatement actual constructor(val db: SqliteDatabase) {
         TODO("Not yet implemented")
     }
 
-    actual enum class StepResult {
-        Done, Row, Busy, Error
-    }
-
-    actual fun step(): StepResult {
+    actual fun step(): SqliteStepResult {
         TODO("Not yet implemented")
     }
 
@@ -142,7 +147,7 @@ actual class SqliteStatement actual constructor(val db: SqliteDatabase) {
         TODO("Not yet implemented")
     }
 
-    actual fun columnType(index: Int): com.oldguy.kiscmp.ColumnType {
+    actual fun columnType(index: Int): SqliteColumnType {
         TODO("Not yet implemented")
     }
 

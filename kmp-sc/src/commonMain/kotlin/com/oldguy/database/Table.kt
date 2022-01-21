@@ -1,7 +1,5 @@
 package com.oldguy.database
 
-import com.oldguy.kiscmp.SqlCipherDatabase
-
 enum class ColumnType { String, Byte, Short, Int, Long, Float, Double,
     Decimal, BigInteger,
     Date, DateTime, Boolean, Blob, Clob, Expression }

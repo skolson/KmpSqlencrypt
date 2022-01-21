@@ -3,6 +3,7 @@ import com.oldguy.gradle.OpensslExtension
 import com.oldguy.gradle.SqlcipherExtension
 import com.oldguy.gradle.BuildType
 import org.gradle.internal.os.OperatingSystem
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
     id("com.android.library")
@@ -31,6 +32,7 @@ val targetSdkVersion = 31
 
 val androidMainDirectory = projectDir.resolve("src").resolve("androidMain")
 val nativeInterop = projectDir.resolve("src/nativeInterop")
+val nativeInteropPath = nativeInterop.absolutePath
 
 sqlcipher {
     useGit = false
@@ -153,36 +155,59 @@ kotlin {
     android {
         publishLibraryVariants("release", "debug")
     }
-    macosX64 {
-        binaries {
-            framework {
-                baseName = "kmp-sc-macosX64"
-            }
-        }
+    val mac = macosX64 {
         val main by this.compilations.getting {
             val sqlcipherInterop by cinterops.creating {
-                defFile(nativeInterop.resolve("macosX64/SqlCipher.def"))
+                defFile(nativeInterop.resolve("macosX64/Sqlcipher.def"))
                 packageName("com.oldguy.sqlcipher")
                 includeDirs.apply {
                     allHeaders(nativeInterop.resolve("macosX64"))
                 }
+                compilerOpts += listOf(
+                    "-I$nativeInteropPath/macosX64"
+                )
             }
         }
     }
-    iosX64 {
+    val iosSimulator = iosX64 {
+        val main by this.compilations.getting {
+            val sqlcipherInterop by cinterops.creating {
+                defFile(nativeInterop.resolve("iosX64/Sqlcipher.def"))
+                packageName("com.oldguy.sqlcipher")
+                includeDirs.apply {
+                    allHeaders(nativeInterop.resolve("iosX64"))
+                }
+                compilerOpts += listOf(
+                    "-I$nativeInteropPath/iosX64"
+                )
+            }
+        }
+    }
+    val ios = iosArm64 {
+        val main by this.compilations.getting {
+            val sqlcipherInterop by cinterops.creating {
+                defFile(nativeInterop.resolve("iosArm64/Sqlcipher.def"))
+                packageName("com.oldguy.sqlcipher")
+                includeDirs.apply {
+                    allHeaders(nativeInterop.resolve("iosArm64"))
+                }
+                compilerOpts += listOf(
+                    "-I$nativeInteropPath/iosArm64"
+                )
+            }
+        }
+    }
+    val frameworkName = "KotlinSqlcipher"
+    val appleXcf = XCFramework()
+    configure(listOf(ios, iosSimulator, mac)) {
         binaries {
             framework {
-                baseName = "kmp-sc-iosX64"
+                baseName = frameworkName
+                appleXcf.add(this)
             }
         }
     }
-    iosArm64 {
-        binaries {
-            framework {
-                baseName = "kmp-sc-arm64"
-            }
-        }
-    }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -212,11 +237,16 @@ kotlin {
             dependsOn(commonMain)
             dependsOn(androidMain)
         }
-        val nativeMain = create("nativeMain") {
+        val nativeMain by creating {
+            dependsOn(commonMain)
             kotlin.srcDir("src/nativeMain/kotlin")
         }
-        val nativeTest = create("nativeTest") {
+        val nativeTest by creating {
             kotlin.srcDir("src/nativeTest/kotlin")
+            dependencies {
+                implementation(kotlin("test"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
+            }
         }
         val iosX64Main by getting {
             dependsOn(nativeMain)
@@ -232,10 +262,6 @@ kotlin {
         }
         val macosX64Test by getting {
             dependsOn(nativeTest)
-            dependencies {
-                implementation(kotlin("test"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
-            }
         }
 
         all {
