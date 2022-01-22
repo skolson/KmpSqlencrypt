@@ -4,10 +4,10 @@ import com.oldguy.gradle.SqlcipherExtension
 import com.oldguy.gradle.BuildType
 import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
-
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
+    kotlin("native.cocoapods")
     id("maven-publish")
     id("signing")
     id("kotlinx-atomicfu")
@@ -25,7 +25,7 @@ repositories {
 group = "com.oldguy"
 version = "0.4.0"
 val mavenArtifactId = "kmp-sqlcipher"
-val frameworkName = "KotlinSqlcipher"
+val appleFrameworkName = "KotlinSqlcipher"
 
 val ndkVersionValue = "24.0.7956693"
 val androidMinSdk = 24
@@ -158,11 +158,21 @@ kotlin {
         publishLibraryVariants("release", "debug")
     }
 
+    cocoapods {
+        framework {
+            summary = "Kotlin Multiplatform API for SqlCipher/OpenSSL"
+            homepage = "https://github.com/skolson/$appleFrameworkName"
+            baseName = appleFrameworkName
+            isStatic = true
+            embedBitcode(org.jetbrains.kotlin.gradle.plugin.mpp.BitcodeEmbeddingMode.BITCODE)
+        }
+    }
+
     val appleXcf = XCFramework()
     macosX64 {
         binaries {
             framework {
-                baseName = frameworkName
+                baseName = appleFrameworkName
                 appleXcf.add(this)
                 isStatic = true
             }
@@ -183,7 +193,7 @@ kotlin {
     iosX64 {
         binaries {
             framework {
-                baseName = frameworkName
+                baseName = appleFrameworkName
                 appleXcf.add(this)
                 isStatic = true
             }
@@ -202,7 +212,7 @@ kotlin {
     iosArm64 {
         binaries {
             framework {
-                baseName = frameworkName
+                baseName = appleFrameworkName
                 appleXcf.add(this)
                 isStatic = true
                 embedBitcode("bitcode")
