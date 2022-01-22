@@ -104,7 +104,7 @@ class SqliteSystemCatalog(val db: SqlCipherDatabase): SystemCatalog() {
         }
     }
 
-    private fun describeTable(table: Table) {
+    private suspend fun describeTable(table: Table) {
         table.columns.clear()
         val sql = describeTableSql(table.name)
         db.execute(sql) {
@@ -348,7 +348,7 @@ class SqlCipherDatabase:
             try {
                 tableCount = tableCount()
             } catch (e: SqliteException) {
-                if (passphrase.passphrase.isNotEmpty())
+                if (e.result == sqliteDb.notDatabaseResult && passphrase.passphrase.isNotEmpty())
                     invalidPassphrase?.let {
                         it(this, passphrase)
                         return@open
@@ -414,7 +414,7 @@ class SqlCipherDatabase:
         observers.forEach { it.onClose(this) }
     }
 
-    fun tableCount(): Int {
+    override suspend fun tableCount(): Int {
         var tableCount = 0
         execute(openQuery) {
             tableCount = it.requireInt(0)
@@ -434,11 +434,11 @@ class SqlCipherDatabase:
      * SqlValues argument will contain any results.
      * @throws SqliteException if any errors occur.
      */
-    override fun execute(sqlScript: String, results: ((SqlValues) -> Boolean)?) {
+    override suspend fun execute(sqlScript: String, results: ((SqlValues) -> Boolean)?) {
         if (results == null)
             executeRaw(sqlScript)
         else {
-            executeRaw(sqlScript) { data: Array<String>, names: Array<String> ->
+            executeRaw(sqlScript) { data, names ->
                 val row = SqlValues()
                 for (i in names.indices) {
                     row.add(SqlValue.StringValue(names[i], data[i]))
@@ -604,12 +604,16 @@ class SqlCipherDatabase:
      * be called once for each row until rows are exhausted or lambda returns false
      */
     fun pragma(pragmaText: String, results: ((SqlValues) -> Boolean)) {
-        execute("PRAGMA $pragmaText;") {
-            results(it)
+        executeRaw("PRAGMA $pragmaText;") { data, names ->
+            val row = SqlValues()
+            for (i in names.indices) {
+                row.add(SqlValue.StringValue(names[i], data[i]))
+            }
+            if (results(row)) 0 else 1
         }
     }
 
-    override fun beginTransaction(mode: TransactionMode) {
+    override suspend fun beginTransaction(mode: TransactionMode) {
         val sql = buildString {
             append("BEGIN ")
             append(when (mode) {
@@ -621,11 +625,11 @@ class SqlCipherDatabase:
         execute(sql)
     }
 
-    override fun commit() {
+    override suspend fun commit() {
         execute("COMMIT;")
     }
 
-    override fun rollback(savepointName: String) {
+    override suspend fun rollback(savepointName: String) {
         val sql = buildString {
             append("ROLLBACK ")
             append(if (savepointName.isNotBlank()) {
@@ -637,12 +641,12 @@ class SqlCipherDatabase:
             transactionDepth = 0
     }
 
-    override fun savepoint(savepointName: String) {
+    override suspend fun savepoint(savepointName: String) {
         if (savepointName.isNotBlank())
             execute("SAVEPOINT $savepointName;")
     }
 
-    override fun releaseSavepoint(savepointName: String) {
+    override suspend fun releaseSavepoint(savepointName: String) {
         if (savepointName.isNotBlank())
             execute("RELEASE $savepointName;")
     }

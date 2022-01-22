@@ -14,6 +14,7 @@ open class SqliteDatabaseNativeImpl {
     var dbContext: CPointer<sqlite3>? = null
         private set
     var encoding = SqliteEncoding.Utf_8
+    val sqliteNotadb = SQLITE_NOTADB
 
     open fun error(): String {
         return sqlite3_errmsg(dbContext)?.toKString() ?: ""
@@ -90,7 +91,11 @@ open class SqliteDatabaseNativeImpl {
                 }
                 defer { sqlite3_free(error.value) }
                 if (result != SQLITE_OK && result != SQLITE_ABORT)
-                    error("exec() error. result: $result, error: ${error.value!!.toKString()}, sql: $sql")
+                    throw SqliteException(
+                        "exec() error. result: $result, error: ${error.value!!.toKString()}, sql: $sql",
+                        "sqlite3_exec",
+                        result
+                    )
             }
         }
         return result

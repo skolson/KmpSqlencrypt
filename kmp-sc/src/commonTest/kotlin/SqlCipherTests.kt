@@ -360,13 +360,14 @@ open class SqlCipherTests {
             invalidPassphrase = { _: SqlCipherDatabase, password: Passphrase ->
                 badPwd = true
                 fail("Invalid password called incorrectly. Passphrase $passphrase, error passphrase: $password")
-            }) {
+            }) { database ->
+            database.execute(drop2)
             testBindInsert()
             testSelect()
-            assertEquals("pwdTables", 1, db.tableCount())
-            db.catalog.retrieveTables()
-            assertEquals("pwdCatalogTables", 1, db.catalog.tables.size)
-            val table = db.catalog.tables[testTbl]
+            assertEquals("pwdTables", 1, database.tableCount())
+            database.catalog.retrieveTables()
+            assertEquals("pwdCatalogTables", 1, database.catalog.tables.size)
+            val table = database.catalog.tables[testTbl]
             assertNotNull(table, "pwdTableLookup")
             table.let {
                 assertEquals("pwdTableName", testTbl, it.name)
@@ -380,7 +381,7 @@ open class SqlCipherTests {
                 assertEquals("pwdBad", badPassphrase, password.passphrase)
                 badPwd = true
             }) {
-            assertEquals("pwdBadCount", 1, db.tableCount())
+            assertEquals("pwdBadCount", 1, it.tableCount())
         }
         assertTrue("pwbBadConfirm", badPwd)
     }

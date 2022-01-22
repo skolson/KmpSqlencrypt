@@ -116,6 +116,7 @@ abstract class Database {
     var trackActiveStatements = false
     private val activeStatementList = mutableListOf<PreparedStatement>()
     val activeStatements get() = activeStatementList.toList()
+    abstract suspend fun tableCount(): Int
 
     /**
      * Open a database, perform the work in a lambda, close the database. Useful for small amounts
@@ -161,7 +162,7 @@ abstract class Database {
      * @throws IllegalStateException or an implementation-specific exception with error text
      * about the error if one is encountered
      */
-    abstract fun execute(sqlScript: String, results: ((SqlValues) -> Boolean)? = null)
+    abstract suspend fun execute(sqlScript: String, results: ((SqlValues) -> Boolean)? = null)
 
 
     /**
@@ -260,15 +261,15 @@ abstract class Database {
     /**
      *
      */
-    abstract fun beginTransaction(mode: TransactionMode = TransactionMode.Deferred)
+    abstract suspend fun beginTransaction(mode: TransactionMode = TransactionMode.Deferred)
 
-    abstract fun commit()
+    abstract suspend fun commit()
 
-    abstract fun rollback(savepointName: String = "")
+    abstract suspend fun rollback(savepointName: String = "")
 
-    abstract fun savepoint(savepointName: String)
+    abstract suspend fun savepoint(savepointName: String)
 
-    abstract fun releaseSavepoint(savepointName: String)
+    abstract suspend fun releaseSavepoint(savepointName: String)
 
     /**
      * The work within the lambda will be performed as part of one database transaction. At the end,

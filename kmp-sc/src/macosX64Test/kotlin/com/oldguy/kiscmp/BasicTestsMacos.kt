@@ -2,7 +2,9 @@ package com.oldguy.kiscmp
 
 import com.oldguy.database.SqlValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
+import platform.Foundation.NSTemporaryDirectory
 import kotlin.test.DefaultAsserter.assertTrue
 import kotlin.test.Test
 
@@ -53,6 +55,13 @@ class BasicTestsMacos: SqlCipherTests() {
             db.use("") {
                 allTests()
             }
+        }
+    }
+
+    @Test
+    fun testEncryption1() {
+        runBlocking {
+            testPasswordsAndUpgrade(NSTemporaryDirectory())
         }
     }
 }

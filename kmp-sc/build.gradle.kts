@@ -23,12 +23,14 @@ repositories {
 }
 
 group = "com.oldguy"
-version = "0.3.7"
-val mavenArtifactId = "kmp-sc"
+version = "0.4.0"
+val mavenArtifactId = "kmp-sqlcipher"
+val frameworkName = "KotlinSqlcipher"
 
 val ndkVersionValue = "24.0.7956693"
-val minSdk = 24
-val targetSdkVersion = 31
+val androidMinSdk = 24
+val androidTargetSdkVersion = 31
+val iosMinSdk = "14"
 
 val androidMainDirectory = projectDir.resolve("src").resolve("androidMain")
 val nativeInterop = projectDir.resolve("src/nativeInterop")
@@ -71,11 +73,11 @@ sqlcipher {
             windowsSdkLocation = "D:\\Android\\sdk"
             macosSdkLocation = "/Users/steve/Library/Android/sdk"
             ndkVersion = ndkVersionValue
-            minimumSdk = minSdk
+            minimumSdk = androidMinSdk
         }
         apple {
             sdkVersion = "15"
-            sdkVersionMinimum = "14"
+            sdkVersionMinimum = iosMinSdk
         }
     }
     openssl {
@@ -87,7 +89,7 @@ sqlcipher {
 }
 
 android {
-    compileSdk = targetSdkVersion
+    compileSdk = androidTargetSdkVersion
     ndkVersion = ndkVersionValue
     buildToolsVersion = "32.0.0"
 
@@ -106,8 +108,8 @@ android {
     }
 
     defaultConfig {
-        minSdk = minSdk
-        targetSdk = targetSdkVersion
+        minSdk = androidMinSdk
+        targetSdk = androidTargetSdkVersion
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -156,7 +158,6 @@ kotlin {
         publishLibraryVariants("release", "debug")
     }
 
-    val frameworkName = "KotlinSqlcipher"
     val appleXcf = XCFramework()
     macosX64 {
         binaries {
@@ -205,7 +206,7 @@ kotlin {
                 appleXcf.add(this)
                 isStatic = true
                 embedBitcode("bitcode")
-                freeCompilerArgs += listOf("-Xoverride-konan-properties=osVersionMin=14")
+                freeCompilerArgs += listOf("-Xoverride-konan-properties=osVersionMin=$iosMinSdk")
             }
         }
         val main by this.compilations.getting {

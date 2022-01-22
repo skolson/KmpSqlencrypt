@@ -1,6 +1,6 @@
 package com.oldguy.kiscmp
 
-class SqliteException(message: String, apiName: String = "", result: Int = 0)
+class SqliteException(message: String, val apiName: String = "", val result: Int = 0)
     : Throwable(fullText(message, apiName, result)) {
     val fullMessage = fullText(message, apiName, result)
 
@@ -23,6 +23,7 @@ enum class SqliteEncoding(val pragma: String) {
 
 expect class SqliteDatabase() {
     var encoding: SqliteEncoding
+    val notDatabaseResult: Int
 
     fun error(): String
 

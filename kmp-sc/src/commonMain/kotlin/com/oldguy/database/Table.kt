@@ -121,7 +121,7 @@ open class Table(val name: String, val systemCatalog: Boolean = false) {
         indexesList.add(index)
     }
 
-    fun rowCount(db: Database): Long {
+    suspend fun rowCount(db: Database): Long {
         var tableCount = 0L
         db.execute("select count(*) from $name") {
             tableCount = it.requireLong(0)

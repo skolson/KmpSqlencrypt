@@ -1,6 +1,7 @@
 package com.oldguy.kiscmp
 
 actual class SqliteDatabase: SqliteDatabaseNativeImpl() {
+    actual val notDatabaseResult = sqliteNotadb
 
     actual override fun error(): String {
         return super.error()
