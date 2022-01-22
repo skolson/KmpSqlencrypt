@@ -12,7 +12,7 @@ plugins {
     id("signing")
     id("kotlinx-atomicfu")
     id("org.jetbrains.dokka") version "1.6.0"
-    id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.3.2"
+    id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.3.3"
     id("com.github.ben-manes.versions") version "0.39.0"
 }
 
@@ -155,7 +155,17 @@ kotlin {
     android {
         publishLibraryVariants("release", "debug")
     }
-    val mac = macosX64 {
+
+    val frameworkName = "KotlinSqlcipher"
+    val appleXcf = XCFramework()
+    macosX64 {
+        binaries {
+            framework {
+                baseName = frameworkName
+                appleXcf.add(this)
+                isStatic = true
+            }
+        }
         val main by this.compilations.getting {
             val sqlcipherInterop by cinterops.creating {
                 defFile(nativeInterop.resolve("macosX64/Sqlcipher.def"))
@@ -169,7 +179,14 @@ kotlin {
             }
         }
     }
-    val iosSimulator = iosX64 {
+    iosX64 {
+        binaries {
+            framework {
+                baseName = frameworkName
+                appleXcf.add(this)
+                isStatic = true
+            }
+        }
         val main by this.compilations.getting {
             val sqlcipherInterop by cinterops.creating {
                 defFile(nativeInterop.resolve("iosX64/Sqlcipher.def"))
@@ -177,13 +194,20 @@ kotlin {
                 includeDirs.apply {
                     allHeaders(nativeInterop.resolve("iosX64"))
                 }
-                compilerOpts += listOf(
-                    "-I$nativeInteropPath/iosX64"
-                )
+                compilerOpts += listOf("-I$nativeInteropPath/iosX64")
             }
         }
     }
-    val ios = iosArm64 {
+    iosArm64 {
+        binaries {
+            framework {
+                baseName = frameworkName
+                appleXcf.add(this)
+                isStatic = true
+                embedBitcode("bitcode")
+                freeCompilerArgs += listOf("-Xoverride-konan-properties=osVersionMin=14")
+            }
+        }
         val main by this.compilations.getting {
             val sqlcipherInterop by cinterops.creating {
                 defFile(nativeInterop.resolve("iosArm64/Sqlcipher.def"))
@@ -191,19 +215,7 @@ kotlin {
                 includeDirs.apply {
                     allHeaders(nativeInterop.resolve("iosArm64"))
                 }
-                compilerOpts += listOf(
-                    "-I$nativeInteropPath/iosArm64"
-                )
-            }
-        }
-    }
-    val frameworkName = "KotlinSqlcipher"
-    val appleXcf = XCFramework()
-    configure(listOf(ios, iosSimulator, mac)) {
-        binaries {
-            framework {
-                baseName = frameworkName
-                appleXcf.add(this)
+                compilerOpts += listOf("-I$nativeInteropPath/iosArm64")
             }
         }
     }
