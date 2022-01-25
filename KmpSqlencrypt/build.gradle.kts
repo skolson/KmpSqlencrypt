@@ -4,6 +4,8 @@ import com.oldguy.gradle.SqlcipherExtension
 import com.oldguy.gradle.BuildType
 import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
+import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
+
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
@@ -24,8 +26,8 @@ repositories {
 
 group = "com.oldguy"
 version = "0.4.0"
-val mavenArtifactId = "kmp-sqlcipher"
-val appleFrameworkName = "KotlinSqlcipher"
+val mavenArtifactId = "kmp-sqlencrypt"
+val appleFrameworkName = "KmpSqlencrypt"
 
 val ndkVersionValue = "24.0.7956693"
 val androidMinSdk = 24
@@ -163,9 +165,14 @@ kotlin {
             summary = "Kotlin Multiplatform API for SqlCipher/OpenSSL"
             homepage = "https://github.com/skolson/$appleFrameworkName"
             baseName = appleFrameworkName
+            license = "Apache 2.0"
+            authors = "Steven Olson"
             isStatic = true
             embedBitcode(org.jetbrains.kotlin.gradle.plugin.mpp.BitcodeEmbeddingMode.BITCODE)
         }
+        // Maps custom Xcode configuration to NativeBuildType
+        xcodeConfigurationToNativeBuildType["CUSTOM_DEBUG"] = NativeBuildType.DEBUG
+        xcodeConfigurationToNativeBuildType["CUSTOM_RELEASE"] = NativeBuildType.RELEASE
     }
 
     val appleXcf = XCFramework()

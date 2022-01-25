@@ -7,4 +7,4 @@ pluginManagement {
 }
 rootProject.name = "SqlCipherKotlinMP"
 
-include(":kmp-sc")
+include(":KmpSqlencrypt")

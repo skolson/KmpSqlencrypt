@@ -1,13 +1,13 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'kmp_sc'
     spec.version                  = '0.4.0'
-    spec.homepage                 = 'https://github.com/skolson/kmp-sc'
+    spec.homepage                 = 'https://github.com/skolson/KmpSqlencrypt'
     spec.source                   = { :git => "Not Published", :tag => "Cocoapods/#{spec.name}/#{spec.version}" }
-    spec.authors                  = ''
-    spec.license                  = ''
+    spec.authors                  = 'Steven Olson'
+    spec.license                  = 'Apache 2.0'
     spec.summary                  = 'Kotlin Multiplatform API for SqlCipher/OpenSSL'
 
-    spec.vendored_frameworks      = "build/cocoapods/framework/kmp-sc.framework"
+    spec.vendored_frameworks      = "build/cocoapods/framework/KmpSqlencrypt.framework"
     spec.libraries                = "c++"
     spec.module_name              = "#{spec.name}_umbrella"
 
