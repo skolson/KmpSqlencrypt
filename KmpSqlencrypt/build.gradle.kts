@@ -242,7 +242,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation("com.soywiz.korlibs.klock:klock:2.4.10")
-                implementation("com.ionspin.kotlin:bignum:0.3.3")
+                implementation("com.ionspin.kotlin:bignum:0.3.4")
 
             }
         }

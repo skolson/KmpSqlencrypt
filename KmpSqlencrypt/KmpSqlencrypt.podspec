@@ -1,5 +1,5 @@
 Pod::Spec.new do |spec|
-    spec.name                     = 'kmp_sc'
+    spec.name                     = 'KmpSqlencrypt'
     spec.version                  = '0.4.0'
     spec.homepage                 = 'https://github.com/skolson/KmpSqlencrypt'
     spec.source                   = { :git => "Not Published", :tag => "Cocoapods/#{spec.name}/#{spec.version}" }
@@ -16,13 +16,13 @@ Pod::Spec.new do |spec|
                 
 
     spec.pod_target_xcconfig = {
-        'KOTLIN_PROJECT_PATH' => ':kmp-sc',
-        'PRODUCT_MODULE_NAME' => 'kmp_sc',
+        'KOTLIN_PROJECT_PATH' => ':KmpSqlencrypt',
+        'PRODUCT_MODULE_NAME' => 'KmpSqlencrypt',
     }
 
     spec.script_phases = [
         {
-            :name => 'Build kmp_sc',
+            :name => 'Build KmpSqlencrypt',
             :execution_position => :before_compile,
             :shell_path => '/bin/sh',
             :script => <<-SCRIPT
