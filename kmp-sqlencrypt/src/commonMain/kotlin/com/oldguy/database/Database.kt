@@ -147,7 +147,7 @@ abstract class Database {
     abstract suspend fun open(
         path:String,
         passphrase: Passphrase = Passphrase(),
-        onOpen: (suspend () -> Unit)? = null,
+        onOpen: (suspend (db: SqlCipherDatabase) -> Unit)? = null,
         invalidPassphrase: (suspend (db: SqlCipherDatabase, passphrase: Passphrase) -> Unit)? = null)
 
     /**

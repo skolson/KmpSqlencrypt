@@ -1,17 +1,19 @@
-# Module kmp-sc
+# Module KmpSqlencrypt
 
 This module contains the core API for accessing SqlCipher/Sqlite functionality use Kotlin Common code on any of the supported target platforms. Platforms currently supported are:
 
-* Android - minimum SDK 23, target SDK 30. ABIs - arm64-v8, x86_64
+* Android - minimum SDK 23, target SDK 32. ABIs - arm64-v8, x86_64
 * IOS - iosArm64, iosX64
 * Windows - mingwX64, jvm
+* MacosX64 - native
+* LinuxX64 - jvm
 
 The library for each platform includes the respective platform-specific build of SqlCipher, built using the *com.oldguy.gradle.sqlcipher-openssl-build* gradle plugin.
 
-| Platform  | Target    | SqlCipher build   | Implementation  |
-|-----------| ----------| ---------------   | --------------- |
-| Android   | X86_64    | NDK 21.3.6528147  | Kotlin, JNI, C++       |
-|           | arm64-v8a | NDK 21.3.6528147  | Kotlin, JNI, C++       |
+| Platform  | Target    | SqlCipher build   | Implementation         |
+|-----------| ----------| ---------------   | ---------------------- |
+| Android   | X86_64    | NDK               | Kotlin, JNI, C++       |
+|           | arm64-v8a | NDK               | Kotlin, JNI, C++       |
 | IOS       | Arm64     |                   | Kotlin Native          |
 |           | X64       |                   | Kotlin Native          |
 | Windows   | mingw64   | MSYS2 gcc         | Kotlin Native          |
@@ -34,7 +36,7 @@ There are two packages. `com.oldguy.database` is a simple set of common interfac
 
 This package has a simple abstraction of standard SQL database concepts; Database, Table (or view), DML statements, SELECT statements, bind argument(s) of basic data types, rows of basic data types, and of course the underlying basic data types. The main Sqlite data types are all supported. Since Kotlin is type-safe and Sqlite has only "type affinity", standard and configurable type mappings are available. See the sealed `SqlValue` classes for details.
 
-# Package com.oldguy.kmp-sc
+# Package com.oldguy.kiscmp
 
 This package contains the SqlCipher-specific implementations of the above interfaces and abstract classes. Opening/creating a SqlCipher database with no key supplied results in a standard Sqlite database with no encryption. To enable encryption, a non-empty key, aka Passphrase, has to be supplied. SqlCipher has a particular structure for database key formats it supports, see the `Passphrase` class for details.
 

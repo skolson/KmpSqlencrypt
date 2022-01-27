@@ -76,6 +76,11 @@ class SqliteColumn(name: String, index: Int, type: ColumnType = ColumnType.Strin
     }
 }
 
+/**
+ * This contains metadata extracted from the sqlite_master table about all user tables and their columns. It uses the Sqlite
+ * querying the declaration of each column and parsing it into the Table and Column instances saved in the underlying
+ * [SystemCatalog] properties.
+ */
 class SqliteSystemCatalog(val db: SqlCipherDatabase): SystemCatalog() {
     override val catalogTableName = SqlCipherDatabase.catalogTable
     override val schemasSupported = false
@@ -281,12 +286,22 @@ class SqlCipherDatabase:
      */
     var readOnly: Boolean = false
 
+    /**
+     * If specified, should only use one or more [db.pragma()] functions to issue any desired pragmas that must happen after
+     * successful open, but BEFORE the first usage of the database.
+     */
+    var onOpenPragmas: (suspend (db: SqlCipherDatabase) -> Unit)? = null
+
     override suspend fun use(path:String,
                      passphrase: Passphrase,
                      invalidPassphrase: (suspend (db: SqlCipherDatabase, passphrase: Passphrase) -> Unit)?,
                      block: suspend (db: Database) -> Unit) {
         try {
-            open(path, passphrase, invalidPassphrase = invalidPassphrase)
+            open(path,
+                passphrase,
+                onOpen = onOpenPragmas,
+                invalidPassphrase = invalidPassphrase
+            )
             if (isOpen) {
                 block(this)
             }
@@ -331,7 +346,7 @@ class SqlCipherDatabase:
      */
     override suspend fun open(path: String,
                       passphrase: Passphrase,
-                      onOpen: (suspend () -> Unit)?,
+                      onOpen: (suspend (db: SqlCipherDatabase) -> Unit)?,
                       invalidPassphrase: (suspend (db: SqlCipherDatabase, passphrase: Passphrase) -> Unit)?
     ) {
         val workPath = path.ifEmpty { inMemoryPath }
@@ -344,7 +359,7 @@ class SqlCipherDatabase:
         try {
             setup(passphrase)
             if (onOpen != null)
-                onOpen()
+                onOpen(this)
             try {
                 tableCount = tableCount()
             } catch (e: SqliteException) {

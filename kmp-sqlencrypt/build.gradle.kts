@@ -24,15 +24,16 @@ repositories {
     mavenCentral()
 }
 
-group = "com.oldguy"
-version = "0.4.0"
 val mavenArtifactId = "kmp-sqlencrypt"
 val appleFrameworkName = "KmpSqlencrypt"
+group = "com.oldguy"
+version = "0.4.1"
 
 val ndkVersionValue = "24.0.7956693"
 val androidMinSdk = 24
 val androidTargetSdkVersion = 31
 val iosMinSdk = "14"
+val kmpPackageName = "com.oldguy.sqlcipher"
 
 val androidMainDirectory = projectDir.resolve("src").resolve("androidMain")
 val nativeInterop = projectDir.resolve("src/nativeInterop")
@@ -187,7 +188,7 @@ kotlin {
         val main by this.compilations.getting {
             val sqlcipherInterop by cinterops.creating {
                 defFile(nativeInterop.resolve("macosX64/Sqlcipher.def"))
-                packageName("com.oldguy.sqlcipher")
+                packageName(kmpPackageName)
                 includeDirs.apply {
                     allHeaders(nativeInterop.resolve("macosX64"))
                 }
@@ -208,7 +209,7 @@ kotlin {
         val main by this.compilations.getting {
             val sqlcipherInterop by cinterops.creating {
                 defFile(nativeInterop.resolve("iosX64/Sqlcipher.def"))
-                packageName("com.oldguy.sqlcipher")
+                packageName(kmpPackageName)
                 includeDirs.apply {
                     allHeaders(nativeInterop.resolve("iosX64"))
                 }
@@ -229,7 +230,7 @@ kotlin {
         val main by this.compilations.getting {
             val sqlcipherInterop by cinterops.creating {
                 defFile(nativeInterop.resolve("iosArm64/Sqlcipher.def"))
-                packageName("com.oldguy.sqlcipher")
+                packageName(kmpPackageName)
                 includeDirs.apply {
                     allHeaders(nativeInterop.resolve("iosArm64"))
                 }
@@ -300,40 +301,14 @@ kotlin {
             }
         }
     }
-}
 
-tasks {
-    dokkaGfm {
-        moduleName.set("Kotlin Multiplatform SqlCipher/Sqlite")
-        dokkaSourceSets {
-            named("commonMain") {
-                noAndroidSdkLink.set(false)
-                includes.from("kmp-sc.md")
-            }
-        }
-    }
-    create<Jar>("javadocJar") {
-        dependsOn(dokkaGfm)
-        archiveClassifier.set("javadoc")
-        from(dokkaGfm.get().outputDirectory)
-    }
-}
-
-signing {
-    isRequired = false
-    sign(publishing.publications)
-}
-
-afterEvaluate {
     publishing {
-        val githubUri = "skolson/kmp-sc"
-        val githubUrl = "https://github.com/$githubUri"
-
-        publications.withType<MavenPublication> {
-            artifact(tasks["javadocJar"])
+        publications.withType(MavenPublication::class) {
+            val githubUri = "skolson/$appleFrameworkName"
+            val githubUrl = "https://github.com/$githubUri"
             pom {
-                name.set("KMP-SC Kotlin Multiplatform SqlCipher/Sqlite")
-                description.set("Kotlin common library for use of SqlCipher/Sqlite using the same API on supported platforms; Android IOS, Windows, Linux, MacOS")
+                name.set("$appleFrameworkName Kotlin Multiplatform SqlCipher/Sqlite")
+                description.set("Library for use of SqlCipher/Sqlite using the same Kotlin API on supported 64 bit platforms; Android IOS, Windows, Linux, MacOS")
                 url.set(githubUrl)
                 licenses {
                     license {
@@ -355,7 +330,30 @@ afterEvaluate {
                 }
             }
         }
+
     }
+}
+
+tasks {
+    dokkaGfm {
+        moduleName.set("Kotlin Multiplatform SqlCipher/Sqlite")
+        dokkaSourceSets {
+            named("commonMain") {
+                noAndroidSdkLink.set(false)
+                includes.from("$appleFrameworkName.md")
+            }
+        }
+    }
+    create<Jar>("javadocJar") {
+        dependsOn(dokkaGfm)
+        archiveClassifier.set("javadoc")
+        from(dokkaGfm.get().outputDirectory)
+    }
+}
+
+signing {
+    isRequired = false
+    sign(publishing.publications)
 }
 
 dependencies {
