@@ -642,7 +642,7 @@ class SqlValues() : Iterable<SqlValue<out Any>>
         if (isNull(columnName)) return null
         return when (val value = getValue(columnName).value) {
             is Float -> value
-            is BigDecimal -> value.floatValue()
+            is BigDecimal -> value.floatValue(false)
             is String -> {
                 try {
                     value.toFloat()
@@ -669,7 +669,7 @@ class SqlValues() : Iterable<SqlValue<out Any>>
         return when (val value = getValue(columnName).value) {
             is Float -> value.toDouble()
             is Double -> value
-            is BigDecimal -> value.doubleValue()
+            is BigDecimal -> value.doubleValue(false)
             is String -> {
                 try {
                     value.toDouble()

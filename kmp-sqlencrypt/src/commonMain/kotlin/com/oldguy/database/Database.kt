@@ -144,7 +144,7 @@ abstract class Database {
     abstract suspend fun use(
         path:String = "",
         passphrase: Passphrase = Passphrase(),
-        invalidPassphrase: (suspend (db: SqlCipherDatabase, passphrase: Passphrase) -> Unit)? = null,
+        invalidPassphrase: ((db: SqlCipherDatabase, passphrase: Passphrase) -> Unit)? = null,
         block: suspend (db: Database) -> Unit)
 
     /**

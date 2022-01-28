@@ -288,15 +288,25 @@ class SqlCipherDatabase:
     var readOnly: Boolean = false
 
     /**
-     * If specified, should only use one or more [db.pragma()] functions to issue any desired pragmas that must happen after
-     * successful open, but BEFORE the first usage of the database.
+     * If specified, should only use one or more [db.pragma()] functions to issue any desired pragmas
+     * that must happen after successful open, but BEFORE the first usage of the database.
      */
     var onOpenPragmas: (suspend (db: SqlCipherDatabase) -> Unit)? = null
 
     /**
      * If specified, will be invoked if a bad password is detected on an encrypted database
      */
-    var invalidPassphrase: (suspend (db: SqlCipherDatabase, passphrase: Passphrase) -> Unit)? = null
+    var invalidPassphrase: ((db: SqlCipherDatabase, passphrase: Passphrase) -> Unit)? = null
+
+    val isForeignKeysChecking: Boolean get() {
+        var enabled = false
+        pragma(foreignKeys) {
+            if (it.size == 1)
+                enabled = it.getInt(0) == 1
+            false
+        }
+        return enabled
+    }
 
     /**
      * Use the supplied Passphrase and previously configured instance to attempt an open
@@ -316,7 +326,7 @@ class SqlCipherDatabase:
 
     override suspend fun use(path:String,
                      passphrase: Passphrase,
-                     invalidPassphrase: (suspend (db: SqlCipherDatabase, passphrase: Passphrase) -> Unit)?,
+                     invalidPassphrase: ((db: SqlCipherDatabase, passphrase: Passphrase) -> Unit)?,
                      block: suspend (db: Database) -> Unit) {
         try {
             this.path = path
@@ -352,17 +362,8 @@ class SqlCipherDatabase:
      * function, if set, to allow any required DML to be excuted.
      * 7) Open complete
 
-     * @param path absolute path to database file, or empty string if temporary/new in-memory database is
-     * desired.
      * @param passphrase optional, if specified used as key for Sqlcipher database. If empty, database
      * is essentially a Sqlite database with no Sqlcipher functionality.
-     * @param onOpen lambda is invoked after open is successful, after passphrase use, but before
-     * first actual read access to database. For Sqlite/SqlCipher, this is ideal spot for pragmas
-     * that must run before database is fully open.
-     * @param invalidPassphrase Will be invoked if a non empty passphrase is in use, and database is
-     * not readable. It is possible (but unlikely) that a database is just corrupted badly enough
-     * that it is unopenable. When a passphrase is in use, a corrupted database and one that can't
-     * be decrypted using that passphrase are indistinguishable.
      */
     override suspend fun open(passphrase: Passphrase)
     {
@@ -386,6 +387,11 @@ class SqlCipherDatabase:
                     }
                 throw e
             }
+            if (createOk)
+                encoding(encoding)
+            else
+                encoding = queryEncoding()
+            sqliteDb.encoding = encoding
             if (tableCount == 0 && !createOk)
                 throw SqliteException("createOk false and database is empty", "open", -1)
             isOpen = true
@@ -606,12 +612,7 @@ class SqlCipherDatabase:
         pragma("encoding") {
             if (it.size != 1)
                 throw SqliteException("Unexpected result from pragma encoding: $it")
-            val response = it.requireString(0)
-            try {
-                enc = SqliteEncoding.valueOf(response)
-            } catch (e: Exception) {
-                throw SqliteException("Unexpected result from pragma encoding: $response")
-            }
+            enc = SqliteEncoding.byPragma(it.requireString(0))
             true
         }
         return enc
@@ -621,6 +622,23 @@ class SqlCipherDatabase:
         pragma("encoding = '${encoding.pragma}'") {
             true
         }
+    }
+
+    /**
+     * Enables or disables Foreign Key checking in Sqlite.
+     * @param enable true to enable, false to disable
+     * @return true if response is enabled, false if response is disabled
+     */
+    fun pragmaForeignKeys(enable: Boolean = true): Boolean {
+        val pragma = "$foreignKeys ${if (enable) " = ON" else " = OFF"};"
+        var result = false
+        pragma(pragma) {
+            if (it.isEmpty || it.size != 1)
+                throw IllegalStateException("Bug: Unexpected empty response to pragma $foreignKeys")
+            result = it.getInt(0) == 1
+            true
+        }
+        return result
     }
 
     /**
@@ -709,11 +727,6 @@ class SqlCipherDatabase:
     private fun setup(passphrase: Passphrase) {
         softHeapLimit = defaultSoftHeapLimit
         sqliteDb.busyTimeout(defaultTimeout)
-        if (createOk)
-            encoding(encoding)
-        else
-            encoding = queryEncoding()
-        sqliteDb.encoding = encoding
         if (passphrase.passphrase.isNotEmpty()) {
             pragmaKey(passphrase)
         }
@@ -755,5 +768,6 @@ class SqlCipherDatabase:
         private const val pragmaSuccess = "ok"
         private const val pragmaVersion = "cipher_version"
         private const val pragmaUserVersion = "user_version"
+        private const val foreignKeys = "foreign_keys"
     }
 }

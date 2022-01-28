@@ -19,6 +19,14 @@ enum class SqliteEncoding(val pragma: String) {
     Utf_16("UTF-16"),
     Utf16LittleEndian("UTF-16le"),
     Utf16BigEndian("UTF-16be");
+
+    companion object {
+        fun byPragma(response: String): SqliteEncoding {
+            return values().firstOrNull {
+                response == it.pragma
+            } ?: throw SqliteException("Unexpected pragma encoding response: $response")
+        }
+    }
 }
 
 expect class SqliteDatabase() {

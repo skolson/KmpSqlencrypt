@@ -32,7 +32,7 @@ Supported platforms (KMM targets) all 64 bit only:
 ## Releases
 Tag 0.4.1 is for SqlCipher 4.5.0, which uses Sqlite 3.36.0. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.0.0. See the gradle.build.kts files for details.
 
-#Dependencies
+# Dependencies
 
 Dependencies are intentionally kept to a minimum and only using Kotlin multi-platform libraries.
 
@@ -42,7 +42,7 @@ Dependencies are intentionally kept to a minimum and only using Kotlin multi-pla
 - Kotlin atomicfu
  
 
-##Usage
+## Usage
 
 This library has been used extensively in one app, so has not so far been published to maven. It can be easily published to mavenLocal using the gradle "publishToMavenLocal" task.
 
@@ -62,18 +62,18 @@ Define the library as a gradle dependency:
     }  
 ```
 
-##Features
+## Features
 
-##Kotlin Type-safe access to SqlCipher
+## Kotlin Type-safe access to SqlCipher
 - Sqlite and therefore SqlCipher have known issues with precision on large decimals as all decimals are basically treated like doubles with about 15 digits of precision and the rounding issues inherent to float and double.  This library maps BigDecimal types of any precision to/from text columns in Sqlite tables. This allows use of arbitrary numerics of any precision to be stored and retrieved with no precision loss, and full rounding and scale control available.  However, note that precision loss can/will still occur if large precision values are used in SQL numeric functions. Bottom line - if you don't want precision loss, don't do numeric calculations in SQL using Sqlite.
 - Date and DateTime support offer mappings between Sqlite date, datetime, and timestamp columns to matching Kotlin types, with default mappings that can be customized.
 - Boolean support offer mappings between Sqlite text columns to Kotlin Boolean, with default mappings ("true","false") that can be customized.
 - Basic types; Int, Long, ByteArray (Blob/Clob), Float, Double, String
     
-##Kotlin coroutines support
+## Kotlin coroutines support
 Pretty much all SqlCipher usage should be using something like the Dispatcher.IO coroutine context for doing database access work.  This library has full coroutine support and uses suspend functions extensively. The caller, like a view model or other business logic controller, provides the coroutine scopes used.  The library does none of its own launches.
 
-##Kotlin syntax for database usage
+## Kotlin syntax for database usage
 DSL-like builder syntax for configuring a SqlCipher database 
 Extensive use of functions as arguments (lambdas). Requirement to directly implement any interface in the library is rare.
 Kotlin-specific ease-of-use syntax for common operations.
@@ -94,7 +94,7 @@ Kotlin-specific ease-of-use syntax for common operations.
 
 Intent is to make Data Access Objects (DAOs) using this library convenient and straightforward.
 
-##Releases
+## Releases
 
 Version 0.4.1 is built with:
 - Kotlin 1.6.10
@@ -175,11 +175,11 @@ These steps happen at open time:
 - At this point open has succeeded, so the [SystemCatalog] instance is created and configured based on what is present in the database. It is populated with a map of Table instances, which each have a list of Column instances with metadata about each column in the table.
 - Final open step looks to see if any [DatabaseObserver] instances have been configured into the [observers] list, and if they have, notify each in list order. 
 
-###Other operations
+### Other operations
 
 Once a database has been opened, there are helpers for executing scripts or other raw SQL. 
 
-##Examples
+## Examples
 
 Here's an example of a simple test that creates a new database in memory with UTF-8 encoding that is encrypted with a passphrase as key, creates a table with a primary key, inserts a row, queries the row, and closes the database. It also shows accessing some of the provided properties set at open time, and simple use of the SystemCatalog support.
 
@@ -259,7 +259,7 @@ Here's an example of a simple test that creates a new database in memory with UT
     }
 ```
 
-###Type safety notes
+### Type safety notes
 
 Since Sqlite is by design not type safe, conventions have to be followed for some types to get good usability.  Below are some notes on these.
 
@@ -269,11 +269,11 @@ Since Sqlite is by design not type safe, conventions have to be followed for som
 
 **Decimal** internally all numeric functions in Sqlite are implemented with doubles.  Doubles have well defined behaviors that result in precision loss (with more than 15 to 16 digits of precision in the mantissa), and rounding issues.  The library supports using TEXT columns to store BigDecimal instances of ANY precision that never have precision loss and offer complete rounding control and scale setting similar to java [BigDecimal].  The values are stored in a plain format compatible with Sqlite DECIMAL functions, i.e: `CAST(textCol AS DECIMAL)`. So Sqlite numeric functions can be used if desired, although only at risk of losing precision/rounding again.  
 
-###Other notes
+### Other notes
 
 There's a bunch more helpers and other stuff that is yet to be documented, but above are the basics.  If this library turns out to be interesting to **anyone** :-), the doc will be expanded.
 
-##Internals
+## Internals
 Android and JVM-based platforms access the native libraries through a thin JNI layer written in C++. There is minimal logic in C++. For other platforms, Kotlin Native is used. Since the original stuff was written Kotlin now supports native Android, so likely should be able to eliminate the JNI. But the current Android implementation is production quality, so it remains JNI for now. 
 
 [Github IonSpin](https://github.com/ionspin/kotlin-multiplatform-bignum) library is used for BigDecimal and BigInteger support is used for the unlimited precision stuff. If/when Kotlin Multi-platform releases BigDecimal support, this will be revisted.

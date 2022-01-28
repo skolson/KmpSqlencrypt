@@ -27,7 +27,7 @@ repositories {
 val mavenArtifactId = "kmp-sqlencrypt"
 val appleFrameworkName = "KmpSqlencrypt"
 group = "com.oldguy"
-version = "0.4.1"
+version = "0.4.2"
 
 val ndkVersionValue = "24.0.7956693"
 val androidMinSdk = 24
@@ -179,19 +179,36 @@ kotlin {
         publishLibraryVariants("release", "debug")
     }
 
+    val githubUrl = "https://github.com/skolson/$appleFrameworkName"
     cocoapods {
+        ios.deploymentTarget = iosMinSdk
+        summary = "Kotlin Multiplatform API for SqlCipher/OpenSSL"
+        homepage = githubUrl
+        license = "Apache 2.0"
+        authors = "Steven Olson"
+        specRepos {
+            url("$githubUrl.git")
+        }
         framework {
-            summary = "Kotlin Multiplatform API for SqlCipher/OpenSSL"
-            homepage = "https://github.com/skolson/$appleFrameworkName"
             baseName = appleFrameworkName
-            license = "Apache 2.0"
-            authors = "Steven Olson"
             isStatic = true
             embedBitcode(org.jetbrains.kotlin.gradle.plugin.mpp.BitcodeEmbeddingMode.BITCODE)
         }
         // Maps custom Xcode configuration to NativeBuildType
         xcodeConfigurationToNativeBuildType["CUSTOM_DEBUG"] = NativeBuildType.DEBUG
         xcodeConfigurationToNativeBuildType["CUSTOM_RELEASE"] = NativeBuildType.RELEASE
+    }
+
+    /**
+     * following is a work-around for issue KT-42105 that is supposedly fixed in 1.6.20
+     */
+    val podspec = tasks["podspec"] as org.jetbrains.kotlin.gradle.tasks.PodspecTask
+    podspec.doLast {
+        val spec = file("${project.name.replace("-", "_")}.podspec")
+        val newPodspecContent = spec.readLines().map {
+            if (it.contains("spec.source")) "    spec.source = { :git => '$githubUrl.git', :tag => '${project.version}' }" else it
+        }
+        spec.writeText(newPodspecContent.joinToString(separator = "\n"))
     }
 
     val appleXcf = XCFramework()
