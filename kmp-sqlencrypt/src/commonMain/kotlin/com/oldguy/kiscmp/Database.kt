@@ -167,6 +167,7 @@ class SqlCipherDatabase:
     Database() {
     internal val sqliteDb = SqliteDatabase()
     override var isOpen = false
+    override var path = inMemoryPath
     override val fileName: String
         get() = sqliteDb.fileName()
 
@@ -292,16 +293,35 @@ class SqlCipherDatabase:
      */
     var onOpenPragmas: (suspend (db: SqlCipherDatabase) -> Unit)? = null
 
+    /**
+     * If specified, will be invoked if a bad password is detected on an encrypted database
+     */
+    var invalidPassphrase: (suspend (db: SqlCipherDatabase, passphrase: Passphrase) -> Unit)? = null
+
+    /**
+     * Use the supplied Passphrase and previously configured instance to attempt an open
+     */
+    override suspend fun use(passphrase: Passphrase,
+                             block: suspend (db: Database) -> Unit) {
+        try {
+            open(passphrase)
+            if (isOpen) {
+                block(this)
+            }
+            close()
+        } catch (error: Throwable) {
+            throw error
+        }
+    }
+
     override suspend fun use(path:String,
                      passphrase: Passphrase,
                      invalidPassphrase: (suspend (db: SqlCipherDatabase, passphrase: Passphrase) -> Unit)?,
                      block: suspend (db: Database) -> Unit) {
         try {
-            open(path,
-                passphrase,
-                onOpen = onOpenPragmas,
-                invalidPassphrase = invalidPassphrase
-            )
+            this.path = path
+            this.invalidPassphrase = invalidPassphrase
+            open(passphrase)
             if (isOpen) {
                 block(this)
             }
@@ -344,11 +364,8 @@ class SqlCipherDatabase:
      * that it is unopenable. When a passphrase is in use, a corrupted database and one that can't
      * be decrypted using that passphrase are indistinguishable.
      */
-    override suspend fun open(path: String,
-                      passphrase: Passphrase,
-                      onOpen: (suspend (db: SqlCipherDatabase) -> Unit)?,
-                      invalidPassphrase: (suspend (db: SqlCipherDatabase, passphrase: Passphrase) -> Unit)?
-    ) {
+    override suspend fun open(passphrase: Passphrase)
+    {
         val workPath = path.ifEmpty { inMemoryPath }
         val rc = sqliteDb.open(workPath, readOnly, createOk)
         if (rc != 0) {
@@ -358,8 +375,7 @@ class SqlCipherDatabase:
         val tableCount: Int
         try {
             setup(passphrase)
-            if (onOpen != null)
-                onOpen(this)
+            onOpenPragmas?.invoke(this)
             try {
                 tableCount = tableCount()
             } catch (e: SqliteException) {

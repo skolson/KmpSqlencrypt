@@ -38,6 +38,7 @@ val kmpPackageName = "com.oldguy.sqlcipher"
 val androidMainDirectory = projectDir.resolve("src").resolve("androidMain")
 val nativeInterop = projectDir.resolve("src/nativeInterop")
 val nativeInteropPath = nativeInterop.absolutePath
+val javadocTaskName = "javadocJar"
 
 sqlcipher {
     useGit = false
@@ -153,6 +154,23 @@ android {
         androidTestImplementation("androidx.test:core:1.4.0")
         androidTestImplementation("androidx.test:runner:1.4.0")
         androidTestImplementation("androidx.test.ext:junit:1.1.3")
+    }
+}
+
+tasks {
+    dokkaGfm {
+        moduleName.set("Kotlin Multiplatform SqlCipher/Sqlite")
+        dokkaSourceSets {
+            named("commonMain") {
+                noAndroidSdkLink.set(false)
+                includes.from("$appleFrameworkName.md")
+            }
+        }
+    }
+    create<Jar>(javadocTaskName) {
+        dependsOn(dokkaGfm)
+        archiveClassifier.set("javadoc")
+        from(dokkaGfm.get().outputDirectory)
     }
 }
 
@@ -306,6 +324,7 @@ kotlin {
         publications.withType(MavenPublication::class) {
             val githubUri = "skolson/$appleFrameworkName"
             val githubUrl = "https://github.com/$githubUri"
+            artifact(tasks.getByPath(javadocTaskName))
             pom {
                 name.set("$appleFrameworkName Kotlin Multiplatform SqlCipher/Sqlite")
                 description.set("Library for use of SqlCipher/Sqlite using the same Kotlin API on supported 64 bit platforms; Android IOS, Windows, Linux, MacOS")
@@ -331,23 +350,6 @@ kotlin {
             }
         }
 
-    }
-}
-
-tasks {
-    dokkaGfm {
-        moduleName.set("Kotlin Multiplatform SqlCipher/Sqlite")
-        dokkaSourceSets {
-            named("commonMain") {
-                noAndroidSdkLink.set(false)
-                includes.from("$appleFrameworkName.md")
-            }
-        }
-    }
-    create<Jar>("javadocJar") {
-        dependsOn(dokkaGfm)
-        archiveClassifier.set("javadoc")
-        from(dokkaGfm.get().outputDirectory)
     }
 }
 

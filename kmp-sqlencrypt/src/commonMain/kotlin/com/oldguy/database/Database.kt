@@ -108,6 +108,7 @@ class SqlTransactionException(message: String, exc: Throwable): Exception(messag
 
 abstract class Database {
     abstract val fileName: String
+    abstract var path: String
     abstract val catalog: SystemCatalog
     abstract var isOpen: Boolean
     var transactionDepth = 0
@@ -120,11 +121,24 @@ abstract class Database {
 
     /**
      * Open a database, perform the work in a lambda, close the database. Useful for small amounts
-     * of work in a single scope.
-     * @param path is an absolute path or a URI or some other unique string identifying a database. If
-     * path is empty, implementations may provide a default.
+     * of work in a single scope. Uses the path property, invalidPassphrase property, and onOpenPragmas proprty that
+     * are all set at configuration time.
      * @param passphrase optional, specify if opening/creating an encrypted database
      * and the supplied path does not exist, create a database at that path.
+     * @param block lambda do work on an open database. Database will be closed at return of block.
+     */
+    abstract suspend fun use(
+        passphrase: Passphrase = Passphrase(),
+        block: suspend (db: Database) -> Unit)
+
+    /**
+     * Open a database, perform the work in a lambda, close the database. Useful for small amounts
+     * of work in a single scope.
+     * @param path is an absolute path or a URI or some other unique string identifying a database. If
+     * path is empty, implementations may provide a default. Overrides configured path.
+     * @param passphrase optional, specify if opening/creating an encrypted database
+     * and the supplied path does not exist, create a database at that path.
+     * @param invalidPassphrase lambda overrides configured [invalidPassphrase]
      * @param block lambda do work on an open database. Database will be closed at return of block.
      */
     abstract suspend fun use(
@@ -134,21 +148,12 @@ abstract class Database {
         block: suspend (db: Database) -> Unit)
 
     /**
-     * Open a database instance, given a path to the database, and an optional password.
-     * @param path is an absolute path or a URI or some other unique string identifying a database. If
-     * supplied path is empty, implementations may provide a default.
+     * Open a database instance, given a path to the database, and an optional password. Assumes database
+     * instance is fully configured before [open] is called.
      * @param passphrase optional, specify if opening/creating an encrypted database
      * and the supplied path does not exist, create a database at that path.
-     * @param onOpen lambda is invoked after open is successful, after passphrase use, but before
-     * first actual read access to database.
-     * @param invalidPassphrase lambda invoked if supplied passphrase won't open the specified
-     * database
      */
-    abstract suspend fun open(
-        path:String,
-        passphrase: Passphrase = Passphrase(),
-        onOpen: (suspend (db: SqlCipherDatabase) -> Unit)? = null,
-        invalidPassphrase: (suspend (db: SqlCipherDatabase, passphrase: Passphrase) -> Unit)? = null)
+    abstract suspend fun open(passphrase: Passphrase = Passphrase())
 
     /**
      * Execute sql statement or statements. Bind variables are not supported, so use this for individual
