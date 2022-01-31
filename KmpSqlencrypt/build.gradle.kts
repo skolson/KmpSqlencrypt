@@ -37,7 +37,7 @@ val kmpPackageName = "com.oldguy.sqlcipher"
 
 val androidMainDirectory = projectDir.resolve("src").resolve("androidMain")
 val nativeInterop = projectDir.resolve("src/nativeInterop")
-val nativeInteropPath = nativeInterop.absolutePath
+val nativeInteropPath: String = nativeInterop.absolutePath
 val javadocTaskName = "javadocJar"
 
 sqlcipher {
@@ -179,16 +179,14 @@ kotlin {
         publishLibraryVariants("release", "debug")
     }
 
-    val githubUrl = "https://github.com/skolson/$appleFrameworkName"
+    val githubUri = "skolson/$appleFrameworkName"
+    val githubUrl = "https://github.com/$githubUri"
     cocoapods {
         ios.deploymentTarget = iosMinSdk
         summary = "Kotlin Multiplatform API for SqlCipher/OpenSSL"
         homepage = githubUrl
         license = "Apache 2.0"
         authors = "Steven Olson"
-        specRepos {
-            url("$githubUrl.git")
-        }
         framework {
             baseName = appleFrameworkName
             isStatic = true
@@ -200,8 +198,7 @@ kotlin {
     }
 
     /**
-     * following is a work-around for issue KT-42105 that is supposedly fixed in 1.6.20
-     */
+     * Once a github podspec repo is set up, the following is a work-around for issue KT-42105 that is supposedly fixed in 1.6.20
     val podspec = tasks["podspec"] as org.jetbrains.kotlin.gradle.tasks.PodspecTask
     podspec.doLast {
         val spec = file("${project.name.replace("-", "_")}.podspec")
@@ -210,6 +207,7 @@ kotlin {
         }
         spec.writeText(newPodspecContent.joinToString(separator = "\n"))
     }
+    */
 
     val appleXcf = XCFramework()
     macosX64 {
@@ -339,8 +337,7 @@ kotlin {
 
     publishing {
         publications.withType(MavenPublication::class) {
-            val githubUri = "skolson/$appleFrameworkName"
-            val githubUrl = "https://github.com/$githubUri"
+            artifactId = mavenArtifactId
             artifact(tasks.getByPath(javadocTaskName))
             pom {
                 name.set("$appleFrameworkName Kotlin Multiplatform SqlCipher/Sqlite")
@@ -366,7 +363,6 @@ kotlin {
                 }
             }
         }
-
     }
 }
 
