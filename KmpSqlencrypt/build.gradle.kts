@@ -27,7 +27,7 @@ repositories {
 val mavenArtifactId = "kmp-sqlencrypt"
 val appleFrameworkName = "KmpSqlencrypt"
 group = "com.oldguy"
-version = "0.4.2"
+version = "0.4.3"
 
 val ndkVersionValue = "24.0.7956693"
 val androidMinSdk = 24
@@ -177,6 +177,9 @@ tasks {
 kotlin {
     android {
         publishLibraryVariants("release", "debug")
+        mavenPublication {
+            artifactId = artifactId.replace(project.name, mavenArtifactId)
+        }
     }
 
     val githubUri = "skolson/$appleFrameworkName"
@@ -311,12 +314,18 @@ kotlin {
                 implementation(kotlin("test"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
             }
+            languageSettings {
+                optIn("kotlin.ExperimentalCoroutinesApi")
+            }
         }
         val iosX64Main by getting {
             dependsOn(nativeMain)
         }
         val iosX64Test by getting {
             dependsOn(nativeTest)
+            languageSettings {
+                optIn("kotlin.ExperimentalCoroutinesApi")
+            }
         }
         val iosArm64Main by getting {
             dependsOn(nativeMain)
@@ -326,9 +335,6 @@ kotlin {
         }
         val macosX64Test by getting {
             dependsOn(nativeTest)
-        }
-
-        all {
             languageSettings {
                 optIn("kotlin.ExperimentalCoroutinesApi")
             }
@@ -337,7 +343,7 @@ kotlin {
 
     publishing {
         publications.withType(MavenPublication::class) {
-            artifactId = mavenArtifactId
+            artifactId = artifactId.replace(project.name, mavenArtifactId)
             artifact(tasks.getByPath(javadocTaskName))
             pom {
                 name.set("$appleFrameworkName Kotlin Multiplatform SqlCipher/Sqlite")

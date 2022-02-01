@@ -418,21 +418,44 @@ class SqlValues() : Iterable<SqlValue<out Any>>
      */
     constructor(values: List<Any>): this() {
         values.forEach {
-            rowValues.add(when (it) {
-                is Int -> SqlValue.IntValue(value = it)
-                is Long -> SqlValue.LongValue(value = it)
-                is String -> SqlValue.StringValue(value = it)
-                is Date -> SqlValue.DateValue(value = it)
-                is DateTime -> SqlValue.DateTimeValue(value = it)
-                is ByteArray -> SqlValue.BytesValue(value = it)
-                is BigInteger -> SqlValue.BigIntegerValue(value = it)
-                is BigDecimal -> SqlValue.DecimalValue(value = it)
-                is Boolean -> SqlValue.BooleanValue(value = it)
-                is Float -> SqlValue.FloatValue(value = it)
-                is Double -> SqlValue.DoubleValue(value = it)
-                else -> throw IllegalArgumentException("Unsupported bind argument value type: $it")
-            })
+            addValue(it)
         }
+    }
+
+    fun addValue(value: Any): SqlValues {
+        rowValues.add(when (value) {
+            is Int -> SqlValue.IntValue(value = value)
+            is Long -> SqlValue.LongValue(value = value)
+            is String -> SqlValue.StringValue(value = value)
+            is Date -> SqlValue.DateValue(value = value)
+            is DateTime -> SqlValue.DateTimeValue(value = value)
+            is ByteArray -> SqlValue.BytesValue(value = value)
+            is BigInteger -> SqlValue.BigIntegerValue(value = value)
+            is BigDecimal -> SqlValue.DecimalValue(value = value)
+            is Boolean -> SqlValue.BooleanValue(value = value)
+            is Float -> SqlValue.FloatValue(value = value)
+            is Double -> SqlValue.DoubleValue(value = value)
+            else -> throw IllegalArgumentException("Unsupported bind argument value type: $value")
+        })
+        return this
+    }
+
+    fun addValue(name: String, value: Any): SqlValues {
+        rowValues.add(when (value) {
+            is Int -> SqlValue.IntValue(name = name, value = value)
+            is Long -> SqlValue.LongValue(name = name, value = value)
+            is String -> SqlValue.StringValue(name = name, value = value)
+            is Date -> SqlValue.DateValue(name = name, value = value)
+            is DateTime -> SqlValue.DateTimeValue(name = name, value = value)
+            is ByteArray -> SqlValue.BytesValue(name = name, value = value)
+            is BigInteger -> SqlValue.BigIntegerValue(name = name, value = value)
+            is BigDecimal -> SqlValue.DecimalValue(name = name, value = value)
+            is Boolean -> SqlValue.BooleanValue(name = name, value = value)
+            is Float -> SqlValue.FloatValue(name = name, value = value)
+            is Double -> SqlValue.DoubleValue(name = name, value = value)
+            else -> throw IllegalArgumentException("Unsupported bind argument value type: $value")
+        })
+        return this
     }
 
     private fun noSuchColumn(columnName: String): IllegalArgumentException {
