@@ -1,0 +1,30 @@
+{
+  "name": "KmpSqlencrypt",
+  "version": "0.4.3",
+  "homepage": "https://github.com/skolson/KmpSqlencrypt",
+  "source": {
+    "git": "Not Published",
+    "tag": "Cocoapods/KmpSqlencrypt/0.4.3"
+  },
+  "authors": "Steven Olson",
+  "license": "Apache 2.0",
+  "summary": "Kotlin Multiplatform API for SqlCipher/OpenSSL",
+  "vendored_frameworks": "build/cocoapods/framework/KmpSqlencrypt.framework",
+  "libraries": "c++",
+  "module_name": "KmpSqlencrypt_umbrella",
+  "platforms": {
+    "ios": "14"
+  },
+  "pod_target_xcconfig": {
+    "KOTLIN_PROJECT_PATH": ":KmpSqlencrypt",
+    "PRODUCT_MODULE_NAME": "KmpSqlencrypt"
+  },
+  "script_phases": [
+    {
+      "name": "Build KmpSqlencrypt",
+      "execution_position": "before_compile",
+      "shell_path": "/bin/sh",
+      "script": "                if [ \"YES\" = \"$COCOAPODS_SKIP_KOTLIN_BUILD\" ]; then\n                  echo \"Skipping Gradle build task invocation due to COCOAPODS_SKIP_KOTLIN_BUILD environment variable set to \"YES\"\"\n                  exit 0\n                fi\n                set -ev\n                REPO_ROOT=\"$PODS_TARGET_SRCROOT\"\n                \"$REPO_ROOT/../gradlew\" -p \"$REPO_ROOT\" $KOTLIN_PROJECT_PATH:syncFramework                     -Pkotlin.native.cocoapods.platform=$PLATFORM_NAME                     -Pkotlin.native.cocoapods.archs=\"$ARCHS\"                     -Pkotlin.native.cocoapods.configuration=$CONFIGURATION\n"
+    }
+  ]
+}

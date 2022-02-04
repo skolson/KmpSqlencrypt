@@ -441,7 +441,7 @@ class SqlValues() : Iterable<SqlValue<out Any>>
     }
 
     fun addValue(name: String, value: Any): SqlValues {
-        rowValues.add(when (value) {
+        when (value) {
             is Int -> SqlValue.IntValue(name = name, value = value)
             is Long -> SqlValue.LongValue(name = name, value = value)
             is String -> SqlValue.StringValue(name = name, value = value)
@@ -454,7 +454,10 @@ class SqlValues() : Iterable<SqlValue<out Any>>
             is Float -> SqlValue.FloatValue(name = name, value = value)
             is Double -> SqlValue.DoubleValue(name = name, value = value)
             else -> throw IllegalArgumentException("Unsupported bind argument value type: $value")
-        })
+        }.apply {
+            if (name.isNotEmpty()) nameMap[name] = this
+            rowValues.add(this)
+        }
         return this
     }
 
@@ -807,11 +810,14 @@ class SqlValues() : Iterable<SqlValue<out Any>>
     }
 
     override fun toString(): String {
-        var s = "Row["
-        for ((name, rowValue) in nameMap) {
-            s = "$s$name=$rowValue,"
-        }
-        return "${s.trimEnd(',')}]"
+        return buildString {
+            append("Row[")
+            var count = 0
+            if (nameMap.isEmpty())
+                rowValues.forEach { append("index=${count++}, value=${it.value?.toString()},") }
+            else
+                nameMap.forEach { append("name=${it.key}, value=${it.value.value?.toString()},") }
+        }.trimEnd(',') + "]"
     }
 
     override fun iterator(): Iterator<SqlValue<out Any>> {

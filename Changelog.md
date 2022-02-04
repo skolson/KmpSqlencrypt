@@ -1,5 +1,13 @@
 ## KmpSqlencrypt Change Log
 
+**0.4.3**  2022-02-02
+
+- iosApp now has a SwiftUI screen that invokes Swift code using the library. For testing/exploring Swift-Kotlin mappings. 
+- Added SwiftReadMe.md for narrative on the structure of the Swift app and the various mapping/usage issues.
+- SqlValues toString() fix
+- SqlValues has two new convenience methods for adding values. 
+- Cocoapods configuration tweaks, maven publishing artifactId changes. Externally Framework name is still "KmpSqlencrypt.framework. Maven artifact prefix for all platforms is still "kmp-sqlencrypt".
+
 **0.4.2**
 - 0.4.1 inadvertently made **SqlcipherDatabase var invalidPassword** a suspend function. Removed suspend.
 - Readme changes

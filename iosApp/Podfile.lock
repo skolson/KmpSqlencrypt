@@ -1,0 +1,16 @@
+PODS:
+  - KmpSqlencrypt (0.4.3)
+
+DEPENDENCIES:
+  - KmpSqlencrypt (from `~/Projects/SqlCipherKotlinMP/KmpSqlencrypt`)
+
+EXTERNAL SOURCES:
+  KmpSqlencrypt:
+    :path: "~/Projects/SqlCipherKotlinMP/KmpSqlencrypt"
+
+SPEC CHECKSUMS:
+  KmpSqlencrypt: cdf13c1df03090cfad932a762a7621393b191bca
+
+PODFILE CHECKSUM: 51e2325f9c40404f68b05d31c44b6b6a6f4e4a3d
+
+COCOAPODS: 1.11.2

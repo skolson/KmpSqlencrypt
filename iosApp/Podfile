@@ -1,0 +1,20 @@
+# Uncomment the next line to define a global platform for your project
+platform :ios, '14.0'
+# source 'https://github.com/skolson/KmpSqlencrypt.git'
+
+target 'iosApp' do
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  pod 'KmpSqlencrypt', :path => '~/Projects/SqlCipherKotlinMP/KmpSqlencrypt'
+
+  target 'iosAppTests' do
+    inherit! :search_paths
+    # Pods for testing
+  end
+
+  target 'iosAppUITests' do
+    # Pods for testing
+  end
+
+end
