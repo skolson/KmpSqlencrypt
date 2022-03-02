@@ -29,7 +29,7 @@ val appleFrameworkName = "KmpSqlencrypt"
 group = "com.oldguy"
 version = "0.4.3"
 
-val ndkVersionValue = "24.0.7956693"
+val ndkVersionValue = "25.0.8151533"
 val androidMinSdk = 24
 val androidTargetSdkVersion = 31
 val iosMinSdk = "14"
@@ -40,7 +40,9 @@ val nativeInterop = projectDir.resolve("src/nativeInterop")
 val nativeInteropPath: String = nativeInterop.absolutePath
 val javadocTaskName = "javadocJar"
 
-val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0"
+val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
+val kotlinCoroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
+
 
 sqlcipher {
     useGit = false
@@ -286,17 +288,18 @@ kotlin {
 
             }
         }
-        named("commonTest") {
+        val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
+                implementation(kotlinCoroutinesTest)
             }
         }
         val androidMain by getting {
             dependsOn(commonMain)
         }
 
-        named("androidTest") {
+        val androidTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation("junit:junit:4.13.2")
@@ -313,6 +316,7 @@ kotlin {
         }
         val nativeTest by creating {
             kotlin.srcDir("src/nativeTest/kotlin")
+            dependsOn(commonTest)
             dependencies {
                 implementation(kotlin("test"))
                 implementation(kotlinCoroutines)
