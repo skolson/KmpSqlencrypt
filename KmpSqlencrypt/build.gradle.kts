@@ -13,9 +13,9 @@ plugins {
     id("maven-publish")
     id("signing")
     id("kotlinx-atomicfu")
-    id("org.jetbrains.dokka") version "1.6.0"
+    id("org.jetbrains.dokka") version "1.6.10"
     id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.3.3"
-    id("com.github.ben-manes.versions") version "0.39.0"
+    id("com.github.ben-manes.versions") version "0.42.0"
 }
 
 repositories {
@@ -39,6 +39,8 @@ val androidMainDirectory = projectDir.resolve("src").resolve("androidMain")
 val nativeInterop = projectDir.resolve("src/nativeInterop")
 val nativeInteropPath: String = nativeInterop.absolutePath
 val javadocTaskName = "javadocJar"
+
+val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0"
 
 sqlcipher {
     useGit = false
@@ -95,13 +97,12 @@ sqlcipher {
 android {
     compileSdk = androidTargetSdkVersion
     ndkVersion = ndkVersionValue
-    buildToolsVersion = "32.0.0"
+    buildToolsVersion = "32.1.0-rc1"
 
     sourceSets {
         getByName("main") {
             java.srcDir(androidMainDirectory.resolve("kotlin"))
             manifest.srcFile(androidMainDirectory.resolve("AndroidManifest.xml"))
-            jni.srcDir("src/androidMain/cpp")
         }
         getByName("test") {
             java.srcDir("src/androidTest/kotlin")
@@ -158,7 +159,7 @@ android {
 }
 
 tasks {
-    dokkaGfm {
+    dokkaHtml {
         moduleName.set("Kotlin Multiplatform SqlCipher/Sqlite")
         dokkaSourceSets {
             named("commonMain") {
@@ -168,12 +169,13 @@ tasks {
         }
     }
     create<Jar>(javadocTaskName) {
-        dependsOn(dokkaGfm)
+        dependsOn(dokkaHtml)
         archiveClassifier.set("javadoc")
-        from(dokkaGfm.get().outputDirectory)
+        from(dokkaHtml.get().outputDirectory)
     }
 }
 
+@Suppress("UNUSED_VARIABLE")
 kotlin {
     android {
         publishLibraryVariants("release", "debug")
@@ -260,7 +262,8 @@ kotlin {
                 appleXcf.add(this)
                 isStatic = true
                 embedBitcode("bitcode")
-                freeCompilerArgs += listOf("-Xoverride-konan-properties=osVersionMin=$iosMinSdk")
+                freeCompilerArgs = freeCompilerArgs +
+                        listOf("-Xoverride-konan-properties=osVersionMin=$iosMinSdk")
             }
         }
         val main by this.compilations.getting {
@@ -278,7 +281,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("com.soywiz.korlibs.klock:klock:2.4.10")
+                implementation("com.soywiz.korlibs.klock:klock:2.5.3")
                 implementation("com.ionspin.kotlin:bignum:0.3.4")
 
             }
@@ -297,7 +300,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation("junit:junit:4.13.2")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
+                implementation(kotlinCoroutines)
             }
         }
         val androidAndroidTest by getting {
@@ -312,10 +315,7 @@ kotlin {
             kotlin.srcDir("src/nativeTest/kotlin")
             dependencies {
                 implementation(kotlin("test"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
-            }
-            languageSettings {
-                optIn("kotlin.ExperimentalCoroutinesApi")
+                implementation(kotlinCoroutines)
             }
         }
         val iosX64Main by getting {
@@ -323,9 +323,6 @@ kotlin {
         }
         val iosX64Test by getting {
             dependsOn(nativeTest)
-            languageSettings {
-                optIn("kotlin.ExperimentalCoroutinesApi")
-            }
         }
         val iosArm64Main by getting {
             dependsOn(nativeMain)
@@ -335,8 +332,12 @@ kotlin {
         }
         val macosX64Test by getting {
             dependsOn(nativeTest)
-            languageSettings {
-                optIn("kotlin.ExperimentalCoroutinesApi")
+        }
+        all {
+            if (name.endsWith("Test")) {
+                languageSettings {
+                    optIn("kotlin.ExperimentalCoroutinesApi")
+                }
             }
         }
     }
