@@ -1,5 +1,9 @@
 ## KmpSqlencrypt Change Log
 
+**0.4.4**  2022-03
+
+- SqlCipher 4.5.1 
+
 **0.4.3**  2022-02-02
 
 - iosApp now has a SwiftUI screen that invokes Swift code using the library. For testing/exploring Swift-Kotlin mappings. 

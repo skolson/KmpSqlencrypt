@@ -14,7 +14,7 @@ plugins {
     id("signing")
     id("kotlinx-atomicfu")
     id("org.jetbrains.dokka") version "1.6.10"
-    id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.3.3"
+    id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.3.4"
     id("com.github.ben-manes.versions") version "0.42.0"
 }
 
@@ -27,7 +27,7 @@ repositories {
 val mavenArtifactId = "kmp-sqlencrypt"
 val appleFrameworkName = "KmpSqlencrypt"
 group = "com.oldguy"
-version = "0.4.3"
+version = "0.4.4"
 
 val ndkVersionValue = "25.0.8151533"
 val androidMinSdk = 24
@@ -46,7 +46,7 @@ val kotlinCoroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
 
 sqlcipher {
     useGit = false
-    version = "4.5.0"
+    version = "4.5.1"
     compilerOptions = SqlcipherExtension.defaultCompilerOptions
     buildCompilerOptions = mapOf(
         BuildType.androidX64 to SqlcipherExtension.androidCompilerOptions,
