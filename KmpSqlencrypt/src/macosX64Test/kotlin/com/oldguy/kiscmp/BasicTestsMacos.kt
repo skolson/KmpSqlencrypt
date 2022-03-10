@@ -7,6 +7,7 @@ import kotlinx.coroutines.test.runTest
 import platform.Foundation.NSTemporaryDirectory
 import kotlin.test.DefaultAsserter.assertTrue
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @ExperimentalCoroutinesApi
 class BasicTestsMacos: SqlCipherTests() {
@@ -38,6 +39,7 @@ class BasicTestsMacos: SqlCipherTests() {
             SqlValue.BooleanValue.mapping("N", "Y")
         runTest {
             db.use("") {
+                assertEquals(SqliteEncoding.Utf16BigEndian, db.queryEncoding())
                 allTests()
             }
         }
@@ -53,6 +55,7 @@ class BasicTestsMacos: SqlCipherTests() {
             SqlValue.BooleanValue.mapping("N", "Y")
         runTest {
             db.use("") {
+                assertEquals(SqliteEncoding.Utf16LittleEndian, db.queryEncoding())
                 allTests()
             }
         }

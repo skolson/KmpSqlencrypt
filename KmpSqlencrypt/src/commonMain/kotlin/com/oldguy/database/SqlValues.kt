@@ -16,10 +16,11 @@ import kotlinx.atomicfu.atomic
  */
 fun ByteArray.toHex(startIndex:Int = 0, length:Int = size):String {
     val hexChars = "0123456789abcdef"
+    val bytes = this
     return buildString(length * 2) {
         for (i in startIndex until (startIndex+length)) {
-            append(hexChars[(this[i].code and 0xF0).ushr(4)])
-            append(hexChars[this[i].code and 0x0F])
+            append(hexChars[(bytes[i].toInt() and 0xF0).ushr(4)])
+            append(hexChars[bytes[i].toInt() and 0x0F])
         }
     }
 }

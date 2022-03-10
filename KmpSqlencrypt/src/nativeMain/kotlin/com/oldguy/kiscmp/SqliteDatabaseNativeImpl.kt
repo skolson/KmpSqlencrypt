@@ -13,7 +13,7 @@ open class SqliteDatabaseNativeImpl {
 
     var dbContext: CPointer<sqlite3>? = null
         private set
-    var encoding = SqliteEncoding.Utf_8
+    var encoding = SqliteEncoding.Utf8
     val sqliteNotadb = SQLITE_NOTADB
 
     open fun error(): String {
@@ -130,6 +130,8 @@ open class SqliteStatementNativeImpl constructor(private val db: SqliteDatabaseN
     private var statementContext: CPointer<sqlite3_stmt>? = null
     private val openStatement get() = statementContext ?: throw stmtClosedError
     private val openDb get() = db.dbContext ?: throw dbClosedError
+    private val utf16le = Charset(Charsets.Utf16le)
+    private val utf16be = Charset(Charsets.Utf16be)
 
     open fun parameterCount(): Int {
         return sqlite3_bind_parameter_count(openStatement)
@@ -167,14 +169,16 @@ open class SqliteStatementNativeImpl constructor(private val db: SqliteDatabaseN
 
     open fun bindText(index: Int, text: String): Int {
         return when (db.encoding) {
-            SqliteEncoding.Utf_8 -> {
+            SqliteEncoding.Utf8 -> {
                 sqlite3_bind_text(openStatement, index, text, text.length, SQLITE_TRANSIENT)
             }
-            SqliteEncoding.Utf_16,
             SqliteEncoding.Utf16LittleEndian,
             SqliteEncoding.Utf16BigEndian -> {
-                val utf16 = text.utf16
-                sqlite3_bind_text16(openStatement, index, utf16, utf16.size * 2, SQLITE_TRANSIENT)
+                val bytes = if (Platform.isLittleEndian)
+                    utf16le.encode(text)
+                else
+                    utf16be.encode(text)
+                sqlite3_bind_text16(openStatement, index, bytes.toCValues(), bytes.size, SQLITE_TRANSIENT)
             }
         }
     }
@@ -268,29 +272,22 @@ open class SqliteStatementNativeImpl constructor(private val db: SqliteDatabaseN
 
     /**
      * Kotlin native doesn't have a conversion from UTF-16 bytes to String
+     * Sqlite seems to always return little endian at least on the system catalog. Needs more research
      */
     open fun columnText(index: Int): String {
-        val len = sqlite3_column_bytes(openStatement, index)
         return when (db.encoding) {
-            SqliteEncoding.Utf_8 -> {
+            SqliteEncoding.Utf8 -> {
+                val len = sqlite3_column_bytes(openStatement, index)
                 sqlite3_column_text(openStatement, index)?.readBytes(len)?.toKString() ?: ""
             }
-            SqliteEncoding.Utf_16,
             SqliteEncoding.Utf16LittleEndian,
             SqliteEncoding.Utf16BigEndian -> {
-                val le = db.encoding == SqliteEncoding.Utf16LittleEndian || Platform.isLittleEndian
+                val len = sqlite3_column_bytes16(openStatement, index)
                 sqlite3_column_text16(openStatement, index)?.readBytes(len)?.let { bytes ->
-                    val chars = len / 2
-                    buildString {
-                        for (i in 0 until chars step 2) {
-                            append(Char(
-                                if (le)
-                                    (bytes[i]*256) + bytes[i+1]
-                                else
-                                    bytes[i] + (bytes[i+1]*256)
-                            ))
-                        }
-                    }
+                    if (Platform.isLittleEndian)
+                        utf16le.decode(bytes)
+                    else
+                        utf16be.decode(bytes)
                 } ?: ""
             }
         }

@@ -2,7 +2,8 @@
 
 **0.4.4**  2022-03
 
-- SqlCipher 4.5.1 
+- SqlCipher 4.5.1 (Sqlite 3.37.2) 
+- Correct native code supporting strings when database encoding is configured for a 16 bit charset.
 
 **0.4.3**  2022-02-02
 

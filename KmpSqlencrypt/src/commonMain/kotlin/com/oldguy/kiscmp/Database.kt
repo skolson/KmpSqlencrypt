@@ -279,7 +279,7 @@ class SqlCipherDatabase:
      * For existing databases, is queried by pragma immediately after open. If createOk is true, and this is set by DSL to a non-
      * default value, it will be set by pragma immediately after create.
      */
-    var encoding: SqliteEncoding = SqliteEncoding.Utf_8
+    var encoding: SqliteEncoding = SqliteEncoding.Utf8
 
     /**
      * Set to true if the database to be opened should throw an exception if any DML that changes
@@ -608,7 +608,7 @@ class SqlCipherDatabase:
     }
 
     fun queryEncoding(): SqliteEncoding {
-        var enc = SqliteEncoding.Utf_8
+        var enc = SqliteEncoding.Utf8
         pragma("encoding") {
             if (it.size != 1)
                 throw SqliteException("Unexpected result from pragma encoding: $it")
