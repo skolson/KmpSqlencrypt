@@ -27,7 +27,7 @@ repositories {
 val mavenArtifactId = "kmp-sqlencrypt"
 val appleFrameworkName = "KmpSqlencrypt"
 group = "com.oldguy"
-version = "0.4.4"
+version = "0.4.5"
 
 val ndkVersionValue = "25.0.8151533"
 val androidMinSdk = 24
@@ -40,8 +40,8 @@ val nativeInterop = projectDir.resolve("src/nativeInterop")
 val nativeInteropPath: String = nativeInterop.absolutePath
 val javadocTaskName = "javadocJar"
 
-val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
-val kotlinCoroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
+val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1"
+val kotlinCoroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.1"
 
 
 sqlcipher {
@@ -99,7 +99,7 @@ sqlcipher {
 android {
     compileSdk = androidTargetSdkVersion
     ndkVersion = ndkVersionValue
-    buildToolsVersion = "32.1.0-rc1"
+    buildToolsVersion = "33.0.0-rc2"
 
     sourceSets {
         getByName("main") {
@@ -283,7 +283,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("com.soywiz.korlibs.klock:klock:2.5.3")
+                implementation("com.soywiz.korlibs.klock:klock:2.7.0")
                 implementation("com.ionspin.kotlin:bignum:0.3.4")
 
             }

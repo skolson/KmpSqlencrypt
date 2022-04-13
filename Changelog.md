@@ -1,5 +1,10 @@
 ## KmpSqlencrypt Change Log
 
+**0.4.5** (in progress)
+
+- Kotlin 1.6.20
+- Gradle 7.4.2
+
 **0.4.4**  2022-03
 
 - SqlCipher 4.5.1 (Sqlite 3.37.2) 
