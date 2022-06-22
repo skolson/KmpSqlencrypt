@@ -30,7 +30,7 @@ Supported platforms (KMM targets) all 64 bit only:
 - iosX64 Simulator
 
 ## Releases
-Tag 0.4.1 is for SqlCipher 4.5.0, which uses Sqlite 3.36.0. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.0.0. See the gradle.build.kts files for details.
+Tag 0.4.4 is for SqlCipher 4.5.0, which uses Sqlite 3.36.0. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.0.0. See the gradle.build.kts files for details.
 
 # Dependencies
 
@@ -96,7 +96,7 @@ Intent is to make Data Access Objects (DAOs) using this library convenient and s
 
 ## Releases
 
-Version 0.4.1 is built with:
+Version 0.4.4 is built with:
 - Kotlin 1.6.10
 - OpenSSL 3.0.1  
 - SqlCipher 4.5.0

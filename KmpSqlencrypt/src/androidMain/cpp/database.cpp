@@ -248,36 +248,6 @@ Java_com_oldguy_kiscmp_Sqlite3JniShim_busyTimeout(JNIEnv *env, jobject thiz, jin
         sqlite3_busy_timeout(handle, timeout);
 }
 
-/**
- * Determines info required for calling back to a lambda with a specified argument signature
- * this broke with kotlin 1.5.31 and java 11 - release dependent. Signature changed, and when
- * lambda found with new signature, attempting to call it caused SIGABRT
- * @param env current JNI environment
- * @param callback object owning the lambda to be called
- * @param signature parameter signature string of the lambda
- * @return callbackInfo struct that contains the calling object and the method ID of the lambda for
- * that object.
-callbackInfo *getCallback(JNIEnv *env, jobject callback, const char *signature) {
-    jclass klass = env->GetObjectClass(callback);
-    jmethodID classMethodId = env->GetMethodID(klass,"getClass","()Ljava/lang/Class;");
-    jobject klassObj = env->CallObjectMethod(callback, classMethodId);
-    auto klassObject = env->GetObjectClass(klassObj);
-    auto nameMethodId = env->GetMethodID(klassObject,"getName","()Ljava/lang/String;");
-    auto classString = (jstring) env->CallObjectMethod(klassObj, nameMethodId);
-    auto className = env->GetStringUTFChars(classString, nullptr);
-    std::string s = className;
-    std::replace(s.begin(), s.end(), '.', '/');
-    jclass lambdaClass = env->FindClass(s.c_str());
-    jmethodID lambdaId = env->GetMethodID(lambdaClass, "invoke", signature);
-    env->ReleaseStringUTFChars(classString, className);
-    auto *info = new callbackInfo;
-    info->env = env;
-    info->callback = callback;
-    info->lambdaId = lambdaId;
-    return info;
-}
- */
-
 struct CallbackEnv {
     JNIEnv *env;
     jobject thiz;

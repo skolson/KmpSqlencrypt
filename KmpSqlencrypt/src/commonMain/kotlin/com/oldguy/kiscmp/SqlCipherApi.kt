@@ -1,6 +1,6 @@
 package com.oldguy.kiscmp
 
-class SqliteException(message: String, val apiName: String = "", val result: Int = 0)
+class SqliteException(message: String, apiName: String = "", val result: Int = 0)
     : Throwable(fullText(message, apiName, result)) {
     val fullMessage = fullText(message, apiName, result)
 
@@ -15,8 +15,7 @@ class SqliteException(message: String, val apiName: String = "", val result: Int
  * See Sqlite "PRAGMA encoding;" doc
  */
 enum class SqliteEncoding(val pragma: String) {
-    Utf_8("UTF-8"),
-    Utf_16("UTF-16"),
+    Utf8("UTF-8"),
     Utf16LittleEndian("UTF-16le"),
     Utf16BigEndian("UTF-16be");
 

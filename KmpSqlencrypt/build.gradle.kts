@@ -289,17 +289,18 @@ kotlin {
 
             }
         }
-        named("commonTest") {
+        val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
+                implementation(kotlinCoroutinesTest)
             }
         }
         val androidMain by getting {
             dependsOn(commonMain)
         }
 
-        named("androidTest") {
+        val androidTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation("junit:junit:4.13.2")
@@ -316,6 +317,7 @@ kotlin {
         }
         val nativeTest by creating {
             kotlin.srcDir("src/nativeTest/kotlin")
+            dependsOn(commonTest)
             dependencies {
                 implementation(kotlin("test"))
                 implementation(kotlinCoroutines)

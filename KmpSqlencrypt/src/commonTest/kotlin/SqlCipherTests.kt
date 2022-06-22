@@ -54,7 +54,7 @@ open class SqlCipherTests {
 
     val createDb get() = sqlcipher {
         createOk = true
-        encoding = SqliteEncoding.Utf_8
+        encoding = SqliteEncoding.Utf8
     }
 
     val createDb16LE get() = sqlcipher {
@@ -87,8 +87,8 @@ open class SqlCipherTests {
     }
 
     fun testVersions() {
-        assertEquals("sqliteVersion","3.36.0", db.sqliteVersion)
-        assertEquals("sqlcipherVersion","4.5.0 community", db.sqlcipherVersion)
+        assertEquals("sqliteVersion","3.37.2", db.sqliteVersion)
+        assertEquals("sqlcipherVersion","4.5.1 community", db.sqlcipherVersion)
         assertEquals("userVersion", 0, db.userVersion)
     }
 

@@ -21,6 +21,7 @@ repositories {
 allprojects {
     repositories {
         google()
+        mavenCentral()
     }
     tasks.withType<KotlinCompile> {
         kotlinOptions {

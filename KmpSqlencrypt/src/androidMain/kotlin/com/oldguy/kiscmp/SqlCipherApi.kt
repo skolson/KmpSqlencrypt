@@ -2,7 +2,7 @@ package com.oldguy.kiscmp
 
 actual class SqliteDatabase {
     internal val shim = Sqlite3JniShim()
-    actual var encoding = SqliteEncoding.Utf_8
+    actual var encoding = SqliteEncoding.Utf8
     actual val notDatabaseResult = 26 // must match SQLITE_NOTADB value
 
     actual fun error(): String {
