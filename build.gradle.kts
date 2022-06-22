@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
-    val kotlinVersion: String by extra("1.6.10")
+    val kotlinVersion: String by extra("1.6.21")
     repositories {
         gradlePluginPortal()
         google()
@@ -9,8 +9,8 @@ buildscript {
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-        classpath("com.android.tools.build:gradle:7.0.4")
-        classpath("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.17.1")
+        classpath("com.android.tools.build:gradle:7.3.0-beta04")
+        classpath("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.17.3")
     }
 }
 

@@ -1,5 +1,19 @@
 ## KmpSqlencrypt Change Log
 
+** 0.4.5 ** 2022-06
+
+No API changes, only release upgrades.
+
+- SqlCipher 4.5.1
+- OpenSSL 3.0.4
+- klock 2.7.0
+- ionspin bignum 0.3.6
+- Kotlin 1.6.21
+- kotlinx atomicfu 0.17.3
+- kotlinx coroutines 1.6.2
+- Android NDK 25.0.8528842
+- Android build tools 33.0.0
+
 **0.4.3**  2022-02-02
 
 - iosApp now has a SwiftUI screen that invokes Swift code using the library. For testing/exploring Swift-Kotlin mappings. 

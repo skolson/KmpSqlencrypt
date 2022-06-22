@@ -13,8 +13,8 @@ plugins {
     id("maven-publish")
     id("signing")
     id("kotlinx-atomicfu")
-    id("org.jetbrains.dokka") version "1.6.10"
-    id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.3.3"
+    id("org.jetbrains.dokka") version "1.6.21"
+    id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.3.4"
     id("com.github.ben-manes.versions") version "0.42.0"
 }
 
@@ -27,11 +27,11 @@ repositories {
 val mavenArtifactId = "kmp-sqlencrypt"
 val appleFrameworkName = "KmpSqlencrypt"
 group = "com.oldguy"
-version = "0.4.3"
+version = "0.4.5"
 
-val ndkVersionValue = "24.0.7956693"
+val ndkVersionValue = "25.0.8528842"
 val androidMinSdk = 24
-val androidTargetSdkVersion = 31
+val androidTargetSdkVersion = 32
 val iosMinSdk = "14"
 val kmpPackageName = "com.oldguy.sqlcipher"
 
@@ -40,11 +40,14 @@ val nativeInterop = projectDir.resolve("src/nativeInterop")
 val nativeInteropPath: String = nativeInterop.absolutePath
 val javadocTaskName = "javadocJar"
 
-val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0"
+val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.2"
+val klock = "com.soywiz.korlibs.klock:klock:2.7.0"
+val bignum = "com.ionspin.kotlin:bignum:0.3.6"
+
 
 sqlcipher {
     useGit = false
-    version = "4.5.0"
+    version = "4.5.1"
     compilerOptions = SqlcipherExtension.defaultCompilerOptions
     buildCompilerOptions = mapOf(
         BuildType.androidX64 to SqlcipherExtension.androidCompilerOptions,
@@ -87,7 +90,7 @@ sqlcipher {
         }
     }
     openssl {
-        tagName = "openssl-3.0.1"
+        tagName = "openssl-3.0.4"
         useGit = false
         configureOptions = OpensslExtension.smallConfigureOptions
         buildSpecificOptions = OpensslExtension.buildOptionsMap
@@ -97,7 +100,7 @@ sqlcipher {
 android {
     compileSdk = androidTargetSdkVersion
     ndkVersion = ndkVersionValue
-    buildToolsVersion = "32.1.0-rc1"
+    buildToolsVersion = "33.0.0"
 
     sourceSets {
         getByName("main") {
@@ -281,8 +284,8 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation("com.soywiz.korlibs.klock:klock:2.5.3")
-                implementation("com.ionspin.kotlin:bignum:0.3.4")
+                implementation(klock)
+                implementation(bignum)
 
             }
         }
@@ -379,5 +382,5 @@ signing {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.7.0")
+    implementation("androidx.core:core-ktx:1.8.0")
 }
