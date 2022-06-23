@@ -361,7 +361,11 @@ open class SqlCipherTests {
                 badPwd = true
                 fail("Invalid password called incorrectly. Passphrase $passphrase, error passphrase: $password")
             }) { database ->
-            database.execute(drop2)
+            try {
+                database.execute(drop2)
+            } catch (e: SqliteException) {
+                assertTrue("pwdTableDrop", e.fullMessage.contains("no such table"))
+            }
             testBindInsert()
             testSelect()
             assertEquals("pwdTables", 1, database.tableCount())
