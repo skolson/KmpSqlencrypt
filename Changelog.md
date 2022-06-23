@@ -5,13 +5,12 @@
 
 No API changes, only release upgrades.
 
-- SqlCipher 4.5.1
-- OpenSSL 3.0.4
+- OpenSSL 3.0.4 (building openssl gets errors due to issue #18619, but error is with tests which are not used by sqlcipher)
 - klock 2.7.0
 - ionspin bignum 0.3.6
 - Kotlin 1.6.21
 - kotlinx atomicfu 0.17.3
-- kotlinx coroutines 1.6.2
+- kotlinx coroutines 1.6.3
 - Android NDK 25.0.8528842
 - Android build tools 33.0.0
 - Gradle 7.4.2

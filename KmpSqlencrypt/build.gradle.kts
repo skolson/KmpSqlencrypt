@@ -40,7 +40,7 @@ val nativeInterop = projectDir.resolve("src/nativeInterop")
 val nativeInteropPath: String = nativeInterop.absolutePath
 val javadocTaskName = "javadocJar"
 
-val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3"
+val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3"
 val kotlinCoroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.3"
 val klock = "com.soywiz.korlibs.klock:klock:2.7.0"
 val bignum = "com.ionspin.kotlin:bignum:0.3.6"
