@@ -13,7 +13,7 @@ plugins {
     id("maven-publish")
     id("signing")
     id("kotlinx-atomicfu")
-    id("org.jetbrains.dokka") version "1.6.21"
+    id("org.jetbrains.dokka") version "1.7.10"
     id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.3.4"
     id("com.github.ben-manes.versions") version "0.42.0"
 }
@@ -40,8 +40,9 @@ val nativeInterop = projectDir.resolve("src/nativeInterop")
 val nativeInteropPath: String = nativeInterop.absolutePath
 val javadocTaskName = "javadocJar"
 
-val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3"
-val kotlinCoroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.3"
+val kotlinCoroutinesVersion = "1.6.4"
+val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
+val kotlinCoroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesVersion"
 val klock = "com.soywiz.korlibs.klock:klock:2.7.0"
 val bignum = "com.ionspin.kotlin:bignum:0.3.6"
 
@@ -91,7 +92,7 @@ sqlcipher {
         }
     }
     openssl {
-        tagName = "openssl-3.0.4"
+        tagName = "openssl-3.0.5"
         useGit = false
         configureOptions = OpensslExtension.smallConfigureOptions
         buildSpecificOptions = OpensslExtension.buildOptionsMap
