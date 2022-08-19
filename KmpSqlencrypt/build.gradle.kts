@@ -29,9 +29,9 @@ val appleFrameworkName = "KmpSqlencrypt"
 group = "com.oldguy"
 version = "0.4.5"
 
-val ndkVersionValue = "25.0.8528842"
+val ndkVersionValue = "25.0.8775105"
 val androidMinSdk = 24
-val androidTargetSdkVersion = 32
+val androidTargetSdkVersion = 33
 val iosMinSdk = "14"
 val kmpPackageName = "com.oldguy.sqlcipher"
 
@@ -49,7 +49,7 @@ val bignum = "com.ionspin.kotlin:bignum:0.3.6"
 
 sqlcipher {
     useGit = false
-    version = "4.5.1"
+    version = "4.5.2"
     compilerOptions = SqlcipherExtension.defaultCompilerOptions
     buildCompilerOptions = mapOf(
         BuildType.androidX64 to SqlcipherExtension.androidCompilerOptions,
@@ -103,6 +103,7 @@ android {
     compileSdk = androidTargetSdkVersion
     ndkVersion = ndkVersionValue
     buildToolsVersion = "33.0.0"
+    namespace = "com.oldguy.kiscmp.android"
 
     sourceSets {
         getByName("main") {
@@ -147,7 +148,7 @@ android {
 
     externalNativeBuild {
         cmake {
-            version = "3.18.1"
+            version = "3.22.1"
             path("src/androidMain/cpp/CMakeLists.txt")
         }
     }
