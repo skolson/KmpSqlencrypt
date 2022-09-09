@@ -29,7 +29,7 @@ val appleFrameworkName = "KmpSqlencrypt"
 group = "com.oldguy"
 version = "0.4.5"
 
-val ndkVersionValue = "25.0.8775105"
+val ndkVersionValue = "25.1.8937393"
 val androidMinSdk = 24
 val androidTargetSdkVersion = 33
 val iosMinSdk = "14"
