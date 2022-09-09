@@ -102,7 +102,7 @@ sqlcipher {
 android {
     compileSdk = androidTargetSdkVersion
     ndkVersion = ndkVersionValue
-    buildToolsVersion = "33.0.0"
+    buildToolsVersion = "33.0.3"
     namespace = "com.oldguy.kiscmp.android"
 
     sourceSets {
