@@ -43,8 +43,8 @@ val javadocTaskName = "javadocJar"
 val kotlinCoroutinesVersion = "1.6.4"
 val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
 val kotlinCoroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesVersion"
-val klock = "com.soywiz.korlibs.klock:klock:2.7.0"
-val bignum = "com.ionspin.kotlin:bignum:0.3.6"
+val klock = "com.soywiz.korlibs.klock:klock:3.1.0"
+val bignum = "com.ionspin.kotlin:bignum:0.3.7"
 
 
 sqlcipher {
@@ -102,7 +102,7 @@ sqlcipher {
 android {
     compileSdk = androidTargetSdkVersion
     ndkVersion = ndkVersionValue
-    buildToolsVersion = "33.0.3"
+    buildToolsVersion = "33.0.0"
     namespace = "com.oldguy.kiscmp.android"
 
     sourceSets {
@@ -387,5 +387,5 @@ signing {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.8.0")
+    implementation("androidx.core:core-ktx:1.9.0")
 }
