@@ -1,7 +1,19 @@
 ## KmpSqlencrypt Change Log
 
+** 0.5.0 ** 2023-05
 
-** 0.4.5 ** 2022-06
+No API changes, only release upgrades.
+
+- Kotlin 1.8.21
+- Atomicfu 0.20.2
+- OpenSSL 3.1.0 (building openssl gets errors due to issue #18619, but error is with tests which are not used by sqlcipher)
+- Sqlcipher 4.5.4 (Sqlite 3.41.2)
+- Gradle 8.1.1
+- Kotlin coroutines 1.7.0
+- Klock 3.4.0
+- Ionspin Bignum 0.3.8
+
+- ** 0.4.5 ** 2022-06
 
 No API changes, only release upgrades.
 

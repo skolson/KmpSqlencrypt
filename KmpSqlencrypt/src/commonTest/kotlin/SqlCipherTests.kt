@@ -87,8 +87,8 @@ open class SqlCipherTests {
     }
 
     fun testVersions() {
-        assertEquals("sqliteVersion","3.37.2", db.sqliteVersion)
-        assertEquals("sqlcipherVersion","4.5.1 community", db.sqlcipherVersion)
+        assertEquals("sqliteVersion","3.41.2", db.sqliteVersion)
+        assertEquals("sqlcipherVersion","4.5.4 community", db.sqlcipherVersion)
         assertEquals("userVersion", 0, db.userVersion)
     }
 

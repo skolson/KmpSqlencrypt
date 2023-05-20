@@ -13,9 +13,9 @@ plugins {
     id("maven-publish")
     id("signing")
     id("kotlinx-atomicfu")
-    id("org.jetbrains.dokka") version "1.7.10"
+    id("org.jetbrains.dokka") version "1.8.10"
     id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.3.4"
-    id("com.github.ben-manes.versions") version "0.42.0"
+    id("com.github.ben-manes.versions") version "0.46.0"
 }
 
 repositories {
@@ -27,9 +27,9 @@ repositories {
 val mavenArtifactId = "kmp-sqlencrypt"
 val appleFrameworkName = "KmpSqlencrypt"
 group = "com.oldguy"
-version = "0.4.5"
+version = "0.5.0"
 
-val ndkVersionValue = "25.1.8937393"
+val ndkVersionValue = "25.2.9519653"
 val androidMinSdk = 24
 val androidTargetSdkVersion = 33
 val iosMinSdk = "14"
@@ -40,16 +40,16 @@ val nativeInterop = projectDir.resolve("src/nativeInterop")
 val nativeInteropPath: String = nativeInterop.absolutePath
 val javadocTaskName = "javadocJar"
 
-val kotlinCoroutinesVersion = "1.6.4"
+val kotlinCoroutinesVersion = "1.7.0"
 val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
 val kotlinCoroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesVersion"
-val klock = "com.soywiz.korlibs.klock:klock:3.1.0"
-val bignum = "com.ionspin.kotlin:bignum:0.3.7"
+val klock = "com.soywiz.korlibs.klock:klock:3.4.0"
+val bignum = "com.ionspin.kotlin:bignum:0.3.8"
 
 
 sqlcipher {
     useGit = false
-    version = "4.5.2"
+    version = "4.5.4"
     compilerOptions = SqlcipherExtension.defaultCompilerOptions
     buildCompilerOptions = mapOf(
         BuildType.androidX64 to SqlcipherExtension.androidCompilerOptions,
@@ -92,7 +92,7 @@ sqlcipher {
         }
     }
     openssl {
-        tagName = "openssl-3.0.5"
+        tagName = "openssl-3.1.0"
         useGit = false
         configureOptions = OpensslExtension.smallConfigureOptions
         buildSpecificOptions = OpensslExtension.buildOptionsMap
@@ -102,25 +102,17 @@ sqlcipher {
 android {
     compileSdk = androidTargetSdkVersion
     ndkVersion = ndkVersionValue
-    buildToolsVersion = "33.0.0"
+    buildToolsVersion = "33.0.2"
     namespace = "com.oldguy.kiscmp.android"
 
     sourceSets {
         getByName("main") {
-            java.srcDir(androidMainDirectory.resolve("kotlin"))
             manifest.srcFile(androidMainDirectory.resolve("AndroidManifest.xml"))
-        }
-        getByName("test") {
-            java.srcDir("src/androidTest/kotlin")
-        }
-        getByName("androidTest") {
-            java.srcDir("src/androidAndroidTest/kotlin")
         }
     }
 
     defaultConfig {
         minSdk = androidMinSdk
-        targetSdk = androidTargetSdkVersion
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -158,9 +150,9 @@ android {
 
     dependencies {
         testImplementation("junit:junit:4.13.2")
-        androidTestImplementation("androidx.test:core:1.4.0")
-        androidTestImplementation("androidx.test:runner:1.4.0")
-        androidTestImplementation("androidx.test.ext:junit:1.1.3")
+        androidTestImplementation("androidx.test:core:1.5.0")
+        androidTestImplementation("androidx.test:runner:1.5.2")
+        androidTestImplementation("androidx.test.ext:junit:1.1.5")
     }
 }
 
@@ -284,6 +276,70 @@ kotlin {
         }
     }
 
+    // workaround starting with Gradle 8 and kotlin 1.8.x, supposedly fixed in Kotlin 1.9.0 (KT-55751)
+    val workaroundAttribute = Attribute.of("com.oldguy.kiscmp", String::class.java)
+
+    configurations.named("debugFrameworkMacosX64").configure {
+        attributes {
+            attribute(workaroundAttribute, "macosX64")
+        }
+    }
+    configurations.named("podDebugFrameworkMacosX64").configure {
+        attributes {
+            attribute(workaroundAttribute, "podMacosX64")
+        }
+    }
+    configurations.named("releaseFrameworkMacosX64").configure {
+        attributes {
+            attribute(workaroundAttribute, "macosX64")
+        }
+    }
+    configurations.named("podReleaseFrameworkMacosX64").configure {
+        attributes {
+            attribute(workaroundAttribute, "podMacosX64")
+        }
+    }
+    configurations.named("debugFrameworkIosX64").configure {
+        attributes {
+            attribute(workaroundAttribute, "iosX64")
+        }
+    }
+    configurations.named("releaseFrameworkIosX64").configure {
+        attributes {
+            attribute(workaroundAttribute, "iosX64")
+        }
+    }
+    configurations.named("debugFrameworkIosArm64").configure {
+        attributes {
+            attribute(workaroundAttribute, "iosArm64")
+        }
+    }
+    configurations.named("releaseFrameworkIosArm64").configure {
+        attributes {
+            attribute(workaroundAttribute, "iosArm64")
+        }
+    }
+    configurations.named("debugFrameworkIosFat").configure {
+        attributes {
+            attribute(workaroundAttribute, "iosFat")
+        }
+    }
+    configurations.named("releaseFrameworkIosFat").configure {
+        attributes {
+            attribute(workaroundAttribute, "iosFat")
+        }
+    }
+    configurations.named("podDebugFrameworkOsxFat").configure {
+        attributes {
+            attribute(workaroundAttribute, "podIosFat")
+        }
+    }
+    configurations.named("podReleaseFrameworkOsxFat").configure {
+        attributes {
+            attribute(workaroundAttribute, "podIosFat")
+        }
+    }
+
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -302,17 +358,22 @@ kotlin {
         val androidMain by getting {
             dependsOn(commonMain)
         }
-
-        val androidTest by getting {
+        val androidUnitTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation("junit:junit:4.13.2")
                 implementation(kotlinCoroutines)
             }
         }
-        val androidAndroidTest by getting {
+        val androidInstrumentedTest by getting {
+            dependencies {
+                implementation(kotlin("test-junit"))
+                implementation("junit:junit:4.13.2")
+                implementation(kotlinCoroutines)
+            }
             dependsOn(commonMain)
             dependsOn(androidMain)
+            dependsOn(commonTest)
         }
         val nativeMain by creating {
             dependsOn(commonMain)
@@ -342,11 +403,6 @@ kotlin {
             dependsOn(nativeTest)
         }
         all {
-            if (name.endsWith("Test")) {
-                languageSettings {
-                    optIn("kotlin.ExperimentalCoroutinesApi")
-                }
-            }
         }
     }
 
@@ -387,5 +443,5 @@ signing {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.9.0")
+    implementation("androidx.core:core-ktx:1.10.1")
 }

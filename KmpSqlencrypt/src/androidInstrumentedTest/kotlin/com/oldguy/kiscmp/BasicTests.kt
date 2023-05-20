@@ -6,9 +6,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.runTest
-import kotlin.test.assertEquals
+import org.junit.Assert.assertEquals
 
-@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class AndroidJunitTests: SqlCipherTests() {
 

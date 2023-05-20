@@ -2,8 +2,6 @@
 
 This project is a Kotlin multi-platform library for using Zetetic's SqlCipher encrypted Sqlite as an embedded SQL database, with an API that is intended to be identical across Android, iOs or other platforms. It currently supports 64-bit platforms; Android, MacOS, iOS, Linux, and Windows (mingwX64).
 
-1/26/2022 - This is a brand new publish even though the code has been used for a long time in an Android app.  So this readme and the associated doc will be changing alot, especially in the next week or so.
-
 ## SqlCipher
 *From the SqlCipher site:*
 
@@ -30,6 +28,7 @@ Supported platforms (KMM targets) all 64 bit only:
 - iosX64 Simulator
 
 ## Releases
+Tag 0.5.0 is for SqlCipher 4.5.4, which uses Sqlite 3.41.2 and Kotlin 1.8.21. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.1.0. See the gradle.build.kts files for details.
 Tag 0.4.5 is for SqlCipher 4.5.2, which uses Sqlite 3.36.0. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.0.5. See the gradle.build.kts files for details.
 Tag 0.4.4 is for SqlCipher 4.5.0, which uses Sqlite 3.36.0. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.0.0. See the gradle.build.kts files for details.
 
@@ -39,7 +38,7 @@ Dependencies are intentionally kept to a minimum and only using Kotlin multi-pla
 
 - BigDecimal support using  [ionspin BigDecimal](https://github.com/skolson/kotlin-multiplatform-bignum)
 - Date and DateTime support using [Klock](https://github.com/korlibs/klock). Intent is to replace or add datetime support using Kotlinx-datetime once it has multi-platform support for parsing/formatting from/to strings built-in. As of this writing that's not there YET :-)
-- Kotlin 1.6.10 
+- Kotlin  
 - Kotlin atomicfu
  
 
@@ -95,7 +94,18 @@ Kotlin-specific ease-of-use syntax for common operations.
 
 Intent is to make Data Access Objects (DAOs) using this library convenient and straightforward.
 
+Kotlin Native code and CInterop are used for all Apple implementations. JVM and Android implementations use JNI and a small C++ wrapper to the SqlCipher libraries built with Gradle Task sqlcipherBuildAll
+
 ## Releases
+
+Version 0.5.0 is built with:
+- Kotlin 1.8.21
+- OpenSSL 3.1.0
+- SqlCipher 4.5.4
+- Android NDK 25.2.9519653. Minimum SDK 24, target SDK 33
+- IOS minimum version 14.0
+- MacOSX Big Sur or later, Xcode 13 or later
+- Cocoapods
 
 Version 0.4.5 is built with:
 - Kotlin 1.7.10
@@ -123,7 +133,7 @@ Kotlin projects can use with new gradle dependency:
 
 ```
     dependencies {
-        implementation("com.oldguy:kmp-sqlencrypt:0.4.1")
+        implementation("com.oldguy:kmp-sqlencrypt:0.5.0")
     }
 ```
 
