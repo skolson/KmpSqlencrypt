@@ -28,9 +28,9 @@ Supported platforms (KMM targets) all 64 bit only:
 - iosX64 Simulator
 
 ## Releases
-Tag 0.5.0 is for SqlCipher 4.5.4, which uses Sqlite 3.41.2 and Kotlin 1.8.21. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.1.0. See the gradle.build.kts files for details.
-Tag 0.4.5 is for SqlCipher 4.5.2, which uses Sqlite 3.36.0. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.0.5. See the gradle.build.kts files for details.
-Tag 0.4.4 is for SqlCipher 4.5.0, which uses Sqlite 3.36.0. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.0.0. See the gradle.build.kts files for details.
+- Tag 0.5.0 is for SqlCipher 4.5.4, which uses Sqlite 3.41.2 and Kotlin 1.8.21. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.1.0. See the gradle.build.kts files for details.
+- Tag 0.4.5 is for SqlCipher 4.5.2, which uses Sqlite 3.36.0. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.0.5. See the gradle.build.kts files for details.
+- Tag 0.4.4 is for SqlCipher 4.5.0, which uses Sqlite 3.36.0. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.0.0. See the gradle.build.kts files for details.
 
 # Dependencies
 
