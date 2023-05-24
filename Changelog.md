@@ -1,5 +1,9 @@
 ## KmpSqlencrypt Change Log
 
+** 0.5.1 ** 2023-05
+
+- Klock 4.0.1
+
 ** 0.5.0 ** 2023-05
 
 No API changes, only release upgrades.

@@ -2,9 +2,9 @@ package com.oldguy.database
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.BigInteger
-import com.soywiz.klock.Date
-import com.soywiz.klock.DateTime
-import com.soywiz.klock.PatternDateFormat
+import korlibs.time.Date
+import korlibs.time.DateTime
+import korlibs.time.PatternDateFormat
 import kotlinx.atomicfu.atomic
 
 /**

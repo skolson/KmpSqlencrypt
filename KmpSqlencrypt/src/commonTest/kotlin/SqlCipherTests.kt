@@ -5,7 +5,7 @@ import com.oldguy.database.ColumnType
 import com.oldguy.database.Passphrase
 import com.oldguy.database.SqlValue
 import com.oldguy.database.SqlValues
-import com.soywiz.klock.DateTime
+import korlibs.time.DateTime
 import kotlin.test.DefaultAsserter.assertEquals
 import kotlin.test.DefaultAsserter.assertTrue
 import kotlin.test.DefaultAsserter.fail

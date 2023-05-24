@@ -27,7 +27,7 @@ repositories {
 val mavenArtifactId = "kmp-sqlencrypt"
 val appleFrameworkName = "KmpSqlencrypt"
 group = "com.oldguy"
-version = "0.5.0"
+version = "0.5.1"
 
 val ndkVersionValue = "25.2.9519653"
 val androidMinSdk = 24
@@ -43,7 +43,7 @@ val javadocTaskName = "javadocJar"
 val kotlinCoroutinesVersion = "1.7.0"
 val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
 val kotlinCoroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesVersion"
-val klock = "com.soywiz.korlibs.klock:klock:3.4.0"
+val klock = "com.soywiz.korlibs.klock:klock:4.0.1"
 val bignum = "com.ionspin.kotlin:bignum:0.3.8"
 
 
