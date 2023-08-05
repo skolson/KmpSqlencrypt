@@ -1,8 +1,18 @@
 ## KmpSqlencrypt Change Log
 
-** 0.5.1 ** 2023-05
+** 0.5.2 ** 2023-08
 
-- Klock 4.0.1
+No functional changes, just release updates
+
+- Kotlin 1.9.0
+- Gradle 8.3-rc-3
+- Klock 4.0.9
+- Openssl 3.1.2
+- Atomicfu 0.21.0
+- Coroutines 1.7.3
+- Android build tools 34.0.0
+- NDK 25.2.9519653
+- Changed work-around for Jetbrains issue KT-55751 to handle IosFat configurations in 1.9.0. Supposed to be a fix coming with 1.9.20
 
 ** 0.5.0 ** 2023-05
 

@@ -13,9 +13,9 @@ plugins {
     id("maven-publish")
     id("signing")
     id("kotlinx-atomicfu")
-    id("org.jetbrains.dokka") version "1.8.10"
+    id("org.jetbrains.dokka") version "1.8.20"
     id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.3.4"
-    id("com.github.ben-manes.versions") version "0.46.0"
+    id("com.github.ben-manes.versions") version "0.47.0"
 }
 
 repositories {
@@ -27,7 +27,7 @@ repositories {
 val mavenArtifactId = "kmp-sqlencrypt"
 val appleFrameworkName = "KmpSqlencrypt"
 group = "com.oldguy"
-version = "0.5.1"
+version = "0.5.2"
 
 val ndkVersionValue = "25.2.9519653"
 val androidMinSdk = 24
@@ -40,10 +40,10 @@ val nativeInterop = projectDir.resolve("src/nativeInterop")
 val nativeInteropPath: String = nativeInterop.absolutePath
 val javadocTaskName = "javadocJar"
 
-val kotlinCoroutinesVersion = "1.7.0"
+val kotlinCoroutinesVersion = "1.7.3"
 val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
 val kotlinCoroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesVersion"
-val klock = "com.soywiz.korlibs.klock:klock:4.0.1"
+val klock = "com.soywiz.korlibs.klock:klock:4.0.9"
 val bignum = "com.ionspin.kotlin:bignum:0.3.8"
 
 
@@ -92,7 +92,7 @@ sqlcipher {
         }
     }
     openssl {
-        tagName = "openssl-3.1.0"
+        tagName = "openssl-3.1.2"
         useGit = false
         configureOptions = OpensslExtension.smallConfigureOptions
         buildSpecificOptions = OpensslExtension.buildOptionsMap
@@ -102,7 +102,7 @@ sqlcipher {
 android {
     compileSdk = androidTargetSdkVersion
     ndkVersion = ndkVersionValue
-    buildToolsVersion = "33.0.2"
+    buildToolsVersion = "34.0.0"
     namespace = "com.oldguy.kiscmp.android"
 
     sourceSets {
@@ -175,7 +175,7 @@ tasks {
 
 @Suppress("UNUSED_VARIABLE")
 kotlin {
-    android {
+    androidTarget {
         publishLibraryVariants("release", "debug")
         mavenPublication {
             artifactId = artifactId.replace(project.name, mavenArtifactId)
@@ -276,67 +276,51 @@ kotlin {
         }
     }
 
-    // workaround starting with Gradle 8 and kotlin 1.8.x, supposedly fixed in Kotlin 1.9.0 (KT-55751)
+    // workaround starting with Gradle 8 and kotlin 1.8.x, supposedly fixed in Kotlin 1.9.20 (KT-55751)
     val workaroundAttribute = Attribute.of("com.oldguy.kiscmp", String::class.java)
-
-    configurations.named("debugFrameworkMacosX64").configure {
-        attributes {
-            attribute(workaroundAttribute, "macosX64")
+    configurations {
+        named("debugFrameworkMacosX64").configure {
+            attributes.attribute(workaroundAttribute, "macosX64")
+        }
+        named("podDebugFrameworkMacosX64").configure {
+            attributes.attribute(workaroundAttribute, "podMacosX64")
+        }
+        named("releaseFrameworkMacosX64").configure {
+            attributes.attribute(workaroundAttribute, "macosX64")
+        }
+        named("podReleaseFrameworkMacosX64").configure {
+            attributes.attribute(workaroundAttribute, "podMacosX64")
+        }
+        named("debugFrameworkIosX64").configure {
+            attributes.attribute(workaroundAttribute, "iosX64")
+        }
+        named("podDebugFrameworkIosX64").configure {
+            attributes.attribute(workaroundAttribute, "podIosX64")
+        }
+        named("debugFrameworkIosArm64").configure {
+            attributes.attribute(workaroundAttribute, "IosArm64D")
+        }
+        named("releaseFrameworkIosArm64").configure {
+            attributes.attribute(workaroundAttribute, "IosArm64")
+        }
+        named("podReleaseFrameworkIosArm64").configure {
+            attributes.attribute(workaroundAttribute, "podIosArm64")
         }
     }
-    configurations.named("podDebugFrameworkMacosX64").configure {
-        attributes {
-            attribute(workaroundAttribute, "podMacosX64")
-        }
-    }
-    configurations.named("releaseFrameworkMacosX64").configure {
-        attributes {
-            attribute(workaroundAttribute, "macosX64")
-        }
-    }
-    configurations.named("podReleaseFrameworkMacosX64").configure {
-        attributes {
-            attribute(workaroundAttribute, "podMacosX64")
-        }
-    }
-    configurations.named("debugFrameworkIosX64").configure {
-        attributes {
-            attribute(workaroundAttribute, "iosX64")
-        }
-    }
-    configurations.named("releaseFrameworkIosX64").configure {
-        attributes {
-            attribute(workaroundAttribute, "iosX64")
-        }
-    }
-    configurations.named("debugFrameworkIosArm64").configure {
-        attributes {
-            attribute(workaroundAttribute, "iosArm64")
-        }
-    }
-    configurations.named("releaseFrameworkIosArm64").configure {
-        attributes {
-            attribute(workaroundAttribute, "iosArm64")
-        }
-    }
-    configurations.named("debugFrameworkIosFat").configure {
-        attributes {
-            attribute(workaroundAttribute, "iosFat")
-        }
-    }
-    configurations.named("releaseFrameworkIosFat").configure {
-        attributes {
-            attribute(workaroundAttribute, "iosFat")
-        }
-    }
-    configurations.named("podDebugFrameworkOsxFat").configure {
-        attributes {
-            attribute(workaroundAttribute, "podIosFat")
-        }
-    }
-    configurations.named("podReleaseFrameworkOsxFat").configure {
-        attributes {
-            attribute(workaroundAttribute, "podIosFat")
+    afterEvaluate {
+        configurations {
+            named("debugFrameworkIosFat").configure {
+                attributes.attribute(workaroundAttribute, "iosFat")
+            }
+            named("podDebugFrameworkIosFat").configure {
+                attributes.attribute(workaroundAttribute, "podIosFat")
+            }
+            named("releaseFrameworkIosFat").configure {
+                attributes.attribute(workaroundAttribute, "iosFat")
+            }
+            named("podReleaseFrameworkIosFat").configure {
+                attributes.attribute(workaroundAttribute, "podIosFat")
+            }
         }
     }
 
