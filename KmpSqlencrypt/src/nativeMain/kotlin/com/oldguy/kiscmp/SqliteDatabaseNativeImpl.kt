@@ -2,6 +2,7 @@ package com.oldguy.kiscmp
 
 import com.oldguy.sqlcipher.*
 import kotlinx.cinterop.*
+import kotlin.experimental.ExperimentalNativeApi
 
 /**
  * All native implementations supply their own cinterop setup using their own classes and cinterop
@@ -9,6 +10,7 @@ import kotlinx.cinterop.*
  * be compiled and linked as apporpriate for each target. This minimizes the amount of redundant code in the
  * various classes in each of the target-specific sourcesets.
  */
+@OptIn(ExperimentalForeignApi::class)
 open class SqliteDatabaseNativeImpl {
 
     var dbContext: CPointer<sqlite3>? = null
@@ -124,7 +126,8 @@ open class SqliteDatabaseNativeImpl {
     }
 }
 
-open class SqliteStatementNativeImpl constructor(private val db: SqliteDatabaseNativeImpl) {
+@OptIn(ExperimentalForeignApi::class, ExperimentalNativeApi::class)
+open class SqliteStatementNativeImpl(private val db: SqliteDatabaseNativeImpl) {
     private val dbClosedError = SqliteException("Db closed")
     private val stmtClosedError = SqliteException("Statement closed")
     private var statementContext: CPointer<sqlite3_stmt>? = null

@@ -1,5 +1,7 @@
 package com.oldguy.kiscmp
 
+import kotlinx.cinterop.BetaInteropApi
+import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.readBytes
@@ -10,6 +12,7 @@ import platform.Foundation.*
  * A Charset instance can encode a String to bytes or decode bytes to a String using the specified character set.
  * @param set from the enum class of supported character sets
  */
+@OptIn(ExperimentalForeignApi::class)
 internal actual class Charset actual constructor(set: Charsets) {
     actual val charset = set
     private val nsEnc = when (set) {
@@ -26,6 +29,7 @@ internal actual class Charset actual constructor(set: Charsets) {
      * bytes.size is double the number of String characters. Entire content is decoded.
      * @return decoded String
      */
+    @OptIn(BetaInteropApi::class)
     actual fun decode(bytes: ByteArray): String {
         val nsData = bytes.usePinned {
             NSData.dataWithBytes(it.addressOf(0), it.get().size.toULong())

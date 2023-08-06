@@ -14,7 +14,7 @@ plugins {
     id("signing")
     id("kotlinx-atomicfu")
     id("org.jetbrains.dokka") version "1.8.20"
-    id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.3.4"
+    id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.3.5"
     id("com.github.ben-manes.versions") version "0.47.0"
 }
 

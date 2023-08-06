@@ -13,6 +13,7 @@ No functional changes, just release updates
 - Android build tools 34.0.0
 - NDK 25.2.9519653
 - Changed work-around for Jetbrains issue KT-55751 to handle IosFat configurations in 1.9.0. Supposed to be a fix coming with 1.9.20
+- SqlCipher/OpenSSL build plugin 0.3.5
 
 ** 0.5.0 ** 2023-05
 
