@@ -13,9 +13,9 @@ plugins {
     id("maven-publish")
     id("signing")
     id("kotlinx-atomicfu")
-    id("org.jetbrains.dokka") version "1.8.20"
+    id("org.jetbrains.dokka") version "1.9.0"
     id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.3.5"
-    id("com.github.ben-manes.versions") version "0.47.0"
+    id("com.github.ben-manes.versions") version "0.48.0"
 }
 
 repositories {
@@ -27,7 +27,7 @@ repositories {
 val mavenArtifactId = "kmp-sqlencrypt"
 val appleFrameworkName = "KmpSqlencrypt"
 group = "com.oldguy"
-version = "0.5.2"
+version = "0.5.3"
 
 val ndkVersionValue = "25.2.9519653"
 val androidMinSdk = 24
@@ -173,7 +173,6 @@ tasks {
     }
 }
 
-@Suppress("UNUSED_VARIABLE")
 kotlin {
     androidTarget {
         publishLibraryVariants("release", "debug")
@@ -427,5 +426,5 @@ signing {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.10.1")
+    implementation("androidx.core:core-ktx:1.12.0")
 }

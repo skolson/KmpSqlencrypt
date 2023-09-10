@@ -1,6 +1,13 @@
 ## KmpSqlencrypt Change Log
 
-** 0.5.2 ** 2023-08
+** 0.5.3 ** 2023-08
+
+- Kotlin 1.9.10
+- Gradle 8.3
+- Atomicfu 0.22.0
+- Add "NUM" to the list of Sqlite valid Numeric/Decimal types. "NUM" used by tables created with `create table as ... select` statements
+
+- ** 0.5.2 ** 2023-08
 
 No functional changes, just release updates
 

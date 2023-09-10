@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
-    val kotlinVersion: String by extra("1.9.0")
+    val kotlinVersion: String by extra("1.9.10")
     repositories {
         gradlePluginPortal()
         google()
@@ -9,8 +9,8 @@ buildscript {
     }
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-        classpath("com.android.tools.build:gradle:8.2.0-alpha15")
-        classpath("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.21.0")
+        classpath("com.android.tools.build:gradle:8.3.0-alpha03")
+        classpath("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.22.0")
     }
 }
 

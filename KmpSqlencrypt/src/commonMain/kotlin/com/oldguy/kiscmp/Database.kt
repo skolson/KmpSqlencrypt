@@ -10,7 +10,7 @@ class SqliteColumn(name: String, index: Int, type: ColumnType = ColumnType.Strin
     companion object {
         val integerTypes = listOf("INT", "INTEGER", "TINYINT", "SMALLINT", "MEDIUMINT", "BIGINT",
             "UNSIGNED BIG INT", "INT2", "INT8")
-        private val decimalTypes = listOf("REAL", "DOUBLE", "DOUBLE PRECISION", "FLOAT", "NUMERIC", "DECIMAL")
+        private val decimalTypes = listOf("REAL", "DOUBLE", "DOUBLE PRECISION", "FLOAT", "NUMERIC", "DECIMAL", "NUM")
         val dateTypes = listOf("DATE", "DATETIME", "TIMESTAMP")
         private val stringTypes = listOf("CHAR", "CHARACTER", "VARCHAR", "VARYING CHARACTER", "NCHAR",
             "NATIVE CHARACTER", "NVARCHAR", "TEXT")
