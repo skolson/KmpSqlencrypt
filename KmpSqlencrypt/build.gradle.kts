@@ -38,7 +38,6 @@ val kmpPackageName = "com.oldguy.sqlcipher"
 val androidMainDirectory = projectDir.resolve("src").resolve("androidMain")
 val nativeInterop = projectDir.resolve("src/nativeInterop")
 val nativeInteropPath: String = nativeInterop.absolutePath
-val javadocTaskName = "javadocJar"
 
 val kotlinCoroutinesVersion = "1.7.3"
 val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
@@ -166,11 +165,6 @@ tasks {
             }
         }
     }
-    create<Jar>(javadocTaskName) {
-        dependsOn(dokkaHtml)
-        archiveClassifier.set("javadoc")
-        from(dokkaHtml.get().outputDirectory)
-    }
 }
 
 kotlin {
@@ -277,6 +271,7 @@ kotlin {
 
     // workaround starting with Gradle 8 and kotlin 1.8.x, supposedly fixed in Kotlin 1.9.20 (KT-55751)
     val workaroundAttribute = Attribute.of("com.oldguy.kiscmp", String::class.java)
+    /*
     configurations {
         named("debugFrameworkMacosX64").configure {
             attributes.attribute(workaroundAttribute, "macosX64")
@@ -306,6 +301,7 @@ kotlin {
             attributes.attribute(workaroundAttribute, "podIosArm64")
         }
     }
+     */
     afterEvaluate {
         configurations {
             named("debugFrameworkIosFat").configure {
@@ -392,7 +388,17 @@ kotlin {
     publishing {
         publications.withType(MavenPublication::class) {
             artifactId = artifactId.replace(project.name, mavenArtifactId)
-            artifact(tasks.getByPath(javadocTaskName))
+            
+            // workaround for https://github.com/gradle/gradle/issues/26091
+            val dokkaJar = tasks.register("${this.name}DokkaJar", Jar::class) {
+                group = JavaBasePlugin.DOCUMENTATION_GROUP
+                description = "Dokka builds javadoc jar"
+                archiveClassifier.set("javadoc")
+                from(tasks.named("dokkaHtml"))
+                archiveBaseName.set("${archiveBaseName.get()}-${this.name}")
+            }
+            artifact(dokkaJar)
+
             pom {
                 name.set("$appleFrameworkName Kotlin Multiplatform SqlCipher/Sqlite")
                 description.set("Library for use of SqlCipher/Sqlite using the same Kotlin API on supported 64 bit platforms; Android IOS, Windows, Linux, MacOS")
