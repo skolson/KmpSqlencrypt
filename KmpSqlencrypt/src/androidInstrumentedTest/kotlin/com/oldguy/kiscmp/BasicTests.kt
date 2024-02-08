@@ -4,7 +4,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.oldguy.database.SqlValue
 import org.junit.Test
 import org.junit.runner.RunWith
-import kotlinx.coroutines.*
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 

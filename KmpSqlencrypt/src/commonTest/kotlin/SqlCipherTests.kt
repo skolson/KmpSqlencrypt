@@ -12,6 +12,8 @@ import kotlin.test.DefaultAsserter.fail
 import kotlin.test.assertNotNull
 
 open class SqlCipherTests {
+    val sqlCipherVersion = "4.5.6 community"
+    val sqlite3Version = "3.44.2"
     val testDate = DateTime.now()
     val testString = "Any text1 4"
     val testString2 = "Other text"
@@ -87,8 +89,8 @@ open class SqlCipherTests {
     }
 
     fun testVersions() {
-        assertEquals("sqliteVersion","3.41.2", db.sqliteVersion)
-        assertEquals("sqlcipherVersion","4.5.4 community", db.sqlcipherVersion)
+        assertEquals("sqliteVersion", sqlite3Version, db.sqliteVersion)
+        assertEquals("sqlcipherVersion", sqlCipherVersion, db.sqlcipherVersion)
         assertEquals("userVersion", 0, db.userVersion)
     }
 

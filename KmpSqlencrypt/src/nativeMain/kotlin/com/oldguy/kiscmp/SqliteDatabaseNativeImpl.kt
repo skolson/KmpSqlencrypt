@@ -1,6 +1,8 @@
 package com.oldguy.kiscmp
 
 import com.oldguy.sqlcipher.*
+import cnames.structs.sqlite3
+import cnames.structs.sqlite3_stmt
 import kotlinx.cinterop.*
 import kotlin.experimental.ExperimentalNativeApi
 

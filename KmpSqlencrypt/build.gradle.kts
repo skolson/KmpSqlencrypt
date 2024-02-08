@@ -3,23 +3,26 @@ import com.oldguy.gradle.OpensslExtension
 import com.oldguy.gradle.SqlcipherExtension
 import com.oldguy.gradle.BuildType
 import org.gradle.internal.os.OperatingSystem
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 
 plugins {
-    id("com.android.library")
-    kotlin("multiplatform")
+    libs.plugins.also {
+        alias(it.android.library)
+        alias(it.kotlin.multiplatform)
+        alias(it.kotlinx.atomicfu)
+        alias(it.dokka)
+        alias(it.versionCheck)
+    }
     kotlin("native.cocoapods")
     id("maven-publish")
     id("signing")
-    id("kotlinx-atomicfu")
-    id("org.jetbrains.dokka") version "1.9.0"
     id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.3.5"
-    id("com.github.ben-manes.versions") version "0.48.0"
 }
 
 repositories {
-    gradlePluginPortal()
     google()
     mavenCentral()
 }
@@ -27,11 +30,11 @@ repositories {
 val mavenArtifactId = "kmp-sqlencrypt"
 val appleFrameworkName = "KmpSqlencrypt"
 group = "com.oldguy"
-version = "0.5.3"
+version = libs.versions.appVersion.get()
 
-val ndkVersionValue = "25.2.9519653"
-val androidMinSdk = 24
-val androidTargetSdkVersion = 33
+val ndkVersionValue = "26.1.10909125"
+val androidMinSdk = 26
+val androidTargetSdkVersion = 34
 val iosMinSdk = "14"
 val kmpPackageName = "com.oldguy.sqlcipher"
 
@@ -39,16 +42,9 @@ val androidMainDirectory = projectDir.resolve("src").resolve("androidMain")
 val nativeInterop = projectDir.resolve("src/nativeInterop")
 val nativeInteropPath: String = nativeInterop.absolutePath
 
-val kotlinCoroutinesVersion = "1.7.3"
-val kotlinCoroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion"
-val kotlinCoroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutinesVersion"
-val klock = "com.soywiz.korlibs.klock:klock:4.0.9"
-val bignum = "com.ionspin.kotlin:bignum:0.3.8"
-
-
 sqlcipher {
     useGit = false
-    version = "4.5.4"
+    version = libs.versions.sqlcipher.get()
     compilerOptions = SqlcipherExtension.defaultCompilerOptions
     buildCompilerOptions = mapOf(
         BuildType.androidX64 to SqlcipherExtension.androidCompilerOptions,
@@ -91,7 +87,7 @@ sqlcipher {
         }
     }
     openssl {
-        tagName = "openssl-3.1.2"
+        tagName = "openssl-${libs.versions.openssl.get()}"
         useGit = false
         configureOptions = OpensslExtension.smallConfigureOptions
         buildSpecificOptions = OpensslExtension.buildOptionsMap
@@ -144,14 +140,12 @@ android {
         }
     }
     compileOptions {
-        targetCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     dependencies {
-        testImplementation("junit:junit:4.13.2")
-        androidTestImplementation("androidx.test:core:1.5.0")
-        androidTestImplementation("androidx.test:runner:1.5.2")
-        androidTestImplementation("androidx.test.ext:junit:1.1.5")
+        testImplementation(libs.junit4)
+        androidTestImplementation(libs.bundles.androidx.test)
     }
 }
 
@@ -169,6 +163,9 @@ tasks {
 
 kotlin {
     androidTarget {
+        java.targetCompatibility = JavaVersion.VERSION_17
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
         publishLibraryVariants("release", "debug")
         mavenPublication {
             artifactId = artifactId.replace(project.name, mavenArtifactId)
@@ -269,69 +266,20 @@ kotlin {
         }
     }
 
-    // workaround starting with Gradle 8 and kotlin 1.8.x, supposedly fixed in Kotlin 1.9.20 (KT-55751)
-    val workaroundAttribute = Attribute.of("com.oldguy.kiscmp", String::class.java)
-    /*
-    configurations {
-        named("debugFrameworkMacosX64").configure {
-            attributes.attribute(workaroundAttribute, "macosX64")
-        }
-        named("podDebugFrameworkMacosX64").configure {
-            attributes.attribute(workaroundAttribute, "podMacosX64")
-        }
-        named("releaseFrameworkMacosX64").configure {
-            attributes.attribute(workaroundAttribute, "macosX64")
-        }
-        named("podReleaseFrameworkMacosX64").configure {
-            attributes.attribute(workaroundAttribute, "podMacosX64")
-        }
-        named("debugFrameworkIosX64").configure {
-            attributes.attribute(workaroundAttribute, "iosX64")
-        }
-        named("podDebugFrameworkIosX64").configure {
-            attributes.attribute(workaroundAttribute, "podIosX64")
-        }
-        named("debugFrameworkIosArm64").configure {
-            attributes.attribute(workaroundAttribute, "IosArm64D")
-        }
-        named("releaseFrameworkIosArm64").configure {
-            attributes.attribute(workaroundAttribute, "IosArm64")
-        }
-        named("podReleaseFrameworkIosArm64").configure {
-            attributes.attribute(workaroundAttribute, "podIosArm64")
-        }
-    }
-     */
-    afterEvaluate {
-        configurations {
-            named("debugFrameworkIosFat").configure {
-                attributes.attribute(workaroundAttribute, "iosFat")
-            }
-            named("podDebugFrameworkIosFat").configure {
-                attributes.attribute(workaroundAttribute, "podIosFat")
-            }
-            named("releaseFrameworkIosFat").configure {
-                attributes.attribute(workaroundAttribute, "iosFat")
-            }
-            named("podReleaseFrameworkIosFat").configure {
-                attributes.attribute(workaroundAttribute, "podIosFat")
-            }
-        }
-    }
-
+    applyDefaultHierarchyTemplate()
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(klock)
-                implementation(bignum)
-
+                implementation(libs.klock)
+                implementation(libs.bigDecimal)
+                implementation(libs.kotlinx.atomicfu)
             }
         }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
-                implementation(kotlinCoroutinesTest)
+                implementation(libs.kotlinx.coroutines.test)
             }
         }
         val androidMain by getting {
@@ -340,30 +288,24 @@ kotlin {
         val androidUnitTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
-                implementation("junit:junit:4.13.2")
-                implementation(kotlinCoroutines)
+                implementation(libs.junit4)
+                implementation(libs.kotlinx.coroutines.core)
             }
         }
         val androidInstrumentedTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
-                implementation("junit:junit:4.13.2")
-                implementation(kotlinCoroutines)
+                implementation(libs.junit4)
+                implementation(libs.kotlinx.coroutines.core)
             }
-            dependsOn(commonMain)
-            dependsOn(androidMain)
-            dependsOn(commonTest)
         }
-        val nativeMain by creating {
+        val nativeMain by getting {
             dependsOn(commonMain)
-            kotlin.srcDir("src/nativeMain/kotlin")
         }
-        val nativeTest by creating {
-            kotlin.srcDir("src/nativeTest/kotlin")
-            dependsOn(commonTest)
+        val nativeTest by getting {
             dependencies {
                 implementation(kotlin("test"))
-                implementation(kotlinCoroutines)
+                implementation(libs.kotlinx.coroutines.core)
             }
         }
         val iosX64Main by getting {
@@ -432,5 +374,10 @@ signing {
 }
 
 dependencies {
-    implementation("androidx.core:core-ktx:1.12.0")
+    implementation(libs.androidx.core.ktx)
+}
+
+// workaround
+task("testClasses").doLast {
+    println("workaround for Iguana change")
 }

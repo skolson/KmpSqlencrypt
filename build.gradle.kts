@@ -1,16 +1,14 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 buildscript {
-    val kotlinVersion: String by extra("1.9.10")
     repositories {
         gradlePluginPortal()
         google()
         mavenCentral()
     }
-    dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
-        classpath("com.android.tools.build:gradle:8.3.0-alpha03")
-        classpath("org.jetbrains.kotlinx:atomicfu-gradle-plugin:0.22.0")
+    libs.versions.also {
+        dependencies {
+            classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${it.kotlin.get()}")
+            classpath("com.android.tools.build:gradle:${it.androidGradlePlugin.get()}")
+        }
     }
 }
 
@@ -18,14 +16,18 @@ repositories {
     mavenCentral()
 }
 
+plugins {
+    libs.plugins.also {
+        alias(it.kotlin.multiplatform) apply false
+        alias(it.android.library) apply false
+        alias(it.kotlinx.atomicfu) apply false
+        alias(it.android.junit5) apply false
+    }
+}
+
 allprojects {
     repositories {
         google()
         mavenCentral()
-    }
-    tasks.withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "11"
-        }
     }
 }

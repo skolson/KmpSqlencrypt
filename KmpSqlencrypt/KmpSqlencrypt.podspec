@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'KmpSqlencrypt'
-    spec.version                  = '0.5.3'
+    spec.version                  = '0.6.0'
     spec.homepage                 = 'https://github.com/skolson/KmpSqlencrypt'
     spec.source                   = { :http=> ''}
     spec.authors                  = 'Steven Olson'
@@ -10,6 +10,17 @@ Pod::Spec.new do |spec|
     spec.libraries                = 'c++'
     spec.ios.deployment_target = '14'
                 
+                
+    if !Dir.exist?('build/cocoapods/framework/KmpSqlencrypt.framework') || Dir.empty?('build/cocoapods/framework/KmpSqlencrypt.framework')
+        raise "
+
+        Kotlin framework 'KmpSqlencrypt' doesn't exist yet, so a proper Xcode project can't be generated.
+        'pod install' should be executed after running ':generateDummyFramework' Gradle task:
+
+            ./gradlew :KmpSqlencrypt:generateDummyFramework
+
+        Alternatively, proper pod installation is performed during Gradle sync in the IDE (if Podfile location is set)"
+    end
                 
     spec.pod_target_xcconfig = {
         'KOTLIN_PROJECT_PATH' => ':KmpSqlencrypt',

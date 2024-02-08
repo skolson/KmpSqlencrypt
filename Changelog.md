@@ -1,5 +1,20 @@
 ## KmpSqlencrypt Change Log
 
+** 0.6.0 ** 2024-02
+
+- Kotlin 1.9.22
+- Gradle 8.6
+- Gradle version catalog usage
+- SqlCipher 4.5.6
+- OpenSSL 3.2.1
+- AGP 8.4.0-alpha08
+- Android NDK version 26.1.10909125
+- Minimum android SDK now 26 (was 24)
+- Use Kotlin MP default hierarchy template for source sets. Force androidInstrumentedTest to be part of the test source set tree.
+- Kotlinx coroutines 1.8.0-RC2
+- Newer patch levels on klock library and bignum library. See libs.versions.toml in gradle directory.
+- No functional changes. Had to add a couple explicit imports to the native code class to get a correct build in 1.9.22. No other code changes. Just gradle and build.gradle.kts changes.
+
 ** 0.5.3 ** 2023-08
 
 - Kotlin 1.9.10
