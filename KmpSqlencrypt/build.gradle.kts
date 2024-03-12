@@ -270,7 +270,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(libs.klock)
+                implementation(libs.kotlinx.datetime)
                 implementation(libs.bigDecimal)
                 implementation(libs.kotlinx.atomicfu)
             }

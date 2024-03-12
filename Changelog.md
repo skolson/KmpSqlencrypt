@@ -1,5 +1,15 @@
 ## KmpSqlencrypt Change Log
 
+** 0.7.0 ** 2024-03
+
+NOTE: this release contains a breaking change.  All Date and DateTime types have been implemented using kotlinx-datetime LocalDate and ZLocalDateTime classes. Dependency on Klock library for dates and times has been removed.
+
+NOTE: kotlinx datetime supports nanosecond resolution. Sqlite resolution of time is milliseconds. To preserve use of the sqlite functions around time, when a datetime is saved to the database all sub-millisecond resoultion is lost. This library includes a LocalDateTime extension function `truncateToMilliseconds` that does the explicit truncation for unit tests and other cases where it is desired to compare the pre-sqlite value to the same value retrieved from sqlite and expect them to be equal.
+
+- kotlinx.datetime library v0.6.0-RC.2
+- klock dependency deleted
+
+
 ** 0.6.0 ** 2024-02
 
 - Kotlin 1.9.22

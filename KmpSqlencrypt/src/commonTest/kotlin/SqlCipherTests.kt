@@ -5,16 +5,37 @@ import com.oldguy.database.ColumnType
 import com.oldguy.database.Passphrase
 import com.oldguy.database.SqlValue
 import com.oldguy.database.SqlValues
-import korlibs.time.DateTime
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import kotlin.test.DefaultAsserter.assertEquals
 import kotlin.test.DefaultAsserter.assertTrue
 import kotlin.test.DefaultAsserter.fail
 import kotlin.test.assertNotNull
 
+/**
+ * Extensio function retuns a new LocalDateTime from the current instance, with nanoseconds value truncated to the
+ * millisecond. Since sqlite currently only supports
+ * milliseconds, instances of this function will be exactly equal once stored in sqlite and then retrieved. Use when the
+ * implicit truncation of sub-milliseconds is not desired, as in Unit Tests etc.
+ */
+fun LocalDateTime.truncateToMillisecond(): LocalDateTime {
+    return LocalDateTime(
+        year,
+        month,
+        dayOfMonth,
+        hour,
+        minute,
+        second,
+        (nanosecond / 1000000) * 1000000
+    )
+}
+
 open class SqlCipherTests {
     val sqlCipherVersion = "4.5.6 community"
     val sqlite3Version = "3.44.2"
-    val testDate = DateTime.now()
+    val testDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).truncateToMillisecond()
     val testString = "Any text1 4"
     val testString2 = "Other text"
     val testBigDecimal = BigDecimal.parseString("12345678901234567890.98")
@@ -203,6 +224,11 @@ open class SqlCipherTests {
             )
             assertEquals(
                 "selTest2BindSelDateTimeRow$rowCount",
+                bindArgs.requireDateTime("dateTime1").toString(),
+                sqlValues.requireDateTime("dateTime1").toString()
+            )
+            assertEquals(
+                "selTest2BindSelDateTimeRow$rowCount",
                 0,
                 bindArgs.requireDateTime("dateTime1")
                     .compareTo(sqlValues.requireDateTime("dateTime1"))
@@ -323,7 +349,7 @@ open class SqlCipherTests {
         val str = "2021-07-03 15:21:23"
         val testTime = SqlValue.DateTimeValue.parse(str)
         assertNotNull(testTime)
-        val testNow = DateTime.now()
+        val testNow = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).truncateToMillisecond()
         db.statement(table3Insert).use {
             val row = SqlValues(
                 SqlValue.DateTimeValue("dateTime1", testTime),

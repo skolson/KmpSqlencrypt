@@ -310,7 +310,7 @@ class SelectStatement(private val db: SqlCipherDatabase, sql:String): Query(sql)
             SqlValue.DateValue(name)
         else {
             val text = getString(index)
-            val dt = SqlValue.DateValue.dateFormatter.tryParse(text)?.local?.date
+            val dt = SqlValue.DateValue.parse(text, false)
             if (dt == null) {
                 stmt.statementAbort("Unparseable date string: $text at index:$index")
                 SqlValue.DateValue(name)

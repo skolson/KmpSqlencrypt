@@ -2,10 +2,12 @@ package com.oldguy.database
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.ionspin.kotlin.bignum.integer.BigInteger
-import korlibs.time.Date
-import korlibs.time.DateTime
-import korlibs.time.PatternDateFormat
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.atomicfu.atomic
+import kotlinx.datetime.format
+import kotlinx.datetime.format.FormatStringsInDatetimeFormats
+import kotlinx.datetime.format.byUnicodePattern
 
 /**
  * Simple extension to translate a ByteArray to a hex string
@@ -58,18 +60,21 @@ sealed class SqlValue<T>(val name: String, var value: T?): Comparable<SqlValue<T
         }
     }
 
-    class DateValue(name: String, value: Date? = null) :
-        SqlValue<Date>(name, value) {
+    @OptIn(FormatStringsInDatetimeFormats::class)
+    class DateValue(name: String, value: LocalDate? = null) :
+        SqlValue<LocalDate>(name, value) {
 
-        var format = dateFormatter
-
-        constructor(value: Date? = null): this("", value)
-
-        override fun toString(): String {
-            return value?.format(format) ?: nullString
+        var format = LocalDate.Format {
+            byUnicodePattern(isoFormat)
         }
 
-        override fun compareTo(other: SqlValue<Date>): Int {
+        constructor(value: LocalDate? = null): this("", value)
+
+        override fun toString(): String {
+            return value?.toString() ?: nullString
+        }
+
+        override fun compareTo(other: SqlValue<LocalDate>): Int {
             val rc = compareNulls(other)
             return if (rc > 1)
                 value!!.compareTo(other.value!!)
@@ -77,32 +82,42 @@ sealed class SqlValue<T>(val name: String, var value: T?): Comparable<SqlValue<T
         }
 
         companion object {
-            val dateFormatter = PatternDateFormat("yyyy-MM-dd")
-            fun parse(dateString: String, throws: Boolean = true): Date? {
-                return dateFormatter.tryParse(dateString, throws)?.utc?.date
+            const val isoFormat = "yyyy-MM-dd"
+
+            fun parse(dateString: String, throws: Boolean = true): LocalDate? {
+                return if (throws) {
+                    LocalDate.parse(dateString)
+                } else {
+                    try {
+                        LocalDate.parse(dateString)
+                    } catch (e: IllegalArgumentException) {
+                        null
+                    }
+                }
             }
         }
     }
 
     /**
-     * Sqlite datetime handlining is based on UTC - no explicit timezone support. So by default,
+     * Sqlite datetime handling is based on UTC - no explicit timezone support. So by default,
      * datetimes are converted to UTC strings in Sqlite format, a subset of ISO-8601. The default
      * formatter uses this pattern: "yyyy-MM-ddTHH:mm:ss.SSS". The default formatter used when
      * retrieving datetimes can be changed, as can the formatter on DateTimeValue instances
      *
      *
      */
-    class DateTimeValue(name: String, value: DateTime? = null) :
-        SqlValue<DateTime>(name, value) {
-        private val format = isoFormat
+    @OptIn(FormatStringsInDatetimeFormats::class)
+    class DateTimeValue(name: String, value: LocalDateTime? = null) :
+        SqlValue<LocalDateTime>(name, value) {
+        private val format = isoFormatter
 
-        constructor(value: DateTime? = null): this("", value)
+        constructor(value: LocalDateTime? = null): this("", value)
 
         override fun toString(): String {
             return value?.format(format) ?: nullString
         }
 
-        override fun compareTo(other: SqlValue<DateTime>): Int {
+        override fun compareTo(other: SqlValue<LocalDateTime>): Int {
             val rc = compareNulls(other)
             return if (rc > 1)
                 value!!.compareTo(other.value!!)
@@ -110,28 +125,34 @@ sealed class SqlValue<T>(val name: String, var value: T?): Comparable<SqlValue<T
         }
 
         companion object {
-            const val isoFormatNoMillis = "yyyy-MM-ddTHH:mm:ss"
+            const val isoFormatNoMillis = "yyyy-MM-dd'T'HH:mm:ss"
             const val isoFormat = "$isoFormatNoMillis.SSS"
-            val isoFormatter = PatternDateFormat(isoFormat)
-            val isoFormatterNoMillis = PatternDateFormat(isoFormatNoMillis)
+            val isoFormatter = LocalDateTime.Format {
+                byUnicodePattern(isoFormat)
+            }
+            val isoFormatterNoMillis = LocalDateTime.Format {
+                byUnicodePattern(isoFormatNoMillis)
+            }
 
             private val formatsRef = atomic(listOf(isoFormatter, isoFormatterNoMillis))
+            private val formatStringsRef = atomic(listOf(isoFormat, isoFormatNoMillis))
 
             /**
              * List of the formatters currently defined, in the order they are tried when
              * invoking the static parse method
              */
             val validFormats get() = formatsRef.value.toList()
+            val validFormatStrings get() = formatStringsRef.value.toList()
 
             /**
-             * Push a new format string onto the stack to be tried.  If a formatter with this
-             * format already is in the list, the list is not changed.
+             * Push a new format string onto the stack to be tried.
              * @param format a valid format string like [isoFormat] or [isoFormatNoMillis] or similar
              */
             fun addFormat(format: String) {
-                if (!validFormats.filter { it.format == format }.any()) {
-                    formatsRef.value = listOf(PatternDateFormat(format)) + validFormats
-                }
+                formatsRef.value = listOf(LocalDateTime.Format {
+                    byUnicodePattern(format)
+                }) + validFormats
+                formatStringsRef.value = listOf(format) + validFormatStrings
             }
 
             /**
@@ -141,9 +162,17 @@ sealed class SqlValue<T>(val name: String, var value: T?): Comparable<SqlValue<T
              * @return true if success, false if none found.
              */
             fun removeFormat(format: String): Boolean {
-                val rc = validFormats.any { it.format == format }
-                if (rc) formatsRef.value = validFormats.filter { it.format != format }
-                return rc
+                val index = formatStringsRef.value.indexOf(format)
+                return if (index < 0) false
+                else {
+                    val list = formatStringsRef.value.toMutableList()
+                    list.removeAt(index)
+                    formatStringsRef.value = list
+                    val l = formatsRef.value.toMutableList()
+                    l.removeAt(index)
+                    formatsRef.value = l
+                    true
+                }
             }
 
             /**
@@ -153,21 +182,21 @@ sealed class SqlValue<T>(val name: String, var value: T?): Comparable<SqlValue<T
              * database using isoFormatter = yyyy-MM-ddTHH:mm:ss.SSS, but will be retrieved using
              *
              */
-            fun parse(dateTimeString: String, throws: Boolean = true): DateTime? {
+            fun parse(dateTimeString: String, throws: Boolean = true): LocalDateTime? {
                 var exc: Throwable? = null
                 val formats = validFormats
                 formats.forEach {
                     try {
-                        return it.tryParse(dateTimeString, true)?.utc!!
-                    } catch (e: Throwable) {
+                        return it.parse(dateTimeString)
+                    } catch (e: IllegalArgumentException) {
                         if (throws)
                             exc = e
                     }
                 }
                 if (throws && exc != null) {
                     val patterns = buildString {
-                        formats.forEach {
-                            append(it.format)
+                        formatStringsRef.value.forEach {
+                            append(it)
                             append(", ")
                         }
                     }
@@ -428,8 +457,8 @@ class SqlValues() : Iterable<SqlValue<out Any>>
             is Int -> SqlValue.IntValue(value = value)
             is Long -> SqlValue.LongValue(value = value)
             is String -> SqlValue.StringValue(value = value)
-            is Date -> SqlValue.DateValue(value = value)
-            is DateTime -> SqlValue.DateTimeValue(value = value)
+            is LocalDate -> SqlValue.DateValue(value = value)
+            is LocalDateTime -> SqlValue.DateTimeValue(value = value)
             is ByteArray -> SqlValue.BytesValue(value = value)
             is BigInteger -> SqlValue.BigIntegerValue(value = value)
             is BigDecimal -> SqlValue.DecimalValue(value = value)
@@ -446,8 +475,8 @@ class SqlValues() : Iterable<SqlValue<out Any>>
             is Int -> SqlValue.IntValue(name = name, value = value)
             is Long -> SqlValue.LongValue(name = name, value = value)
             is String -> SqlValue.StringValue(name = name, value = value)
-            is Date -> SqlValue.DateValue(name = name, value = value)
-            is DateTime -> SqlValue.DateTimeValue(name = name, value = value)
+            is LocalDate -> SqlValue.DateValue(name = name, value = value)
+            is LocalDateTime -> SqlValue.DateTimeValue(name = name, value = value)
             is ByteArray -> SqlValue.BytesValue(name = name, value = value)
             is BigInteger -> SqlValue.BigIntegerValue(name = name, value = value)
             is BigDecimal -> SqlValue.DecimalValue(name = name, value = value)
@@ -713,53 +742,53 @@ class SqlValues() : Iterable<SqlValue<out Any>>
         return v ?: if (nullZero) 0.0 else throw requireGotNull(columnName)
     }
 
-    fun getDate(columnIndex: Int): Date? {
+    fun getDate(columnIndex: Int): LocalDate? {
         verifyColumnIndex(columnIndex)
         if (isNull(columnIndex)) return null
         return when (val value = getValue(columnIndex).value) {
-            is Date -> value
+            is LocalDate -> value
             else -> throw IllegalArgumentException("Index $columnIndex is not a Date, value: $value")
         }
     }
 
-    fun getDate(columnName: String): Date? {
+    fun getDate(columnName: String): LocalDate? {
         if (isNull(columnName)) return null
         return when (val value = getValue(columnName).value) {
-            is Date -> value
+            is LocalDate -> value
             else -> throw IllegalArgumentException("$columnName is not a Date, value: $value")
         }
     }
 
-    fun requireDate(columnIndex: Int): Date {
+    fun requireDate(columnIndex: Int): LocalDate {
         return getDate(columnIndex) ?: throw requireGotNull(columnIndex)
     }
 
-    fun requireDate(columnName: String): Date {
+    fun requireDate(columnName: String): LocalDate {
         return getDate(columnName) ?: throw requireGotNull(columnName)
     }
 
-    fun getDateTime(columnIndex: Int): DateTime? {
+    fun getDateTime(columnIndex: Int): LocalDateTime? {
         verifyColumnIndex(columnIndex)
         if (isNull(columnIndex)) return null
         return when (val value = getValue(columnIndex).value) {
-            is DateTime -> value
+            is LocalDateTime -> value
             else -> throw IllegalArgumentException("Index $columnIndex is not a Date, value: $value")
         }
     }
 
-    fun getDateTime(columnName: String): DateTime? {
+    fun getDateTime(columnName: String): LocalDateTime? {
         if (isNull(columnName)) return null
         return when (val value = getValue(columnName).value) {
-            is DateTime -> value
+            is LocalDateTime -> value
             else -> throw IllegalArgumentException("$columnName is not a DateTime, value: $value")
         }
     }
 
-    fun requireDateTime(columnIndex: Int): DateTime {
+    fun requireDateTime(columnIndex: Int): LocalDateTime {
         return getDateTime(columnIndex) ?: throw requireGotNull(columnIndex)
     }
 
-    fun requireDateTime(columnName: String): DateTime {
+    fun requireDateTime(columnName: String): LocalDateTime {
         return getDateTime(columnName) ?: throw requireGotNull(columnName)
     }
 
