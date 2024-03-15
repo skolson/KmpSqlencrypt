@@ -8,6 +8,8 @@ NOTE: kotlinx datetime supports nanosecond resolution. Sqlite resolution of time
 
 - kotlinx.datetime library v0.6.0-RC.2
 - klock dependency deleted
+- plugin sqlcipher-openssl-build 0.4.0 for Macos Arm64 build support for openssl and SqlCipher
+- new target Macos ARM64 for M1 or other ARM64 mac hardware
 
 
 ** 0.6.0 ** 2024-02

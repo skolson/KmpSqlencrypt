@@ -19,7 +19,7 @@ plugins {
     kotlin("native.cocoapods")
     id("maven-publish")
     id("signing")
-    id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.3.5"
+    id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.4.0"
 }
 
 repositories {
@@ -51,7 +51,8 @@ sqlcipher {
         BuildType.androidArm64 to SqlcipherExtension.androidCompilerOptions,
         BuildType.iosX64 to SqlcipherExtension.iosCompilerOptions,
         BuildType.iosArm64 to SqlcipherExtension.iosCompilerOptions,
-        BuildType.macosX64 to SqlcipherExtension.macOsCompilerOptions
+        BuildType.macosX64 to SqlcipherExtension.macOsCompilerOptions,
+        BuildType.macosArm64 to SqlcipherExtension.macOsCompilerOptions
     )
 
     builds(BuildType.appleBuildTypes)
@@ -212,14 +213,37 @@ kotlin {
             }
         }
         val main by this.compilations.getting {
+            val dirName = "macosX64"
             val sqlcipherInterop by cinterops.creating {
-                defFile(nativeInterop.resolve("macosX64/Sqlcipher.def"))
+                defFile(nativeInterop.resolve("$dirName/Sqlcipher.def"))
                 packageName(kmpPackageName)
                 includeDirs.apply {
-                    allHeaders(nativeInterop.resolve("macosX64"))
+                    allHeaders(nativeInterop.resolve(dirName))
                 }
                 compilerOpts += listOf(
-                    "-I$nativeInteropPath/macosX64"
+                    "-I$nativeInteropPath/$dirName"
+                )
+            }
+        }
+    }
+    macosArm64 {
+        binaries {
+            framework {
+                baseName = appleFrameworkName
+                appleXcf.add(this)
+                isStatic = true
+            }
+        }
+        val main by this.compilations.getting {
+            val dirName = "macosArm64"
+            val sqlcipherInterop by cinterops.creating {
+                defFile(nativeInterop.resolve("$dirName/Sqlcipher.def"))
+                packageName(kmpPackageName)
+                includeDirs.apply {
+                    allHeaders(nativeInterop.resolve(dirName))
+                }
+                compilerOpts += listOf(
+                    "-I$nativeInteropPath/$dirName"
                 )
             }
         }
@@ -323,7 +347,11 @@ kotlin {
         val macosX64Test by getting {
             dependsOn(nativeTest)
         }
-        all {
+        val macosArm64Main by getting {
+            dependsOn(nativeMain)
+        }
+        val macosArm64Test by getting {
+            dependsOn(nativeTest)
         }
     }
 
