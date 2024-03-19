@@ -1,5 +1,10 @@
 ## KmpSqlencrypt Change Log
 
+** 0.7.1 ** 2024-03
+
+- kotlin 1.9.23
+- AGP release update
+
 ** 0.7.0 ** 2024-03
 
 NOTE: this release contains a breaking change.  All Date and DateTime types have been implemented using kotlinx-datetime LocalDate and ZLocalDateTime classes. Dependency on Klock library for dates and times has been removed.
