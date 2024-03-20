@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'KmpSqlencrypt'
-    spec.version                  = '0.7.0'
+    spec.version                  = '0.7.1'
     spec.homepage                 = 'https://github.com/skolson/KmpSqlencrypt'
     spec.source                   = { :http=> ''}
     spec.authors                  = 'Steven Olson'
