@@ -1,21 +1,3 @@
-buildscript {
-    repositories {
-        gradlePluginPortal()
-        google()
-        mavenCentral()
-    }
-    libs.versions.also {
-        dependencies {
-            classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${it.kotlin.get()}")
-            classpath("com.android.tools.build:gradle:${it.androidGradlePlugin.get()}")
-        }
-    }
-}
-
-repositories {
-    mavenCentral()
-}
-
 plugins {
     libs.plugins.also {
         alias(it.kotlin.multiplatform) apply false
@@ -29,5 +11,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        mavenLocal()
     }
 }

@@ -21,7 +21,7 @@ enum class SqliteEncoding(val pragma: String) {
 
     companion object {
         fun byPragma(response: String): SqliteEncoding {
-            return values().firstOrNull {
+            return entries.firstOrNull {
                 response == it.pragma
             } ?: throw SqliteException("Unexpected pragma encoding response: $response")
         }

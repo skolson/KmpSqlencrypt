@@ -3,6 +3,8 @@ package com.oldguy.kiscmp
 import com.oldguy.sqlcipher.*
 import cnames.structs.sqlite3
 import cnames.structs.sqlite3_stmt
+import com.oldguy.common.io.charsets.Utf16BE
+import com.oldguy.common.io.charsets.Utf16LE
 import kotlinx.cinterop.*
 import kotlin.experimental.ExperimentalNativeApi
 
@@ -135,8 +137,8 @@ open class SqliteStatementNativeImpl(private val db: SqliteDatabaseNativeImpl) {
     private var statementContext: CPointer<sqlite3_stmt>? = null
     private val openStatement get() = statementContext ?: throw stmtClosedError
     private val openDb get() = db.dbContext ?: throw dbClosedError
-    private val utf16le = Charset(Charsets.Utf16le)
-    private val utf16be = Charset(Charsets.Utf16be)
+    private val utf16le = Utf16LE()
+    private val utf16be = Utf16BE()
 
     open fun parameterCount(): Int {
         return sqlite3_bind_parameter_count(openStatement)

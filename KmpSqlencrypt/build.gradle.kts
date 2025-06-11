@@ -19,7 +19,7 @@ plugins {
     kotlin("native.cocoapods")
     id("maven-publish")
     id("signing")
-    id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.4.0"
+    id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.5.1"
 }
 
 repositories {
@@ -32,10 +32,10 @@ val appleFrameworkName = "KmpSqlencrypt"
 group = "com.oldguy"
 version = libs.versions.appVersion.get()
 
-val ndkVersionValue = "26.1.10909125"
-val androidMinSdk = 26
-val androidTargetSdkVersion = 34
-val iosMinSdk = "14"
+val ndkVersionValue = libs.versions.androidNdk.get()
+val androidMinSdk = libs.versions.androidSdkMinimum.get().toInt()
+val androidTargetSdkVersion = libs.versions.androidSdk.get().toInt()
+val iosMinSdk = libs.versions.iosMinSdk.get()
 val kmpPackageName = "com.oldguy.sqlcipher"
 
 val androidMainDirectory = projectDir.resolve("src").resolve("androidMain")
@@ -49,13 +49,15 @@ sqlcipher {
     buildCompilerOptions = mapOf(
         BuildType.androidX64 to SqlcipherExtension.androidCompilerOptions,
         BuildType.androidArm64 to SqlcipherExtension.androidCompilerOptions,
+        BuildType.linuxX64 to SqlcipherExtension.androidCompilerOptions,
         BuildType.iosX64 to SqlcipherExtension.iosCompilerOptions,
         BuildType.iosArm64 to SqlcipherExtension.iosCompilerOptions,
         BuildType.macosX64 to SqlcipherExtension.macOsCompilerOptions,
         BuildType.macosArm64 to SqlcipherExtension.macOsCompilerOptions
     )
 
-    builds(BuildType.appleBuildTypes)
+    //builds(BuildType.linuxBuildTypes)
+    builds(BuildType.linuxX64)
     val abiMap = mapOf(
         BuildType.androidX64 to "x86_64",
         BuildType.androidArm64 to "arm64-v8a"
@@ -76,14 +78,14 @@ sqlcipher {
             perlInstallDirectory = "D:\\SqlCipher\\Strawberry\\perl"
         }
         android {
-            linuxSdkLocation = "/home/steve/Android/Sdk"
+            linuxSdkLocation = "/mnt/Android"
             windowsSdkLocation = "D:\\Android\\sdk"
             macosSdkLocation = "/Users/steve/Library/Android/sdk"
             ndkVersion = ndkVersionValue
             minimumSdk = androidMinSdk
         }
         apple {
-            sdkVersion = "15"
+            sdkVersion = "16"
             sdkVersionMinimum = iosMinSdk
         }
     }
@@ -98,7 +100,7 @@ sqlcipher {
 android {
     compileSdk = androidTargetSdkVersion
     ndkVersion = ndkVersionValue
-    buildToolsVersion = "34.0.0"
+    buildToolsVersion = libs.versions.androidBuildTools.get()
     namespace = "com.oldguy.kiscmp.android"
 
     sourceSets {
@@ -136,12 +138,12 @@ android {
 
     externalNativeBuild {
         cmake {
-            version = "3.22.1"
+            version = "4.0.2"
             path("src/androidMain/cpp/CMakeLists.txt")
         }
     }
     compileOptions {
-        targetCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     dependencies {
@@ -150,17 +152,21 @@ android {
     }
 }
 
-tasks {
-    dokkaHtml {
-        moduleName.set("Kotlin Multiplatform SqlCipher/Sqlite")
-        dokkaSourceSets {
-            named("commonMain") {
-                noAndroidSdkLink.set(false)
-                includes.from("$appleFrameworkName.md")
-            }
-        }
+dokka {
+    moduleName.set("Kotlin Multiplatform SqlCipher/Sqlite")
+    dokkaPublications.html {
+        suppressInheritedMembers.set(true)
+        failOnWarning.set(true)
+    }
+    dokkaSourceSets.commonMain {
+        enableAndroidDocumentationLink
+        includes.from("$appleFrameworkName.md")
     }
 }
+
+
+val githubUri = "skolson/$appleFrameworkName"
+val githubUrl = "https://github.com/$githubUri"
 
 kotlin {
     androidTarget {
@@ -173,8 +179,6 @@ kotlin {
         }
     }
 
-    val githubUri = "skolson/$appleFrameworkName"
-    val githubUrl = "https://github.com/$githubUri"
     cocoapods {
         ios.deploymentTarget = iosMinSdk
         summary = "Kotlin Multiplatform API for SqlCipher/OpenSSL"
@@ -184,24 +188,27 @@ kotlin {
         framework {
             baseName = appleFrameworkName
             isStatic = true
-            embedBitcode(org.jetbrains.kotlin.gradle.plugin.mpp.BitcodeEmbeddingMode.BITCODE)
         }
         // Maps custom Xcode configuration to NativeBuildType
         xcodeConfigurationToNativeBuildType["CUSTOM_DEBUG"] = NativeBuildType.DEBUG
         xcodeConfigurationToNativeBuildType["CUSTOM_RELEASE"] = NativeBuildType.RELEASE
     }
 
-    /**
-     * Once a github podspec repo is set up, the following is a work-around for issue KT-42105 that is supposedly fixed in 1.6.20
-    val podspec = tasks["podspec"] as org.jetbrains.kotlin.gradle.tasks.PodspecTask
-    podspec.doLast {
-        val spec = file("${project.name.replace("-", "_")}.podspec")
-        val newPodspecContent = spec.readLines().map {
-            if (it.contains("spec.source")) "    spec.source = { :git => '$githubUrl.git', :tag => '${project.version}' }" else it
+    linuxX64 {
+        val main by this.compilations.getting {
+            val dirName = "linuxX64"
+            val sqlcipherInterop by cinterops.creating {
+                defFile(nativeInterop.resolve("$dirName/Sqlcipher.def"))
+                packageName(kmpPackageName)
+                includeDirs.apply {
+                    allHeaders(nativeInterop.resolve(dirName))
+                }
+                compilerOpts += listOf(
+                    "-I$nativeInteropPath/$dirName",
+                )
+            }
         }
-        spec.writeText(newPodspecContent.joinToString(separator = "\n"))
     }
-    */
 
     val appleXcf = XCFramework()
     macosX64 {
@@ -273,7 +280,6 @@ kotlin {
                 baseName = appleFrameworkName
                 appleXcf.add(this)
                 isStatic = true
-                embedBitcode("bitcode")
                 freeCompilerArgs = freeCompilerArgs +
                         listOf("-Xoverride-konan-properties=osVersionMin=$iosMinSdk")
             }
@@ -297,6 +303,7 @@ kotlin {
                 implementation(libs.kotlinx.datetime)
                 implementation(libs.bigDecimal)
                 implementation(libs.kotlinx.atomicfu)
+                implementation(libs.kmp.io)
             }
         }
         val commonTest by getting {
@@ -305,9 +312,6 @@ kotlin {
                 implementation(kotlin("test-annotations-common"))
                 implementation(libs.kotlinx.coroutines.test)
             }
-        }
-        val androidMain by getting {
-            dependsOn(commonMain)
         }
         val androidUnitTest by getting {
             dependencies {
@@ -323,74 +327,67 @@ kotlin {
                 implementation(libs.kotlinx.coroutines.core)
             }
         }
-        val nativeMain by getting {
-            dependsOn(commonMain)
-        }
         val nativeTest by getting {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.kotlinx.io.core)
             }
-        }
-        val iosX64Main by getting {
-            dependsOn(nativeMain)
-        }
-        val iosX64Test by getting {
-            dependsOn(nativeTest)
-        }
-        val iosArm64Main by getting {
-            dependsOn(nativeMain)
-        }
-        val macosX64Main by getting {
-            dependsOn(nativeMain)
-        }
-        val macosX64Test by getting {
-            dependsOn(nativeTest)
-        }
-        val macosArm64Main by getting {
-            dependsOn(nativeMain)
-        }
-        val macosArm64Test by getting {
-            dependsOn(nativeTest)
         }
     }
 
-    publishing {
-        publications.withType(MavenPublication::class) {
-            artifactId = artifactId.replace(project.name, mavenArtifactId)
-            
-            // workaround for https://github.com/gradle/gradle/issues/26091
-            val dokkaJar = tasks.register("${this.name}DokkaJar", Jar::class) {
-                group = JavaBasePlugin.DOCUMENTATION_GROUP
-                description = "Dokka builds javadoc jar"
-                archiveClassifier.set("javadoc")
-                from(tasks.named("dokkaHtml"))
-                archiveBaseName.set("${archiveBaseName.get()}-${this.name}")
-            }
-            artifact(dokkaJar)
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+}
 
-            pom {
-                name.set("$appleFrameworkName Kotlin Multiplatform SqlCipher/Sqlite")
-                description.set("Library for use of SqlCipher/Sqlite using the same Kotlin API on supported 64 bit platforms; Android IOS, Windows, Linux, MacOS")
+dokka {
+    moduleName.set("Kotlin Multiplatform SqlCipher/Sqlite")
+    dokkaPublications.html {
+        suppressInheritedMembers.set(true)
+        failOnWarning.set(true)
+    }
+    dokkaSourceSets.commonMain {
+        enableAndroidDocumentationLink
+        includes.from("$appleFrameworkName.md")
+    }
+}
+
+publishing {
+    publications.withType(MavenPublication::class) {
+        artifactId = artifactId.replace(project.name, mavenArtifactId)
+
+        // workaround for https://github.com/gradle/gradle/issues/26091
+        val dokkaJar = tasks.register("${this.name}DokkaJar", Jar::class) {
+            group = JavaBasePlugin.DOCUMENTATION_GROUP
+            description = "Dokka builds javadoc jar"
+            archiveClassifier.set("javadoc")
+            //from(dokka)
+            archiveBaseName.set("${archiveBaseName.get()}-${this.name}")
+        }
+        artifact(dokkaJar)
+
+        pom {
+            name.set("$appleFrameworkName Kotlin Multiplatform SqlCipher/Sqlite")
+            description.set("Library for use of SqlCipher/Sqlite using the same Kotlin API on supported 64 bit platforms; Android IOS, Windows, Linux, MacOS")
+            url.set(githubUrl)
+            licenses {
+                license {
+                    name.set("The Apache License, Version 2.0")
+                    url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                }
+            }
+            developers {
+                developer {
+                    id.set("oldguy")
+                    name.set("Steve Olson")
+                    email.set("skolson5903@gmail.com")
+                }
+            }
+            scm {
                 url.set(githubUrl)
-                licenses {
-                    license {
-                        name.set("The Apache License, Version 2.0")
-                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                    }
-                }
-                developers {
-                    developer {
-                        id.set("oldguy")
-                        name.set("Steve Olson")
-                        email.set("skolson5903@gmail.com")
-                    }
-                }
-                scm {
-                    url.set(githubUrl)
-                    connection.set("scm:git:git://git@github.com:${githubUri}.git")
-                    developerConnection.set("cm:git:ssh://git@github.com:${githubUri}.git")
-                }
+                connection.set("scm:git:git://git@github.com:${githubUri}.git")
+                developerConnection.set("cm:git:ssh://git@github.com:${githubUri}.git")
             }
         }
     }
@@ -403,9 +400,4 @@ signing {
 
 dependencies {
     implementation(libs.androidx.core.ktx)
-}
-
-// workaround
-task("testClasses").doLast {
-    println("workaround for Iguana change")
 }

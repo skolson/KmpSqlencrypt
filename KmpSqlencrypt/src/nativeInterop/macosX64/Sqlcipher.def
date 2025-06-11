@@ -4,5 +4,5 @@ noStringConversion = sqlite3_prepare_v2 sqlite3_prepare_v3
 
 compilerOpts = -DSQLITE_HAS_CODEC -DSQLCIPHER_CRYPTO_OPENSSL
 
-staticLibraries = libsqlcipher.a libcrypto.a
+staticLibraries = libsqlite3.a libcrypto.a
 libraryPaths = /Users/steve/Projects/KmpSqlencrypt/KmpSqlencrypt/src/nativeInterop/macosX64

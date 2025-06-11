@@ -1,5 +1,25 @@
 ## KmpSqlencrypt Change Log
 
+** 0.8.0 ** 2025-06
+
+- Kotlin 2.1.21
+- Coroutines 1.10.2
+- Atomicfu 0.27.0
+- datetime 0.6.2
+- com.ionspin.kotlin:bignum 0.3.10
+- SqlCipher 4.9.0
+- OpenSSL 3.5.0
+- CMake 4.0.2
+- com.oldguy.gradle.sqlcipher-openssl-build 0.5.1. Note: this version of the plugin handles multiple changes required by builds of SqlCipher 4.7.0 and later
+- Android NDK 28.1.13356709
+- Dokka 2.0.0
+- Android Gradle Plugin 8.5.2
+- Test manniodermaus 1.12.0.0
+- LinuxX64 native support
+- New dependency on io.github.skolson:kmp-io only for the common Charset support of UTF-16 (LE and BE) used with the text16 api in Sqlite3 
+- Removed redundant SqlCipherApi.kt files from the various native platform source trees, added it to nativeMain sourceset
+- SqlCipher 4.7.0 and later cinterop links now need _fcntl64_ and ___isoc23_strtol_ which are not available in the gcc dynamic link library libc.so, but are resolved by static library glibc.a. This was seen on Ubuntu 24.04 and ldd version 2.39.
+
 ** 0.7.1 ** 2024-03
 
 - kotlin 1.9.23

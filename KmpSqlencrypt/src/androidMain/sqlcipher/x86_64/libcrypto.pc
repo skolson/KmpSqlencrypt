@@ -1,13 +1,13 @@
-prefix=/usr/local
+prefix=/mnt/Projects/KmpSqlencrypt/KmpSqlencrypt/build/srcOpenssl/androidX64/openssl-openssl-3.5.0
 exec_prefix=${prefix}
-libdir=${exec_prefix}/lib
-includedir=${prefix}/include
-enginesdir=${libdir}/engines-3
-modulesdir=${libdir}/ossl-modules
+libdir=${exec_prefix}
+includedir=${prefix}/include ${prefix}/./include 
+enginesdir=${libdir}/engines
+modulesdir=${libdir}/providers
 
 Name: OpenSSL-libcrypto
 Description: OpenSSL cryptography library
-Version: 3.2.1
+Version: 3.5.0
 Libs: -L${libdir} -lcrypto
-Libs.private: -ldl -pthread 
-Cflags: -I${includedir}
+Libs.private: -ldl -pthread
+Cflags: -I${prefix}/include  -I${prefix}/./include 
