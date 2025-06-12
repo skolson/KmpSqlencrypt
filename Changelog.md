@@ -19,7 +19,8 @@
 - LinuxX64 native support
 - New dependency on io.github.skolson:kmp-io only for the common Charset support of UTF-16 (LE and BE) used with the text16 api in Sqlite3 
 - Removed redundant SqlCipherApi.kt files from the various native platform source trees, added it to nativeMain sourceset
-- SqlCipher 4.7.0 and later Linux cinterop links now need fcntl64 and __isoc23_strtol which are resolved at runtime. So the Linux Sqlcipher.def file specifies link options to ignore these being unresolved during builds.
+ 
+**Note:** SqlCipher 4.7.0 and later Linux cinterop links now need C runtime symbols "fcntl64" and "__isoc23_strtol" which are resolveble dynamically at runtime. So the Linux Sqlcipher.def file specifies link options to ignore these being unresolved during builds.
 
 ** 0.7.1 ** 2024-03
 
