@@ -4,7 +4,6 @@ import com.oldguy.database.SqlValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import kotlinx.io.files.SystemTemporaryDirectory
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -62,8 +61,7 @@ class BasicTestsLinux: SqlCipherTests() {
     @Test
     fun testEncryption1() {
         runBlocking {
-            val tmp = SystemTemporaryDirectory.name
-            testPasswordsAndUpgrade(tmp)
+            testPasswordsAndUpgrade("/tmp")
         }
     }
 }

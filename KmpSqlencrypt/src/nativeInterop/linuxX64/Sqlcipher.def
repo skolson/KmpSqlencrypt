@@ -3,6 +3,7 @@ headers = sqlite3.h
 noStringConversion = sqlite3_prepare_v2 sqlite3_prepare_v3
 
 compilerOpts = -DSQLITE_HAS_CODEC -DSQLCIPHER_CRYPTO_OPENSSL
-
-staticLibraries = libsqlite3.a libcrypto.a libc.a
-libraryPaths = /lib/x86_64-linux-gnu
+linkerOpts.linux = --unresolved-symbols=ignore-all --allow-shlib-undefined
+staticLibraries = libsqlite3.a libcrypto.a
+# The linker options allow symbols fcntl64 and __iosct23_strtol to be unresolved at link time. They are dynamically resolved
+# by gcc libs at run time.

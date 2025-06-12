@@ -15,7 +15,7 @@ import kotlin.test.DefaultAsserter.fail
 import kotlin.test.assertNotNull
 
 /**
- * Extensio function retuns a new LocalDateTime from the current instance, with nanoseconds value truncated to the
+ * Extension function returns a new LocalDateTime from the current instance, with nanoseconds value truncated to the
  * millisecond. Since sqlite currently only supports
  * milliseconds, instances of this function will be exactly equal once stored in sqlite and then retrieved. Use when the
  * implicit truncation of sub-milliseconds is not desired, as in Unit Tests etc.
@@ -33,8 +33,8 @@ fun LocalDateTime.truncateToMillisecond(): LocalDateTime {
 }
 
 open class SqlCipherTests {
-    val sqlCipherVersion = "4.5.6 community"
-    val sqlite3Version = "3.44.2"
+    val sqlCipherVersion = "4.9.0 community"
+    val sqlite3Version = "3.49.2"
     val testDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).truncateToMillisecond()
     val testString = "Any text1 4"
     val testString2 = "Other text"
