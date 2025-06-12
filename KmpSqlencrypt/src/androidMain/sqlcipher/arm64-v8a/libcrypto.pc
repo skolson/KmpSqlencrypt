@@ -1,4 +1,4 @@
-prefix=/mnt/Projects/KmpSqlencrypt/KmpSqlencrypt/build/srcOpenssl/androidArm64/openssl-openssl-3.5.0
+prefix=/Users/steve/Projects/KmpSqlencrypt/KmpSqlencrypt/build/srcOpenssl/androidArm64/openssl-openssl-3.5.0
 exec_prefix=${prefix}
 libdir=${exec_prefix}
 includedir=${prefix}/include ${prefix}/./include 

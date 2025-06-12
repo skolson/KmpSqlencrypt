@@ -2,9 +2,11 @@ import org.gradle.kotlin.dsl.signing
 import com.oldguy.gradle.OpensslExtension
 import com.oldguy.gradle.SqlcipherExtension
 import com.oldguy.gradle.BuildType
+import com.oldguy.gradle.HostOs
 import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
+import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultCInteropSettings
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 
@@ -56,8 +58,12 @@ sqlcipher {
         BuildType.macosArm64 to SqlcipherExtension.macOsCompilerOptions
     )
 
-    //builds(BuildType.linuxBuildTypes)
-    builds(BuildType.linuxX64)
+    when (HostOs.query()) {
+        HostOs.LINUX -> builds(BuildType.linuxBuildTypes)
+        HostOs.WINDOWS -> builds(BuildType.windowsBuildTypes)
+        HostOs.MAC -> builds(BuildType.appleBuildTypes)
+    }
+
     val abiMap = mapOf(
         BuildType.androidX64 to "x86_64",
         BuildType.androidArm64 to "arm64-v8a"
@@ -80,7 +86,7 @@ sqlcipher {
         android {
             linuxSdkLocation = "/mnt/Android"
             windowsSdkLocation = "D:\\Android\\sdk"
-            macosSdkLocation = "/Users/steve/Library/Android/sdk"
+            macosSdkLocation = "/Users/steve/Library/Android"
             ndkVersion = ndkVersionValue
             minimumSdk = androidMinSdk
         }
@@ -194,18 +200,24 @@ kotlin {
         xcodeConfigurationToNativeBuildType["CUSTOM_RELEASE"] = NativeBuildType.RELEASE
     }
 
-    linuxX64 {
-        val main by this.compilations.getting {
-            val dirName = "linuxX64"
-            val sqlcipherInterop by cinterops.creating {
-                defFile(nativeInterop.resolve("$dirName/Sqlcipher.def"))
-                packageName(kmpPackageName)
-                includeDirs.apply {
-                    allHeaders(nativeInterop.resolve(dirName))
+    fun DefaultCInteropSettings.cinteropConfig(dirName: String) {
+        defFile(nativeInterop.resolve("$dirName/Sqlcipher.def"))
+        packageName(kmpPackageName)
+        includeDirs.apply {
+            allHeaders(nativeInterop.resolve(dirName))
+        }
+        compilerOpts += listOf(
+            "-I$nativeInteropPath/$dirName",
+        )
+        extraOpts("-libraryPath", "$nativeInteropPath/$dirName")
+    }
+
+    if (OperatingSystem.current().isLinux) {
+        linuxX64 {
+            val main by this.compilations.getting {
+                val sqlcipherInterop by cinterops.creating {
+                    cinteropConfig("linuxX64")
                 }
-                compilerOpts += listOf(
-                    "-I$nativeInteropPath/$dirName",
-                )
             }
         }
     }
@@ -220,16 +232,8 @@ kotlin {
             }
         }
         val main by this.compilations.getting {
-            val dirName = "macosX64"
             val sqlcipherInterop by cinterops.creating {
-                defFile(nativeInterop.resolve("$dirName/Sqlcipher.def"))
-                packageName(kmpPackageName)
-                includeDirs.apply {
-                    allHeaders(nativeInterop.resolve(dirName))
-                }
-                compilerOpts += listOf(
-                    "-I$nativeInteropPath/$dirName"
-                )
+                cinteropConfig("macosX64")
             }
         }
     }
@@ -242,16 +246,8 @@ kotlin {
             }
         }
         val main by this.compilations.getting {
-            val dirName = "macosArm64"
             val sqlcipherInterop by cinterops.creating {
-                defFile(nativeInterop.resolve("$dirName/Sqlcipher.def"))
-                packageName(kmpPackageName)
-                includeDirs.apply {
-                    allHeaders(nativeInterop.resolve(dirName))
-                }
-                compilerOpts += listOf(
-                    "-I$nativeInteropPath/$dirName"
-                )
+                cinteropConfig("macosArm64")
             }
         }
     }
@@ -265,12 +261,7 @@ kotlin {
         }
         val main by this.compilations.getting {
             val sqlcipherInterop by cinterops.creating {
-                defFile(nativeInterop.resolve("iosX64/Sqlcipher.def"))
-                packageName(kmpPackageName)
-                includeDirs.apply {
-                    allHeaders(nativeInterop.resolve("iosX64"))
-                }
-                compilerOpts += listOf("-I$nativeInteropPath/iosX64")
+                cinteropConfig("iosX64")
             }
         }
     }
@@ -286,12 +277,7 @@ kotlin {
         }
         val main by this.compilations.getting {
             val sqlcipherInterop by cinterops.creating {
-                defFile(nativeInterop.resolve("iosArm64/Sqlcipher.def"))
-                packageName(kmpPackageName)
-                includeDirs.apply {
-                    allHeaders(nativeInterop.resolve("iosArm64"))
-                }
-                compilerOpts += listOf("-I$nativeInteropPath/iosArm64")
+                cinteropConfig("iosArm64")
             }
         }
     }

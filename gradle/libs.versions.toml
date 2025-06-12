@@ -28,7 +28,7 @@ androidxTestCore = "1.6.1"
 androidxTestRunner = "1.6.2"
 androidxTestExt = "1.2.1"
 versionCheck = "0.52.0"
-testMannodermausPlugin = "1.12.2.0"
+testMannodermausPlugin = "1.13.0.0"
 
 [libraries]
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinCoroutines" }
