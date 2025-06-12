@@ -87,7 +87,7 @@ class SqliteSystemCatalog(val db: SqlCipherDatabase): SystemCatalog() {
 
     private val queryPrefix = "select * from $catalogTableName WHERE type ="
     private val queryTablesSql = "$queryPrefix 'table' AND name NOT LIKE 'sqlite_%';"
-    private val queryIndexesSql = "$queryPrefix 'index';"
+    private val queryIndexesSql = "$queryPrefix 'index' AND sql IS NOT NULL;"
 
     override suspend fun retrieveTables() {
         db.usingSelect(queryTablesSql) { _: Int, row: SqlValues ->

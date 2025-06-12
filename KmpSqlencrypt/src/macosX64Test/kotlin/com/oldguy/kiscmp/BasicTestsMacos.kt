@@ -19,7 +19,6 @@ class BasicTestsMacos: SqlCipherTests() {
     @Test
     fun testOpenClose() {
         db = createDb
-        assertTrue("nativeMemoryModel", isExperimentalMM())
         if (mapBooleanYN)
             SqlValue.BooleanValue.mapping("N", "Y")
         runTest {
