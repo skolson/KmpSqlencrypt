@@ -4,12 +4,13 @@
 
 - Kotlin 2.1.21
 - Coroutines 1.10.2
-- Atomicfu 0.27.0
+- Atomicfu 0.28.0
 - datetime 0.6.2
 - com.ionspin.kotlin:bignum 0.3.10
 - SqlCipher 4.9.0
 - OpenSSL 3.5.0
 - CMake 4.0.2
+- Gradle 8.14.2
 - com.oldguy.gradle.sqlcipher-openssl-build 0.5.1. Note: this version of the plugin handles multiple changes required by builds of SqlCipher 4.7.0 and later
 - Android NDK 28.1.13356709
 - Dokka 2.0.0
