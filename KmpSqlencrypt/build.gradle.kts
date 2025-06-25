@@ -24,14 +24,10 @@ plugins {
     id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.5.1"
 }
 
-repositories {
-    google()
-    mavenCentral()
-}
-
-val mavenArtifactId = "kmp-sqlencrypt"
+val publishDomain = "io.github.skolson"
+val mavenArtifactId = name
 val appleFrameworkName = "KmpSqlencrypt"
-group = "com.oldguy"
+group = publishDomain
 version = libs.versions.appVersion.get()
 
 val ndkVersionValue = libs.versions.androidNdk.get()
@@ -186,6 +182,7 @@ kotlin {
     }
 
     cocoapods {
+        name = appleFrameworkName
         ios.deploymentTarget = iosMinSdk
         summary = "Kotlin Multiplatform API for SqlCipher/OpenSSL"
         homepage = githubUrl

@@ -5,7 +5,7 @@
 - Kotlin 2.1.21
 - Coroutines 1.10.2
 - Atomicfu 0.28.0
-- datetime 0.6.2
+- datetime 0.7.0
 - com.ionspin.kotlin:bignum 0.3.10
 - SqlCipher 4.9.0
 - OpenSSL 3.5.0

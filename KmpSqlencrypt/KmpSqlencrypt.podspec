@@ -17,7 +17,7 @@ Pod::Spec.new do |spec|
         Kotlin framework 'KmpSqlencrypt' doesn't exist yet, so a proper Xcode project can't be generated.
         'pod install' should be executed after running ':generateDummyFramework' Gradle task:
 
-            ./gradlew :KmpSqlencrypt:generateDummyFramework
+            ./gradlew :kmp-sqlencrypt:generateDummyFramework
 
         Alternatively, proper pod installation is performed during Gradle sync in the IDE (if Podfile location is set)"
     end
@@ -27,7 +27,7 @@ Pod::Spec.new do |spec|
     }
                 
     spec.pod_target_xcconfig = {
-        'KOTLIN_PROJECT_PATH' => ':KmpSqlencrypt',
+        'KOTLIN_PROJECT_PATH' => ':kmp-sqlencrypt',
         'PRODUCT_MODULE_NAME' => 'KmpSqlencrypt',
     }
                 
