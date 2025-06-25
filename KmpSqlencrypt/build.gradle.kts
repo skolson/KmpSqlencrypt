@@ -1,4 +1,5 @@
-import org.gradle.kotlin.dsl.signing
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.oldguy.gradle.OpensslExtension
 import com.oldguy.gradle.SqlcipherExtension
 import com.oldguy.gradle.BuildType
@@ -17,18 +18,18 @@ plugins {
         alias(it.kotlinx.atomicfu)
         alias(it.dokka)
         alias(it.versionCheck)
+        alias(it.maven.publish.vannik)
     }
     kotlin("native.cocoapods")
-    id("maven-publish")
-    id("signing")
     id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.5.1"
 }
 
 val publishDomain = "io.github.skolson"
 val mavenArtifactId = name
+val appVersion = libs.versions.appVersion.get()
 val appleFrameworkName = "KmpSqlencrypt"
 group = publishDomain
-version = libs.versions.appVersion.get()
+version = appVersion
 
 val ndkVersionValue = libs.versions.androidNdk.get()
 val androidMinSdk = libs.versions.androidSdkMinimum.get().toInt()
@@ -153,19 +154,6 @@ android {
         androidTestImplementation(libs.bundles.androidx.test)
     }
 }
-
-dokka {
-    moduleName.set("Kotlin Multiplatform SqlCipher/Sqlite")
-    dokkaPublications.html {
-        suppressInheritedMembers.set(true)
-        failOnWarning.set(true)
-    }
-    dokkaSourceSets.commonMain {
-        enableAndroidDocumentationLink
-        includes.from("$appleFrameworkName.md")
-    }
-}
-
 
 val githubUri = "skolson/$appleFrameworkName"
 val githubUrl = "https://github.com/$githubUri"
@@ -336,49 +324,39 @@ dokka {
     }
 }
 
-publishing {
-    publications.withType(MavenPublication::class) {
-        artifactId = artifactId.replace(project.name, mavenArtifactId)
+mavenPublishing {
+    coordinates(publishDomain, name, appVersion)
+    configure(
+        KotlinMultiplatform(
+            JavadocJar.Dokka("dokkaGeneratePublicationHtml"),
+            true,
+            listOf("debug", "release")
+        )
+    )
 
-        // workaround for https://github.com/gradle/gradle/issues/26091
-        val dokkaJar = tasks.register("${this.name}DokkaJar", Jar::class) {
-            group = JavaBasePlugin.DOCUMENTATION_GROUP
-            description = "Dokka builds javadoc jar"
-            archiveClassifier.set("javadoc")
-            //from(dokka)
-            archiveBaseName.set("${archiveBaseName.get()}-${this.name}")
+    pom {
+        name.set("$appleFrameworkName Kotlin Multiplatform SqlCipher/Sqlite")
+        description.set("Library for use of SqlCipher/Sqlite using the same Kotlin API on supported 64 bit platforms; Android IOS, Windows, Linux, MacOS")
+        url.set(githubUrl)
+        licenses {
+            license {
+                name.set("The Apache License, Version 2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+            }
         }
-        artifact(dokkaJar)
-
-        pom {
-            name.set("$appleFrameworkName Kotlin Multiplatform SqlCipher/Sqlite")
-            description.set("Library for use of SqlCipher/Sqlite using the same Kotlin API on supported 64 bit platforms; Android IOS, Windows, Linux, MacOS")
+        developers {
+            developer {
+                id.set("oldguy")
+                name.set("Steve Olson")
+                email.set("skolson5903@gmail.com")
+            }
+        }
+        scm {
             url.set(githubUrl)
-            licenses {
-                license {
-                    name.set("The Apache License, Version 2.0")
-                    url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                }
-            }
-            developers {
-                developer {
-                    id.set("oldguy")
-                    name.set("Steve Olson")
-                    email.set("skolson5903@gmail.com")
-                }
-            }
-            scm {
-                url.set(githubUrl)
-                connection.set("scm:git:git://git@github.com:${githubUri}.git")
-                developerConnection.set("cm:git:ssh://git@github.com:${githubUri}.git")
-            }
+            connection.set("scm:git:git://git@github.com:${githubUri}.git")
+            developerConnection.set("cm:git:ssh://git@github.com:${githubUri}.git")
         }
     }
-}
-
-signing {
-    isRequired = false
-    sign(publishing.publications)
 }
 
 dependencies {

@@ -11,6 +11,7 @@ kotlinxIo = "0.7.0"
 androidxCoreKtx = "1.16.0"
 bigDecimal = "0.3.10"
 kmpIo = "0.1.9"
+vannikTech = "0.33.0"
 
 sqlcipher = "4.9.0"
 openssl = "3.5.0"
@@ -53,6 +54,7 @@ androidx-test = [ "androidx-test-core", "androidx-test-runner", "androidx-test-e
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinx-atomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }
+maven-publish-vannik = { id = "com.vanniktech.maven.publish", version.ref = "vannikTech" }
 
 android-junit5 = { id = "de.mannodermaus.android-junit5", version.ref = "testMannodermausPlugin"}
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokkaPlugin" }

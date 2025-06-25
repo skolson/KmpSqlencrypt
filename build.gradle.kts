@@ -4,6 +4,7 @@ plugins {
         alias(it.android.library) apply false
         alias(it.kotlinx.atomicfu) apply false
         alias(it.android.junit5) apply false
+        alias(it.maven.publish.vannik) apply false
     }
 }
 
