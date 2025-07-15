@@ -23,11 +23,14 @@ Supported platforms (KMM targets) all 64 bit only:
 
 - Android Arm, X64
 - linuxX64
+- linuxArm64
 - macosX64
 - iosArm64
 - iosX64 Simulator
+- iosArm64Simulator
 
 ## Releases
+- Tag 0.8.1 is for SqlCipher 4.9.0, which uses Sqlite 3.49.2 and Kotlin 2.2.0. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.5.1. See the gradle.build.kts files for details.
 - Tag 0.8.0 is for SqlCipher 4.9.0, which uses Sqlite 3.49.2 and Kotlin 2.1.21. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.5.0. See the gradle.build.kts files for details.
 - Tag 0.5.0 is for SqlCipher 4.5.4, which uses Sqlite 3.41.2 and Kotlin 1.8.21. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.1.0. See the gradle.build.kts files for details.
 - Tag 0.4.5 is for SqlCipher 4.5.2, which uses Sqlite 3.36.0. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.0.5. See the gradle.build.kts files for details.
@@ -38,7 +41,7 @@ Supported platforms (KMM targets) all 64 bit only:
 Dependencies are intentionally kept to a minimum and only using Kotlin multi-platform libraries.
 
 - BigDecimal support using  [ionspin BigDecimal](https://github.com/skolson/kotlin-multiplatform-bignum)
-- Date and DateTime support using [Klock](https://github.com/korlibs/klock). Intent is to replace or add datetime support using Kotlinx-datetime once it has multi-platform support for parsing/formatting from/to strings built-in. As of this writing that's not there YET :-)
+- Date and DateTime support using kotlinx-datetime
 - Kotlin  
 - Kotlin atomicfu
  
@@ -59,7 +62,7 @@ Define the library as a gradle dependency:
 
 ```
     dependencies {
-        implementation("com.oldguy.kmpsc:kmp-sqlencrypt:0.4.1")
+        implementation("com.oldguy.kmpsc:kmp-sqlencrypt:0.8.1")
     }  
 ```
 

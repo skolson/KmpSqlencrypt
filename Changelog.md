@@ -1,5 +1,19 @@
 ## KmpSqlencrypt Change Log
 
+** 0.8.1 in progress
+
+- Gradle 8.14.3
+- Kotlin 2.2.0
+- atomicfu 0.29.0
+- kotlinx-datetime 0.7.1
+- kotlinx-io 0.8.0
+- kmp-io 0.2.2
+- openssl 3.5.1
+- sqlcipher build plugin 0.5.2
+- linuxArm64 target supported
+
+No functional changes/fixes
+
 ** 0.8.0 ** 2025-06
 
 - Kotlin 2.1.21

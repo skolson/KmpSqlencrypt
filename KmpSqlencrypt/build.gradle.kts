@@ -15,13 +15,13 @@ plugins {
     libs.plugins.also {
         alias(it.android.library)
         alias(it.kotlin.multiplatform)
+        alias(it.sqlcipher.build)
         alias(it.kotlinx.atomicfu)
         alias(it.dokka)
         alias(it.versionCheck)
         alias(it.maven.publish.vannik)
     }
     kotlin("native.cocoapods")
-    id("com.oldguy.gradle.sqlcipher-openssl-build") version "0.5.1"
 }
 
 val publishDomain = "io.github.skolson"
@@ -49,6 +49,7 @@ sqlcipher {
         BuildType.androidX64 to SqlcipherExtension.androidCompilerOptions,
         BuildType.androidArm64 to SqlcipherExtension.androidCompilerOptions,
         BuildType.linuxX64 to SqlcipherExtension.androidCompilerOptions,
+        BuildType.linuxArm64 to SqlcipherExtension.androidCompilerOptions,
         BuildType.iosX64 to SqlcipherExtension.iosCompilerOptions,
         BuildType.iosArm64 to SqlcipherExtension.iosCompilerOptions,
         BuildType.macosX64 to SqlcipherExtension.macOsCompilerOptions,
@@ -202,6 +203,13 @@ kotlin {
             val main by this.compilations.getting {
                 val sqlcipherInterop by cinterops.creating {
                     cinteropConfig("linuxX64")
+                }
+            }
+        }
+        linuxArm64 {
+            val main by this.compilations.getting {
+                val sqlcipherInterop by cinterops.creating {
+                    cinteropConfig("linuxArm64")
                 }
             }
         }

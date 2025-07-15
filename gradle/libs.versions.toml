@@ -1,20 +1,21 @@
 [versions]
-appVersion = "0.8.0"
+appVersion = "0.8.1"
 
-androidGradlePlugin = "8.12.0-alpha06"
+androidGradlePlugin = "8.12.0-alpha08"
 
-kotlin = "2.1.21"
+kotlin = "2.2.0"
 kotlinCoroutines = "1.10.2"
-kotlinxAtomicfu = "0.28.0"
-kotlinxDatetime = "0.7.0"
-kotlinxIo = "0.7.0"
+kotlinxAtomicfu = "0.29.0"
+kotlinxDatetime = "0.7.1"
+kotlinxIo = "0.8.0"
 androidxCoreKtx = "1.16.0"
 bigDecimal = "0.3.10"
-kmpIo = "0.1.9"
+kmpIo = "0.2.2"
 vannikTech = "0.33.0"
 
 sqlcipher = "4.9.0"
-openssl = "3.5.0"
+openssl = "3.5.1"
+sqlcipherBuildPlugin = "0.5.2"
 
 androidBuildTools = "36.0.0"
 androidSdk = "36"
@@ -29,7 +30,7 @@ androidxTestCore = "1.6.1"
 androidxTestRunner = "1.6.2"
 androidxTestExt = "1.2.1"
 versionCheck = "0.52.0"
-testMannodermausPlugin = "1.13.0.0"
+testMannodermausPlugin = "1.13.1.0"
 
 [libraries]
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinCoroutines" }
@@ -55,6 +56,7 @@ android-library = { id = "com.android.library", version.ref = "androidGradlePlug
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinx-atomicfu = { id = "org.jetbrains.kotlin.plugin.atomicfu", version.ref = "kotlin" }
 maven-publish-vannik = { id = "com.vanniktech.maven.publish", version.ref = "vannikTech" }
+sqlcipher-build = { id = "com.oldguy.gradle.sqlcipher-openssl-build", version.ref = "sqlcipherBuildPlugin" }
 
 android-junit5 = { id = "de.mannodermaus.android-junit5", version.ref = "testMannodermausPlugin"}
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokkaPlugin" }
