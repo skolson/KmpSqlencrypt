@@ -1,6 +1,6 @@
 ## KmpSqlencrypt Change Log
 
-** 0.8.1 in progress
+** 0.8.1 (2025-07-15)
 
 - Gradle 8.14.3
 - Kotlin 2.2.0

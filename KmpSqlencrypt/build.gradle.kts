@@ -84,7 +84,7 @@ sqlcipher {
         android {
             linuxSdkLocation = "/mnt/Android"
             windowsSdkLocation = "D:\\Android\\sdk"
-            macosSdkLocation = "/Users/steve/Library/Android"
+            macosSdkLocation = "/Volumes/mnt/Library/Android"
             ndkVersion = ndkVersionValue
             minimumSdk = androidMinSdk
         }
