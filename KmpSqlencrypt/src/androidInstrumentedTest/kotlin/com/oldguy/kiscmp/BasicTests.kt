@@ -1,7 +1,10 @@
 package com.oldguy.kiscmp
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
+import com.oldguy.common.io.File
 import com.oldguy.database.SqlValue
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlinx.coroutines.test.runTest
@@ -55,6 +58,14 @@ class AndroidJunitTests: SqlCipherTests() {
                 assertEquals(SqliteEncoding.Utf16LittleEndian, db.queryEncoding())
                 allTests()
             }
+        }
+    }
+
+    @Test
+    fun testEncryption1() {
+        File.appContext = getInstrumentation().targetContext.applicationContext
+        runBlocking {
+            testPasswordsAndUpgrade(File.tempDirectoryFile().fullPath)
         }
     }
 }

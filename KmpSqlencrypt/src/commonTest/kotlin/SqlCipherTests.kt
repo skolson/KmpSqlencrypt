@@ -5,7 +5,7 @@ import com.oldguy.database.ColumnType
 import com.oldguy.database.Passphrase
 import com.oldguy.database.SqlValue
 import com.oldguy.database.SqlValues
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -13,6 +13,7 @@ import kotlin.test.DefaultAsserter.assertEquals
 import kotlin.test.DefaultAsserter.assertTrue
 import kotlin.test.DefaultAsserter.fail
 import kotlin.test.assertNotNull
+import kotlin.time.ExperimentalTime
 
 /**
  * Extension function returns a new LocalDateTime from the current instance, with nanoseconds value truncated to the
@@ -24,7 +25,7 @@ fun LocalDateTime.truncateToMillisecond(): LocalDateTime {
     return LocalDateTime(
         year,
         month,
-        dayOfMonth,
+        day,
         hour,
         minute,
         second,
@@ -32,6 +33,7 @@ fun LocalDateTime.truncateToMillisecond(): LocalDateTime {
     )
 }
 
+@OptIn(ExperimentalTime::class)
 open class SqlCipherTests {
     val sqlCipherVersion = "4.9.0 community"
     val sqlite3Version = "3.49.2"
