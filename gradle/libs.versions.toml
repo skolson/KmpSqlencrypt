@@ -11,7 +11,7 @@ kotlinxIo = "0.8.0"
 androidxCoreKtx = "1.16.0"
 bigDecimal = "0.3.10"
 kmpIo = "0.2.2"
-vannikTech = "0.33.0"
+vannikTech = "0.34.0"
 
 sqlcipher = "4.9.0"
 openssl = "3.5.1"
