@@ -1,5 +1,10 @@
 ## KmpSqlencrypt Change Log
 
+** 0.9.0 (2025-08)
+
+- Gradle 9.0.0
+- iosSimulatorArm64 target
+
 ** 0.8.1 (2025-07-15)
 
 - Gradle 8.14.3

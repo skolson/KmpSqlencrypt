@@ -30,6 +30,7 @@ Supported platforms (KMM targets) all 64 bit only:
 - iosArm64Simulator
 
 ## Releases
+- Tag 0.9.0 is for SqlCipher 4.9.0, which uses Sqlite 3.49.2 and Kotlin 2.2.0. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.5.1. See the gradle.build.kts files for details.
 - Tag 0.8.1 is for SqlCipher 4.9.0, which uses Sqlite 3.49.2 and Kotlin 2.2.0. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.5.1. See the gradle.build.kts files for details.
 - Tag 0.8.0 is for SqlCipher 4.9.0, which uses Sqlite 3.49.2 and Kotlin 2.1.21. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.5.0. See the gradle.build.kts files for details.
 - Tag 0.5.0 is for SqlCipher 4.5.4, which uses Sqlite 3.41.2 and Kotlin 1.8.21. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.1.0. See the gradle.build.kts files for details.
@@ -62,7 +63,7 @@ Define the library as a gradle dependency:
 
 ```
     dependencies {
-        implementation("com.oldguy.kmpsc:kmp-sqlencrypt:0.8.1")
+        implementation("com.oldguy.kmpsc:kmp-sqlencrypt:0.9.0")
     }  
 ```
 
@@ -102,32 +103,7 @@ Kotlin Native code and CInterop are used for all Apple implementations. JVM and 
 
 ## Releases
 
-Version 0.5.0 is built with:
-- Kotlin 1.8.21
-- OpenSSL 3.1.0
-- SqlCipher 4.5.4
-- Android NDK 25.2.9519653. Minimum SDK 24, target SDK 33
-- IOS minimum version 14.0
-- MacOSX Big Sur or later, Xcode 13 or later
-- Cocoapods
-
-Version 0.4.5 is built with:
-- Kotlin 1.7.10
-- OpenSSL 3.0.5
-- SqlCipher 4.5.2
-- Android NDK 25.0.8775105. Minimum SDK 24, target SDK 31
-- IOS minimum version 14.0
-- MacOSX Big Sur or later, Xcode 13 or later
-- Cocoapods
-  
-Version 0.4.4 is built with:
-- Kotlin 1.6.10
-- OpenSSL 3.0.1  
-- SqlCipher 4.5.0
-- Android NDK 24.0.7956693. Minimum SDK 24, target SDK 31
-- IOS minimum version 14.0
-- MacOSX Big Sur or later, Xcode 13 or later
-- Cocoapods 
+See Changelog.md for details on each release 
 
 ## Usage
 
@@ -137,7 +113,7 @@ Kotlin projects can use with new gradle dependency:
 
 ```
     dependencies {
-        implementation("com.oldguy:kmp-sqlencrypt:0.5.0")
+        implementation("com.oldguy:kmp-sqlencrypt:0.9.0")
     }
 ```
 
@@ -172,7 +148,7 @@ Basic usage steps for any platform (with details for each below) are:
 
 ### Configuration
 
-Use a pretty simple DSL-like syntax to create and configure a database instance. Parameters that can be configured on the new instance include:
+Use a DSL-like syntax to create and configure a database instance. Parameters that can be configured on the new instance include:
 - **createOk** defaults to false. False indicates that if the path specified at open time is not found, the open fails. True indicates that if the path specified is not found, a new file should be created.
 - **encoding** defaults to SqliteEncoding.Utf_8. This is only useful if createOk = true and a new database is created.  Immediately after a new database is created, causes a pragma to be executed that sets the encoding to use within Sqlite.  As per Sqlite doc, this can only be set at create time.
 - **readOnly** defaults to false. Set to true if changes to the database are to be disabled.
@@ -298,8 +274,8 @@ Since Sqlite is by design not type safe, conventions have to be followed for som
 There's a bunch more helpers and other stuff that is yet to be documented, but above are the basics.  If this library turns out to be interesting to **anyone** :-), the doc will be expanded.
 
 ## Internals
-Android and JVM-based platforms access the native libraries through a thin JNI layer written in C++. There is minimal logic in C++. For other platforms, Kotlin Native is used. Since the original stuff was written Kotlin now supports native Android, so likely should be able to eliminate the JNI. But the current Android implementation is production quality, so it remains JNI for now. 
+Android and JVM-based platforms access the native libraries through a thin JNI layer written in C++. There is minimal logic in C++. For other platforms, Kotlin Native is used. 
 
-[Github IonSpin](https://github.com/ionspin/kotlin-multiplatform-bignum) library is used for BigDecimal and BigInteger support is used for the unlimited precision stuff. If/when Kotlin Multi-platform releases BigDecimal support, this will be revisted.
-
-Klock library is used for multi-platform Date and DateTime support. Once kotlinx.datetime releases support for formatting/parsing of at least ISO datetime formats, this will be revisited.  
+[Github IonSpin](https://github.com/ionspin/kotlin-multiplatform-bignum) library provides BigDecimal and BigInteger support for numbers with unlimited precision, stored in Sqlite as Strings in a format that CAST can use (with possible precision loss). If/when Kotlin Multi-platform releases BigDecimal support, use of Ionspin will be revisited. See SqlValue subclass SqlBigDecimal for details.
+ 
+kotlinx.datetime is used for date and datetime types. Best practice is to store/retrieve serialized Instance objects (no time zone info). Default format is ISO 8601. See SqlValue subclasses SqlDate and SqlDateTime for details.

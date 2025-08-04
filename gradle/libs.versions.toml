@@ -1,7 +1,7 @@
 [versions]
-appVersion = "0.8.1"
+appVersion = "0.9.0"
 
-androidGradlePlugin = "8.12.0-alpha09"
+androidGradlePlugin = "8.13.0-alpha03"
 
 kotlin = "2.2.0"
 kotlinCoroutines = "1.10.2"
@@ -15,7 +15,7 @@ vannikTech = "0.33.0"
 
 sqlcipher = "4.9.0"
 openssl = "3.5.1"
-sqlcipherBuildPlugin = "0.5.2"
+sqlcipherBuildPlugin = "0.5.3"
 
 androidBuildTools = "36.0.0"
 androidSdk = "36"

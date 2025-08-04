@@ -52,6 +52,7 @@ sqlcipher {
         BuildType.linuxArm64 to SqlcipherExtension.androidCompilerOptions,
         BuildType.iosX64 to SqlcipherExtension.iosCompilerOptions,
         BuildType.iosArm64 to SqlcipherExtension.iosCompilerOptions,
+        BuildType.iosSimulatorArm64 to SqlcipherExtension.iosCompilerOptions,
         BuildType.macosX64 to SqlcipherExtension.macOsCompilerOptions,
         BuildType.macosArm64 to SqlcipherExtension.macOsCompilerOptions
     )
@@ -89,7 +90,7 @@ sqlcipher {
             minimumSdk = androidMinSdk
         }
         apple {
-            sdkVersion = "16"
+            sdkVersion = "18"
             sdkVersionMinimum = iosMinSdk
         }
     }
@@ -271,6 +272,20 @@ kotlin {
         val main by this.compilations.getting {
             val sqlcipherInterop by cinterops.creating {
                 cinteropConfig("iosArm64")
+            }
+        }
+    }
+    iosSimulatorArm64 {
+        binaries {
+            framework {
+                baseName = appleFrameworkName
+                appleXcf.add(this)
+                isStatic = true
+            }
+        }
+        val main by this.compilations.getting {
+            val sqlcipherInterop by cinterops.creating {
+                cinteropConfig("iosSimulatorArm64")
             }
         }
     }
