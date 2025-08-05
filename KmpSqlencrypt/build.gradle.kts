@@ -5,8 +5,6 @@ import com.oldguy.gradle.SqlcipherExtension
 import com.oldguy.gradle.BuildType
 import com.oldguy.gradle.HostOs
 import org.gradle.internal.os.OperatingSystem
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultCInteropSettings
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
@@ -102,6 +100,13 @@ sqlcipher {
     }
 }
 
+val javaVersion = JavaLanguageVersion.of(libs.versions.java.get().toInt())
+java {
+    toolchain {
+        languageVersion.set(javaVersion)
+    }
+}
+
 android {
     compileSdk = androidTargetSdkVersion
     ndkVersion = ndkVersionValue
@@ -161,14 +166,12 @@ val githubUri = "skolson/$appleFrameworkName"
 val githubUrl = "https://github.com/$githubUri"
 
 kotlin {
+    jvmToolchain {
+        languageVersion = javaVersion
+    }
+
     androidTarget {
-        java.targetCompatibility = JavaVersion.VERSION_17
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
         publishLibraryVariants("release", "debug")
-        mavenPublication {
-            artifactId = artifactId.replace(project.name, mavenArtifactId)
-        }
     }
 
     cocoapods {
@@ -199,19 +202,17 @@ kotlin {
         extraOpts("-libraryPath", "$nativeInteropPath/$dirName")
     }
 
-    if (OperatingSystem.current().isLinux) {
-        linuxX64 {
-            val main by this.compilations.getting {
-                val sqlcipherInterop by cinterops.creating {
-                    cinteropConfig("linuxX64")
-                }
+    linuxX64 {
+        val main by this.compilations.getting {
+            val sqlcipherInterop by cinterops.creating {
+                cinteropConfig("linuxX64")
             }
         }
-        linuxArm64 {
-            val main by this.compilations.getting {
-                val sqlcipherInterop by cinterops.creating {
-                    cinteropConfig("linuxArm64")
-                }
+    }
+    linuxArm64 {
+        val main by this.compilations.getting {
+            val sqlcipherInterop by cinterops.creating {
+                cinteropConfig("linuxArm64")
             }
         }
     }
@@ -297,7 +298,6 @@ kotlin {
                 implementation(libs.kotlinx.datetime)
                 implementation(libs.bigDecimal)
                 implementation(libs.kotlinx.atomicfu)
-                implementation(libs.kmp.io)
             }
         }
         val commonTest by getting {
@@ -315,16 +315,25 @@ kotlin {
             }
         }
         val androidInstrumentedTest by getting {
+            dependsOn(commonTest)
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation(libs.junit4)
                 implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.kotlinx.coroutines.test)
+                implementation(libs.kmp.io)
+            }
+        }
+        val nativeMain by getting {
+            dependencies {
+                implementation(libs.kmp.io)
             }
         }
         val nativeTest by getting {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.kotlinx.coroutines.test)
                 implementation(libs.kotlinx.io.core)
             }
         }

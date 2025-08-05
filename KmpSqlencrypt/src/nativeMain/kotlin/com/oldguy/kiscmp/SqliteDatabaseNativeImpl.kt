@@ -11,8 +11,8 @@ import kotlin.experimental.ExperimentalNativeApi
 /**
  * All native implementations supply their own cinterop setup using their own classes and cinterop
  * configs.  Since they all use the same Sqlite API, they can all share this implementation. It will then
- * be compiled and linked as apporpriate for each target. This minimizes the amount of redundant code in the
- * various classes in each of the target-specific sourcesets.
+ * be compiled and linked as appropriate for each target. This minimizes the amount of redundant code in the
+ * various classes in each of the target-specific source sets.
  */
 @OptIn(ExperimentalForeignApi::class)
 open class SqliteDatabaseNativeImpl {
