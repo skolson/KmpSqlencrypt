@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
+
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.oldguy.gradle.OpensslExtension
@@ -5,6 +7,8 @@ import com.oldguy.gradle.SqlcipherExtension
 import com.oldguy.gradle.BuildType
 import com.oldguy.gradle.HostOs
 import org.gradle.internal.os.OperatingSystem
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSetTree
 import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultCInteropSettings
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
@@ -148,7 +152,7 @@ android {
 
     externalNativeBuild {
         cmake {
-            version = "4.0.2"
+            version = "4.0.3"
             path("src/androidMain/cpp/CMakeLists.txt")
         }
     }
@@ -172,6 +176,7 @@ kotlin {
 
     androidTarget {
         publishLibraryVariants("release", "debug")
+        instrumentedTestVariant.sourceSetTree.set(KotlinSourceSetTree.test)
     }
 
     cocoapods {
@@ -315,7 +320,6 @@ kotlin {
             }
         }
         val androidInstrumentedTest by getting {
-            dependsOn(commonTest)
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation(libs.junit4)
