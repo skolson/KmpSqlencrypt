@@ -12,3 +12,4 @@ rootProject.name = projectNameMavenName
 
 include(":KmpSqlencrypt")
 project( ":KmpSqlencrypt" ).name = projectNameMavenName
+include(":kmp-android-jni")

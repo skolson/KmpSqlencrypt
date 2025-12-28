@@ -1,0 +1,63 @@
+import org.gradle.internal.os.OperatingSystem
+
+plugins {
+    alias(libs.plugins.android.library)
+}
+
+val ndkVersionValue: String = libs.versions.androidNdk.get()
+val androidMinSdk: Int = libs.versions.androidSdkMinimum.get().toInt()
+val androidTargetSdkVersion: Int = libs.versions.androidSdk.get().toInt()
+val androidMainDirectory = projectDir.resolve("../KmpSqlencrypt/src/androidMain")
+
+android {
+    ndkVersion = ndkVersionValue
+    buildToolsVersion = libs.versions.androidBuildTools.get()
+    namespace = "com.oldguy.sqlcipher.android"
+    compileSdk {
+        version = release(androidTargetSdkVersion)
+    }
+
+    defaultConfig {
+        minSdk = androidMinSdk
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles("consumer-rules.pro")
+        ndk {
+            abiFilters.addAll(listOf("x86_64", "arm64-v8a"))
+        }
+        externalNativeBuild {
+            val isWindowsOS = if (OperatingSystem.current().isWindows) 1 else 0
+            cmake {
+                arguments(
+                    "-DANDROID_MAIN_PATH=${androidMainDirectory.absolutePath}",
+                    "-DOSWINDOWS=$isWindowsOS"
+                )
+                cppFlags("-std=c++17")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            version = libs.versions.cmake.get()
+            path("src/main/cpp/CMakeLists.txt")
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+}
+
+dependencies {
+    testImplementation(libs.junit4)
+    androidTestImplementation(libs.androidx.test.ext)
+}

@@ -1,5 +1,8 @@
 package com.oldguy.kiscmp
 
+import com.oldguy.sqlcipher.android.Sqlite3JniShim
+import com.oldguy.sqlcipher.android.Sqlite3StatementJniShim
+
 actual class SqliteDatabase {
     internal val shim = Sqlite3JniShim()
     actual var encoding = SqliteEncoding.Utf8

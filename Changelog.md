@@ -1,5 +1,17 @@
 ## KmpSqlencrypt Change Log
 
+** 1.0.0 (2026-01, in progress)
+
+- Gradle 9.2.1
+- Kotlin 2.3.0
+- KmpIO 0.3.0
+- SqlCipher 4.12.0 *Sqlite 3.51.1)
+- OpenSSL 3.6.0
+- Android KMP library plugin replacing com.android.library
+  - new source tree names for android tests
+  - forced moving the android-only and JVM wrapper stuff using NDK (android) and CMake to a separate module, which continues to use the com.android.library plugin but does not use the KMP plugin in that new module.
+  - kmp-android-jni module contains JNI code and a small kotlin JniShims class
+
 ** 0.9.0 (2025-08)
 
 - Gradle 9.0.0

@@ -4,22 +4,21 @@ import com.oldguy.gradle.OpensslExtension
 import com.oldguy.gradle.SqlcipherExtension
 import com.oldguy.gradle.BuildType
 import com.oldguy.gradle.HostOs
-import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultCInteropSettings
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
 
 plugins {
     libs.plugins.also {
-        alias(it.android.library)
         alias(it.kotlin.multiplatform)
+        alias(it.android.kmp.library)
         alias(it.sqlcipher.build)
         alias(it.kotlinx.atomicfu)
         alias(it.dokka)
         alias(it.versionCheck)
         alias(it.maven.publish.vannik)
+        alias(it.kotlin.cocoapods)
     }
-    kotlin("native.cocoapods")
 }
 
 val publishDomain = "io.github.skolson"
@@ -100,68 +99,12 @@ sqlcipher {
     }
 }
 
-val javaVersion = JavaLanguageVersion.of(libs.versions.java.get().toInt())
+val javaVersion: JavaLanguageVersion = JavaLanguageVersion.of(libs.versions.java.get().toInt())
 java {
     toolchain {
         languageVersion.set(javaVersion)
     }
 }
-
-android {
-    compileSdk = androidTargetSdkVersion
-    ndkVersion = ndkVersionValue
-    buildToolsVersion = libs.versions.androidBuildTools.get()
-    namespace = "com.oldguy.kiscmp.android"
-
-    sourceSets {
-        getByName("main") {
-            manifest.srcFile(androidMainDirectory.resolve("AndroidManifest.xml"))
-        }
-    }
-
-    defaultConfig {
-        minSdk = androidMinSdk
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-        ndk {
-            abiFilters.addAll(listOf("x86_64", "arm64-v8a"))
-        }
-        externalNativeBuild {
-            val isWindowsOS = if (OperatingSystem.current().isWindows) 1 else 0
-            cmake {
-                arguments(
-                    "-DANDROID_MAIN_PATH=${androidMainDirectory.absolutePath}",
-                    "-DOSWINDOWS=$isWindowsOS"
-                )
-                cppFlags("-std=c++17")
-            }
-        }
-        consumerProguardFiles("tools/proguard-rules.pro")
-    }
-
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-        }
-    }
-
-    externalNativeBuild {
-        cmake {
-            version = "4.0.2"
-            path("src/androidMain/cpp/CMakeLists.txt")
-        }
-    }
-    compileOptions {
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-
-    dependencies {
-        testImplementation(libs.junit4)
-        androidTestImplementation(libs.bundles.androidx.test)
-    }
-}
-
 val githubUri = "skolson/$appleFrameworkName"
 val githubUrl = "https://github.com/$githubUri"
 
@@ -170,8 +113,23 @@ kotlin {
         languageVersion = javaVersion
     }
 
-    androidTarget {
-        publishLibraryVariants("release", "debug")
+    android {
+        compileSdk = libs.versions.androidSdk.get().toInt()
+        buildToolsVersion = libs.versions.androidBuildTools.get()
+        namespace = "com.oldguy.kiscmp"
+
+        minSdk = libs.versions.androidSdkMinimum.get().toInt()
+
+        withHostTest {}
+        withDeviceTest {
+            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+            execution = "HOST"
+        }
+
+        optimization {
+            consumerKeepRules.publish = true
+            consumerKeepRules.files.add(project.file("proguard-rules.pro"))
+        }
     }
 
     cocoapods {
@@ -293,29 +251,33 @@ kotlin {
 
     applyDefaultHierarchyTemplate()
     sourceSets {
-        val commonMain by getting {
+        getByName("commonMain") {
             dependencies {
                 implementation(libs.kotlinx.datetime)
                 implementation(libs.bigDecimal)
                 implementation(libs.kotlinx.atomicfu)
             }
         }
-        val commonTest by getting {
+        getByName("commonTest") {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
                 implementation(libs.kotlinx.coroutines.test)
             }
         }
-        val androidUnitTest by getting {
+        getByName("androidMain") {
+            dependencies {
+                implementation(project(":kmp-android-jni"))
+            }
+        }
+        getByName("androidHostTest") {
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation(libs.junit4)
                 implementation(libs.kotlinx.coroutines.core)
             }
         }
-        val androidInstrumentedTest by getting {
-            dependsOn(commonTest)
+        getByName("androidDeviceTest") {
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation(libs.junit4)
@@ -324,12 +286,12 @@ kotlin {
                 implementation(libs.kmp.io)
             }
         }
-        val nativeMain by getting {
+        getByName("nativeMain") {
             dependencies {
                 implementation(libs.kmp.io)
             }
         }
-        val nativeTest by getting {
+        getByName("nativeTest") {
             dependencies {
                 implementation(kotlin("test"))
                 implementation(libs.kotlinx.coroutines.core)
@@ -389,8 +351,4 @@ mavenPublishing {
             developerConnection.set("cm:git:ssh://git@github.com:${githubUri}.git")
         }
     }
-}
-
-dependencies {
-    implementation(libs.androidx.core.ktx)
 }
