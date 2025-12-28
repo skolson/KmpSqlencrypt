@@ -16,6 +16,8 @@
 
 - Gradle 9.0.0
 - iosSimulatorArm64 target
+- kmp-io 0.2.3
+- CMake 4.0.3
 
 ** 0.8.1 (2025-07-15)
 
