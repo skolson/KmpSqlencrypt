@@ -7,9 +7,10 @@
 - KmpIO 0.3.0
 - SqlCipher 4.12.0 (Sqlite 3.51.1)
 - OpenSSL 3.6.0
-- Android KMP library plugin replacing com.android.library
+- Android KMP library plugin replacing com.android.library in KmpSqlencrypt module
   - new source tree names for android tests
-  - forced moving the android-only and JVM wrapper stuff using NDK (android) and CMake to a separate module, which continues to use the com.android.library plugin but does not use the KMP plugin in that new module.
+  - com.android.library is now deprecated and replaced with com.android.kotlin.multiplatform.library for multiplatform modules
+  - forced moving the android-only and JVM wrapper stuff using NDK (android) and CMake to a separate android-only module, which uses the com.android.library plugin.
   - kmp-android-jni module contains JNI code and a small kotlin JniShims class
 
 ** 0.9.0 (2025-08)
