@@ -160,91 +160,30 @@ kotlin {
         extraOpts("-libraryPath", "$nativeInteropPath/$dirName")
     }
 
-    linuxX64 {
-        val main by this.compilations.getting {
+    listOf(linuxX64(), linuxArm64()).forEach {
+        val main by it.compilations.getting {
             val sqlcipherInterop by cinterops.creating {
-                cinteropConfig("linuxX64")
-            }
-        }
-    }
-    linuxArm64 {
-        val main by this.compilations.getting {
-            val sqlcipherInterop by cinterops.creating {
-                cinteropConfig("linuxArm64")
+                cinteropConfig(it.name)
             }
         }
     }
 
     val appleXcf = XCFramework()
-    macosX64 {
-        binaries {
+    listOf(macosX64(), macosArm64(), iosX64(), iosArm64(), iosSimulatorArm64()).forEach {
+        it.binaries {
             framework {
                 baseName = appleFrameworkName
                 appleXcf.add(this)
                 isStatic = true
+                if (it.name == "iosArm64" || it.name == "iosSimulatorArm64") {
+                    freeCompilerArgs = freeCompilerArgs +
+                            listOf("-Xoverride-konan-properties=osVersionMin=$iosMinSdk")
+                }
             }
         }
-        val main by this.compilations.getting {
+        val main by it.compilations.getting {
             val sqlcipherInterop by cinterops.creating {
-                cinteropConfig("macosX64")
-            }
-        }
-    }
-    macosArm64 {
-        binaries {
-            framework {
-                baseName = appleFrameworkName
-                appleXcf.add(this)
-                isStatic = true
-            }
-        }
-        val main by this.compilations.getting {
-            val sqlcipherInterop by cinterops.creating {
-                cinteropConfig("macosArm64")
-            }
-        }
-    }
-    iosX64 {
-        binaries {
-            framework {
-                baseName = appleFrameworkName
-                appleXcf.add(this)
-                isStatic = true
-            }
-        }
-        val main by this.compilations.getting {
-            val sqlcipherInterop by cinterops.creating {
-                cinteropConfig("iosX64")
-            }
-        }
-    }
-    iosArm64 {
-        binaries {
-            framework {
-                baseName = appleFrameworkName
-                appleXcf.add(this)
-                isStatic = true
-                freeCompilerArgs = freeCompilerArgs +
-                        listOf("-Xoverride-konan-properties=osVersionMin=$iosMinSdk")
-            }
-        }
-        val main by this.compilations.getting {
-            val sqlcipherInterop by cinterops.creating {
-                cinteropConfig("iosArm64")
-            }
-        }
-    }
-    iosSimulatorArm64 {
-        binaries {
-            framework {
-                baseName = appleFrameworkName
-                appleXcf.add(this)
-                isStatic = true
-            }
-        }
-        val main by this.compilations.getting {
-            val sqlcipherInterop by cinterops.creating {
-                cinteropConfig("iosSimulatorArm64")
+                cinteropConfig(it.name)
             }
         }
     }

@@ -5,7 +5,7 @@
 - Gradle 9.2.1
 - Kotlin 2.3.0
 - KmpIO 0.3.0
-- SqlCipher 4.12.0 *Sqlite 3.51.1)
+- SqlCipher 4.12.0 (Sqlite 3.51.1)
 - OpenSSL 3.6.0
 - Android KMP library plugin replacing com.android.library
   - new source tree names for android tests

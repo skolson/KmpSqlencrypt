@@ -10,7 +10,6 @@ val androidTargetSdkVersion: Int = libs.versions.androidSdk.get().toInt()
 val androidMainDirectory = projectDir.resolve("../KmpSqlencrypt/src/androidMain")
 
 android {
-    ndkVersion = ndkVersionValue
     buildToolsVersion = libs.versions.androidBuildTools.get()
     namespace = "com.oldguy.sqlcipher.android"
     compileSdk {
@@ -19,6 +18,7 @@ android {
 
     defaultConfig {
         minSdk = androidMinSdk
+        ndkVersion = ndkVersionValue
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
         ndk {
