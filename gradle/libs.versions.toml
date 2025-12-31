@@ -2,7 +2,7 @@
 appVersion = "1.0.0"
 java = "21"
 
-androidGradlePlugin = "9.1.0-alpha01"
+androidGradlePlugin = "9.1.0-alpha02"
 
 kotlin = "2.3.0"
 kotlinCoroutines = "1.10.2"
@@ -43,6 +43,8 @@ kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCoreKtx"}
 bigDecimal = { module = "com.ionspin.kotlin:bignum", version.ref = "bigDecimal"}
 kmp-io = { module = "io.github.skolson:kmp-io", version.ref = "kmpIo"}
+kmp-sqlencrypt-jni-android = { module = "io.github.skolson:kmp-android-jni", version.ref = "appVersion"}
+
 
 #testing libraries
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinCoroutines"}

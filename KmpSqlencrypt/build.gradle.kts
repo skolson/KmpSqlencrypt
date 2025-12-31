@@ -23,7 +23,7 @@ plugins {
 
 val publishDomain = "io.github.skolson"
 val mavenArtifactId = name
-val appVersion = libs.versions.appVersion.get()
+val appVersion: String = libs.versions.appVersion.get()
 val appleFrameworkName = "KmpSqlencrypt"
 group = publishDomain
 version = appVersion
@@ -206,7 +206,7 @@ kotlin {
         }
         getByName("androidMain") {
             dependencies {
-                implementation(project(":kmp-android-jni"))
+                implementation(libs.kmp.sqlencrypt.jni.android)
             }
         }
         getByName("androidHostTest") {

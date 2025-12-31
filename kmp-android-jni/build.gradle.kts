@@ -1,7 +1,10 @@
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinMultiplatform
 import org.gradle.internal.os.OperatingSystem
 
 plugins {
     alias(libs.plugins.android.library)
+    alias(libs.plugins.maven.publish.vannik)
 }
 
 val ndkVersionValue: String = libs.versions.androidNdk.get()
@@ -60,4 +63,36 @@ android {
 dependencies {
     testImplementation(libs.junit4)
     androidTestImplementation(libs.androidx.test.ext)
+}
+val publishDomain = "io.github.skolson"
+val appVersion: String = libs.versions.appVersion.get()
+val githubUri = "skolson/KmpSqlencrypt"
+val githubUrl = "https://github.com/$githubUri"
+
+mavenPublishing {
+    coordinates(publishDomain, name, appVersion)
+
+    pom {
+        name.set("Kotlin Multiplatform SqlCipher/Sqlite Android-only JNI library")
+        description.set("Library containing thin JNI wrapper of Sqlite API used by KmpSqlencrypt module.")
+        url.set(githubUrl)
+        licenses {
+            license {
+                name.set("The Apache License, Version 2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+            }
+        }
+        developers {
+            developer {
+                id.set("oldguy")
+                name.set("Steve Olson")
+                email.set("skolson5903@gmail.com")
+            }
+        }
+        scm {
+            url.set(githubUrl)
+            connection.set("scm:git:git://git@github.com:${githubUri}.git")
+            developerConnection.set("cm:git:ssh://git@github.com:${githubUri}.git")
+        }
+    }
 }
