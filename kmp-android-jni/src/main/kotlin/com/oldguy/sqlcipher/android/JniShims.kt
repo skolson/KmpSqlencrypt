@@ -89,7 +89,6 @@ class Sqlite3JniShim {
 
         init {
             System.loadLibrary("sqlcipher-kotlin")
-            println("sqlcipher-kotlin.so System.loadLibrary completed")
             nativeInit()
         }
     }
