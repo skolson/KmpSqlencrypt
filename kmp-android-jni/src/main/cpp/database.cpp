@@ -83,7 +83,7 @@ extern "C" {
 static SqliteEnvironment *pShimEnv = nullptr;
 
 JNIEXPORT void JNICALL
-Java_com_oldguy_kiscmp_Sqlite3JniShim_nativeInit(JNIEnv *env, jclass clazz) {
+Java_com_oldguy_sqlcipher_android_Sqlite3JniShim_nativeInit(JNIEnv *env, jclass clazz) {
     if (pShimEnv == nullptr) {
         pShimEnv = new SqliteEnvironment();
     }
@@ -91,7 +91,7 @@ Java_com_oldguy_kiscmp_Sqlite3JniShim_nativeInit(JNIEnv *env, jclass clazz) {
 }
 
 JNIEXPORT void JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_nativeInit(JNIEnv *env, jclass clazz) {
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_nativeInit(JNIEnv *env, jclass clazz) {
     if (pShimEnv == nullptr) {
         pShimEnv = new SqliteEnvironment();
     }
@@ -166,21 +166,21 @@ sqlite3_stmt *getStatement(JNIEnv *env, jobject thiz, const char *apiName) {
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_oldguy_kiscmp_Sqlite3JniShim_fileName(JNIEnv *env, jobject thiz) {
+Java_com_oldguy_sqlcipher_android_Sqlite3JniShim_fileName(JNIEnv *env, jobject thiz) {
     auto *handle = getDb(env, thiz);
     if (handle == nullptr) return emptyString(env);
     return getJString(env, sqlite3_db_filename(handle, "main"));
 }
 
 JNIEXPORT void JNICALL
-Java_com_oldguy_kiscmp_Sqlite3JniShim_sleep([[maybe_unused]] JNIEnv *env,
+Java_com_oldguy_sqlcipher_android_Sqlite3JniShim_sleep([[maybe_unused]] JNIEnv *env,
                                                [[maybe_unused]] jobject thiz,
                                                jint millis) {
     sqlite3_sleep(millis);
 }
 
 JNIEXPORT jint JNICALL
-Java_com_oldguy_kiscmp_Sqlite3JniShim_open(JNIEnv *env,
+Java_com_oldguy_sqlcipher_android_Sqlite3JniShim_open(JNIEnv *env,
                                               jobject thiz,
                                               jstring path,
                                               jboolean read_only,
@@ -213,7 +213,7 @@ Java_com_oldguy_kiscmp_Sqlite3JniShim_open(JNIEnv *env,
 }
 
 JNIEXPORT jint JNICALL
-Java_com_oldguy_kiscmp_Sqlite3JniShim_close(JNIEnv *env, jobject thiz) {
+Java_com_oldguy_sqlcipher_android_Sqlite3JniShim_close(JNIEnv *env, jobject thiz) {
     auto *handle = getDb(env, thiz);
     int result = 0;
     if (handle != nullptr) {
@@ -226,7 +226,7 @@ Java_com_oldguy_kiscmp_Sqlite3JniShim_close(JNIEnv *env, jobject thiz) {
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_oldguy_kiscmp_Sqlite3JniShim_error(JNIEnv *env, jobject thiz) {
+Java_com_oldguy_sqlcipher_android_Sqlite3JniShim_error(JNIEnv *env, jobject thiz) {
     auto *handle = getDb(env, thiz);
     if (handle == nullptr)
         return emptyString(env);
@@ -235,14 +235,14 @@ Java_com_oldguy_kiscmp_Sqlite3JniShim_error(JNIEnv *env, jobject thiz) {
 }
 
 JNIEXPORT jlong JNICALL
-Java_com_oldguy_kiscmp_Sqlite3JniShim_softHeapLimit([[maybe_unused]] JNIEnv *env,
+Java_com_oldguy_sqlcipher_android_Sqlite3JniShim_softHeapLimit([[maybe_unused]] JNIEnv *env,
                                                        [[maybe_unused]] jobject thiz,
                                                        jlong limit) {
     return sqlite3_soft_heap_limit64(limit);
 }
 
 JNIEXPORT void JNICALL
-Java_com_oldguy_kiscmp_Sqlite3JniShim_busyTimeout(JNIEnv *env, jobject thiz, jint timeout) {
+Java_com_oldguy_sqlcipher_android_Sqlite3JniShim_busyTimeout(JNIEnv *env, jobject thiz, jint timeout) {
     auto *handle = getDb(env, thiz);
     if (handle != nullptr)
         sqlite3_busy_timeout(handle, timeout);
@@ -278,7 +278,7 @@ int execCallback(void *pInfoIn, int numColumns, char **results, char **columnNam
 }
 
 JNIEXPORT jint JNICALL
-Java_com_oldguy_kiscmp_Sqlite3JniShim_exec(
+Java_com_oldguy_sqlcipher_android_Sqlite3JniShim_exec(
         JNIEnv *env,
         jobject thiz,
         jstring sql) {
@@ -302,7 +302,7 @@ Java_com_oldguy_kiscmp_Sqlite3JniShim_exec(
 
 
 JNIEXPORT jlong JNICALL
-Java_com_oldguy_kiscmp_Sqlite3JniShim_lastInsertRowid(JNIEnv *env, jobject thiz) {
+Java_com_oldguy_sqlcipher_android_Sqlite3JniShim_lastInsertRowid(JNIEnv *env, jobject thiz) {
     auto *handle = getDb(env, thiz);
     if (handle == nullptr) return -1;
     return sqlite3_last_insert_rowid(handle);
@@ -315,7 +315,7 @@ Java_com_oldguy_kiscmp_Sqlite3JniShim_lastInsertRowid(JNIEnv *env, jobject thiz)
  * @return
  */
 JNIEXPORT jstring JNICALL
-Java_com_oldguy_kiscmp_Sqlite3JniShim_version(JNIEnv *env, [[maybe_unused]] jobject thiz) {
+Java_com_oldguy_sqlcipher_android_Sqlite3JniShim_version(JNIEnv *env, [[maybe_unused]] jobject thiz) {
     int sz = sizeof(SQLITE_VERSION);
     char *wrk = new char(sz + 1);
     memcpy(wrk, SQLITE_VERSION, sz);
@@ -326,21 +326,21 @@ Java_com_oldguy_kiscmp_Sqlite3JniShim_version(JNIEnv *env, [[maybe_unused]] jobj
 }
 
 JNIEXPORT jint JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_parameterCount(JNIEnv *env, jobject thiz) {
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_parameterCount(JNIEnv *env, jobject thiz) {
     sqlite3_stmt *pStmt = getStatement(env, thiz, "bind_parameter_count");
     if (pStmt == nullptr) return 0;
     return sqlite3_bind_parameter_count(pStmt);
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_isReadOnly(JNIEnv *env, jobject thiz) {
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_isReadOnly(JNIEnv *env, jobject thiz) {
     sqlite3_stmt *pStmt = getStatement(env, thiz, "sqlite3_stmt_readonly");
     if (pStmt == nullptr) return JNI_FALSE;
     return sqlite3_stmt_readonly(pStmt);
 }
 
 JNIEXPORT jint JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_prepare(JNIEnv *env, jobject thiz,
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_prepare(JNIEnv *env, jobject thiz,
                                                           jlong db_handle, jstring sql) {
     auto *handle = (sqlite3 *) db_handle;
     if (handle == nullptr) {
@@ -365,7 +365,7 @@ done:
 }
 
 JNIEXPORT jint JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_bindIndex(JNIEnv *env, jobject thiz,
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_bindIndex(JNIEnv *env, jobject thiz,
                                                             jstring name) {
     auto pStmt = getStatement(env, thiz, "bind_parameter_index");
     if (pStmt == nullptr) {
@@ -378,7 +378,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_bindIndex(JNIEnv *env, jobject th
 }
 
 JNIEXPORT jint JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_bindNull(JNIEnv *env, jobject thiz, jint index) {
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_bindNull(JNIEnv *env, jobject thiz, jint index) {
     auto pStmt = getStatement(env, thiz, "bind_null");
     if (pStmt == nullptr) {
         return -1;
@@ -387,7 +387,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_bindNull(JNIEnv *env, jobject thi
 }
 
 JNIEXPORT jint JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_bindText(JNIEnv *env, jobject thiz, jint index,
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_bindText(JNIEnv *env, jobject thiz, jint index,
                                                            jstring text) {
     auto pStmt = getStatement(env, thiz, "bind_text");
     if (pStmt == nullptr) {
@@ -401,7 +401,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_bindText(JNIEnv *env, jobject thi
 }
 
 JNIEXPORT jint JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_bindInt(JNIEnv *env, jobject thiz, jint index,
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_bindInt(JNIEnv *env, jobject thiz, jint index,
                                                           jint value) {
     auto pStmt = getStatement(env, thiz, "bind_int");
     if (pStmt == nullptr) {
@@ -411,7 +411,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_bindInt(JNIEnv *env, jobject thiz
 }
 
 JNIEXPORT jint JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_bindLong(JNIEnv *env, jobject thiz, jint index,
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_bindLong(JNIEnv *env, jobject thiz, jint index,
                                                            jlong value) {
     auto pStmt = getStatement(env, thiz, "bind_int64");
     if (pStmt == nullptr) {
@@ -421,7 +421,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_bindLong(JNIEnv *env, jobject thi
 }
 
 JNIEXPORT jint JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_bindDouble(JNIEnv *env, jobject thiz, jint index,
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_bindDouble(JNIEnv *env, jobject thiz, jint index,
                                                              jdouble value) {
     auto pStmt = getStatement(env, thiz, "bind_double");
     if (pStmt == nullptr) {
@@ -431,7 +431,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_bindDouble(JNIEnv *env, jobject t
 }
 
 JNIEXPORT jint JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_bindBytes(JNIEnv *env, jobject thiz, jint index,
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_bindBytes(JNIEnv *env, jobject thiz, jint index,
                                                             jbyteArray array) {
     auto pStmt = getStatement(env, thiz, "bind_blob");
     if (pStmt == nullptr) {
@@ -455,7 +455,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_bindBytes(JNIEnv *env, jobject th
  *          4 - SQLITE_BUSY
  */
 JNIEXPORT jint JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_stepInt(JNIEnv *env, jobject thiz) {
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_stepInt(JNIEnv *env, jobject thiz) {
     auto pStmt = getStatement(env, thiz, "step");
     if (pStmt != nullptr) {
         int result = sqlite3_step(pStmt);
@@ -467,14 +467,14 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_stepInt(JNIEnv *env, jobject thiz
 }
 
 JNIEXPORT jint JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_changes(JNIEnv *env, jobject thiz, jlong db_handle) {
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_changes(JNIEnv *env, jobject thiz, jlong db_handle) {
     auto *handle = (sqlite3 *) db_handle;
     if (handle == nullptr) return -1;
     return sqlite3_changes(handle);
 }
 
 JNIEXPORT jint JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_finalize(JNIEnv *env, jobject thiz) {
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_finalize(JNIEnv *env, jobject thiz) {
     auto pStmt = getStatement(env, thiz, "finalize");
     if (pStmt != nullptr) {
         env->SetLongField(thiz, pShimEnv->statementHandleField, 0);
@@ -484,7 +484,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_finalize(JNIEnv *env, jobject thi
 }
 
 JNIEXPORT void JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_clearBindings(JNIEnv *env, jobject thiz) {
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_clearBindings(JNIEnv *env, jobject thiz) {
     auto pStmt = getStatement(env, thiz, "clear_bindings");
     if (pStmt != nullptr) {
         sqlite3_clear_bindings(pStmt);
@@ -492,7 +492,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_clearBindings(JNIEnv *env, jobjec
 }
 
 JNIEXPORT void JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_reset(JNIEnv *env, jobject thiz) {
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_reset(JNIEnv *env, jobject thiz) {
     auto pStmt = getStatement(env, thiz, "reset");
     if (pStmt != nullptr) {
         sqlite3_reset(pStmt);
@@ -500,7 +500,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_reset(JNIEnv *env, jobject thiz) 
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_expandedSql(JNIEnv *env, jobject thiz) {
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_expandedSql(JNIEnv *env, jobject thiz) {
     auto pStmt = getStatement(env, thiz, apiExpandedSql);
     if (pStmt != nullptr) {
         return getJString(env, sqlite3_expanded_sql(pStmt));
@@ -509,7 +509,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_expandedSql(JNIEnv *env, jobject 
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_isBusy(JNIEnv *env, jobject thiz) {
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_isBusy(JNIEnv *env, jobject thiz) {
     auto pStmt = getStatement(env, thiz, "busy");
     if (pStmt != nullptr) {
         int rc = sqlite3_stmt_busy(pStmt);
@@ -521,7 +521,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_isBusy(JNIEnv *env, jobject thiz)
 }
 
 JNIEXPORT jint JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_columnCount(JNIEnv *env, jobject thiz) {
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_columnCount(JNIEnv *env, jobject thiz) {
     auto pStmt = getStatement(env, thiz, "column_count");
     if (pStmt != nullptr) {
         return sqlite3_column_count(pStmt);
@@ -530,7 +530,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_columnCount(JNIEnv *env, jobject 
 }
 
 JNIEXPORT jint JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_dataCount(JNIEnv *env, jobject thiz) {
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_dataCount(JNIEnv *env, jobject thiz) {
     auto pStmt = getStatement(env, thiz, "data_count");
     if (pStmt != nullptr) {
         return sqlite3_data_count(pStmt);
@@ -539,7 +539,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_dataCount(JNIEnv *env, jobject th
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_columnName(JNIEnv *env, jobject thiz,
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_columnName(JNIEnv *env, jobject thiz,
                                                              jint index) {
     auto pStmt = getStatement(env, thiz, "column_name");
     if (pStmt != nullptr) {
@@ -549,7 +549,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_columnName(JNIEnv *env, jobject t
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_columnDeclaredType(JNIEnv *env, jobject thiz,
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_columnDeclaredType(JNIEnv *env, jobject thiz,
                                                                      jint index) {
     auto pStmt = getStatement(env, thiz, "column_decltype");
     if (pStmt != nullptr) {
@@ -570,7 +570,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_columnDeclaredType(JNIEnv *env, j
  *          5 - SQLITE_BLOB
  */
 JNIEXPORT jint JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_columnTypeInt(JNIEnv *env, jobject thiz,
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_columnTypeInt(JNIEnv *env, jobject thiz,
                                                                 jint index) {
     auto pStmt = getStatement(env, thiz, "column_decltype");
     if (pStmt != nullptr) {
@@ -586,7 +586,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_columnTypeInt(JNIEnv *env, jobjec
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_columnText(JNIEnv *env, jobject thiz,
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_columnText(JNIEnv *env, jobject thiz,
                                                              jint index) {
     auto pStmt = getStatement(env, thiz, "column_text");
     if (pStmt != nullptr) {
@@ -598,7 +598,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_columnText(JNIEnv *env, jobject t
 }
 
 JNIEXPORT jint JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_columnInt(JNIEnv *env, jobject thiz, jint index) {
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_columnInt(JNIEnv *env, jobject thiz, jint index) {
     auto pStmt = getStatement(env, thiz, "column_int");
     if (pStmt != nullptr) {
         return sqlite3_column_int(pStmt, index);
@@ -607,7 +607,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_columnInt(JNIEnv *env, jobject th
 }
 
 JNIEXPORT jlong JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_columnLong(JNIEnv *env, jobject thiz,
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_columnLong(JNIEnv *env, jobject thiz,
                                                              jint index) {
     auto pStmt = getStatement(env, thiz, "column_int64");
     if (pStmt != nullptr) {
@@ -617,7 +617,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_columnLong(JNIEnv *env, jobject t
 }
 
 JNIEXPORT jdouble JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_columnDouble(JNIEnv *env, jobject thiz,
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_columnDouble(JNIEnv *env, jobject thiz,
                                                                jint index) {
     auto pStmt = getStatement(env, thiz, "column_int64");
     if (pStmt != nullptr) {
@@ -627,7 +627,7 @@ Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_columnDouble(JNIEnv *env, jobject
 }
 
 JNIEXPORT jbyteArray JNICALL
-Java_com_oldguy_kiscmp_Sqlite3StatementJniShim_columnBlob(JNIEnv *env, jobject thiz,
+Java_com_oldguy_sqlcipher_android_Sqlite3StatementJniShim_columnBlob(JNIEnv *env, jobject thiz,
                                                              jint index) {
     auto pStmt = getStatement(env, thiz, "column_int64");
     if (pStmt != nullptr) {
