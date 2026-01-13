@@ -1,8 +1,9 @@
-package com.oldguy.kiscmp
+package com.oldguy.kiscmp.android
 
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.oldguy.common.io.File
 import com.oldguy.database.SqlValue
+import com.oldguy.kiscmp.SqliteEncoding
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertEquals

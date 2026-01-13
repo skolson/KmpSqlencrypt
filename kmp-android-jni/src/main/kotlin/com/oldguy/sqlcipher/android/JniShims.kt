@@ -2,13 +2,13 @@ package com.oldguy.sqlcipher.android
 
 /**
  * Used when API returns an error that should be handled with a Kotlin Throwable
- * @param message error text
+ * @param msg error text
  * @param apiName usually the Sqlite3 API function name
  * @param result from Sqlite API
  */
-class SqliteException(message: String, apiName: String = "", val result: Int = 0)
-    : Throwable(fullText(message, apiName, result)) {
-    val fullMessage = fullText(message, apiName, result)
+class SqliteException(val msg: String, val apiName: String = "", val result: Int = 0)
+    : Throwable(fullText(msg, apiName, result)) {
+    val fullMessage = fullText(msg, apiName, result)
 
     companion object {
         private fun fullText(message: String, apiName: String, result: Int): String {

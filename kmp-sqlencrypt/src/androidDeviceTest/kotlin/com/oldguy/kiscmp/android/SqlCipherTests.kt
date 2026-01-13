@@ -1,10 +1,15 @@
-package com.oldguy.kiscmp
+package com.oldguy.kiscmp.android
 
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
 import com.oldguy.database.ColumnType
 import com.oldguy.database.Passphrase
 import com.oldguy.database.SqlValue
 import com.oldguy.database.SqlValues
+import com.oldguy.kiscmp.SqlCipherDatabase
+import com.oldguy.kiscmp.SqliteEncoding
+import com.oldguy.kiscmp.SqliteException
+import com.oldguy.kiscmp.SqliteSystemCatalog
+import com.oldguy.kiscmp.sqlcipher
 import kotlin.time.Clock
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone

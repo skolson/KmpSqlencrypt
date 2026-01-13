@@ -1,12 +1,20 @@
 package com.oldguy.kiscmp
 
+import com.oldguy.kiscmp.SqliteDatabase.Companion.translate
 import com.oldguy.sqlcipher.android.Sqlite3JniShim
 import com.oldguy.sqlcipher.android.Sqlite3StatementJniShim
 
+/**
+ * Android implementation is this wrapper around the native sqlite3 library using Sqlite3JniShim.
+ * Due to Google forcing the JNI code to a separate module, the main module can no longer share
+ * its SqliteException definition. So this wrapper has to translate the JNI-specific SqliteException
+ * instance to the common Kotlin SqliteException instance.
+ *
+ */
 actual class SqliteDatabase {
     internal val shim = Sqlite3JniShim()
     actual var encoding = SqliteEncoding.Utf8
-    actual val notDatabaseResult = 26 // must match SQLITE_NOTADB value
+    actual val notDatabaseResult = 26 // must match SQLITE_NOTADB value in sqlite3.h
 
     actual fun error(): String {
         return shim.error()
@@ -21,11 +29,19 @@ actual class SqliteDatabase {
         readOnly: Boolean,
         createOk: Boolean
     ): Int {
-        return shim.open(path, readOnly, createOk)
+        try {
+            return shim.open(path, readOnly, createOk)
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun close(): Int {
-        return shim.close()
+        try {
+            return shim.close()
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun softHeapLimit(limit: Long): Long {
@@ -33,20 +49,28 @@ actual class SqliteDatabase {
     }
 
     actual fun busyTimeout(timeout: Int) {
-        return shim.busyTimeout((timeout))
+        return shim.busyTimeout(timeout)
     }
 
     actual fun exec(
         sql: String,
         callback: ((values: Array<String>, columnNames: Array<String>) -> Int)?
     ): Int {
-        return callback?.let {
-            shim.exec(sql, it)
-        } ?: shim.exec(sql)
+        try {
+            return callback?.let {
+                shim.exec(sql, it)
+            } ?: shim.exec(sql)
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun exec(sql: String): Int {
-        return shim.exec(sql)
+        try {
+            return shim.exec(sql)
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun version(): String {
@@ -58,19 +82,37 @@ actual class SqliteDatabase {
      * the insert
      */
     actual fun lastInsertRowid(): Long {
-        return shim.lastInsertRowid()
+        try {
+            return shim.lastInsertRowid()
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun sleep(millis: Int) {
         shim.sleep(millis)
     }
+
+    companion object {
+        fun translate(e: com.oldguy.sqlcipher.android.SqliteException): SqliteException {
+            return SqliteException(e.msg, e.apiName, e.result)
+        }
+    }
 }
 
+/**
+ * Android implementation is this wrapper around the native sqlite3 library using Sqlite3JniShim.
+ * As with the database implementation, SqliteException translation has to happen here as well.
+ */
 actual class SqliteStatement actual constructor(val db: SqliteDatabase) {
     private val shim = Sqlite3StatementJniShim()
 
     actual fun parameterCount(): Int {
-        return shim.parameterCount()
+        try {
+            return shim.parameterCount()
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun isReadOnly(): Boolean {
@@ -78,54 +120,97 @@ actual class SqliteStatement actual constructor(val db: SqliteDatabase) {
     }
 
     actual fun prepare(sql: String): Int {
-        return shim.prepare(db.shim.handle, sql)
+        try {
+            return shim.prepare(db.shim.handle, sql)
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun bindIndex(name: String): Int {
-        return shim.bindIndex(name)
+        try {
+            return shim.bindIndex(name)
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun bindNull(index: Int): Int {
-        return shim.bindNull(index)
+        try {
+            return shim.bindNull(index)
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun bindText(index: Int, text: String): Int {
-        return shim.bindText(index, text)
+        try {
+            return shim.bindText(index, text)
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun bindInt(index: Int, value: Int): Int {
-        return shim.bindInt(index, value)
+        try {
+            return shim.bindInt(index, value)
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun bindLong(index: Int, value: Long): Int {
-        return shim.bindLong(index, value)
+        try {
+            return shim.bindLong(index, value)
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun bindDouble(index: Int, value: Double): Int {
-        return shim.bindDouble(index, value)
+        try {
+            return shim.bindDouble(index, value)
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun bindBytes(index: Int, array: ByteArray): Int {
-        return shim.bindBytes(index, array)
+        try {
+            return shim.bindBytes(index, array)
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun step(): SqliteStepResult {
-        val rc = shim.stepInt()
-        return when (rc) {
-            1 -> SqliteStepResult.Error
-            2 -> SqliteStepResult.Done
-            3 -> SqliteStepResult.Row
-            4 -> SqliteStepResult.Busy
-            else -> throw SqliteException("Unsupported return from StepInt(): $rc")
+        try {
+            return when (val rc = shim.stepInt()) {
+                1 -> SqliteStepResult.Error
+                2 -> SqliteStepResult.Done
+                3 -> SqliteStepResult.Row
+                4 -> SqliteStepResult.Busy
+                else -> throw SqliteException("Unsupported return from StepInt(): $rc")
+            }
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
         }
     }
 
     actual fun changes(): Int {
-        return shim.changes(db.shim.handle)
+        try {
+            return shim.changes(db.shim.handle)
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun finalize(): Int {
-        return shim.finalize()
+        try {
+            return shim.finalize()
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun clearBindings() {
@@ -140,7 +225,11 @@ actual class SqliteStatement actual constructor(val db: SqliteDatabase) {
      * The following functions are only useful when preparing and running a select statement.
      */
     actual fun expandedSql(): String {
-        return shim.expandedSql()
+        try {
+            return shim.expandedSql()
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun isBusy(): Boolean {
@@ -156,42 +245,73 @@ actual class SqliteStatement actual constructor(val db: SqliteDatabase) {
     }
 
     actual fun columnName(index: Int): String {
-        return shim.columnName(index)
+        try {
+            return shim.columnName(index)
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun columnDeclaredType(index: Int): String {
-        return shim.columnDeclaredType(index)
+        try {
+            return shim.columnDeclaredType(index)
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun columnType(index: Int): SqliteColumnType {
-        val rc = shim.columnTypeInt(index)
-        return when (rc) {
-            1 -> SqliteColumnType.Null
-            2 -> SqliteColumnType.Text
-            3 -> SqliteColumnType.Integer
-            4 -> SqliteColumnType.Float
-            5 -> SqliteColumnType.Blob
-            else -> throw SqliteException("Unsupported return from columnTypeInt($index): $rc")
+        try {
+            return when (val rc = shim.columnTypeInt(index)) {
+                1 -> SqliteColumnType.Null
+                2 -> SqliteColumnType.Text
+                3 -> SqliteColumnType.Integer
+                4 -> SqliteColumnType.Float
+                5 -> SqliteColumnType.Blob
+                else -> throw SqliteException("Unsupported return from columnTypeInt($index): $rc")
+            }
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
         }
     }
 
     actual fun columnText(index: Int): String {
-        return shim.columnText(index)
+        try {
+            return shim.columnText(index)
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun columnBlob(index: Int): ByteArray {
-        return shim.columnBlob(index)
+        try {
+            return shim.columnBlob(index)
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun columnDouble(index: Int): Double {
-        return shim.columnDouble(index)
+        try {
+            return shim.columnDouble(index)
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun columnInt(index: Int): Int {
-        return shim.columnInt(index)
+        try {
+            return shim.columnInt(index)
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 
     actual fun columnLong(index: Int): Long {
-        return shim.columnLong(index)
+        try {
+            return shim.columnLong(index)
+        } catch (e: com.oldguy.sqlcipher.android.SqliteException) {
+            throw translate(e)
+        }
     }
 }

@@ -1,11 +1,10 @@
+import com.oldguy.common.io.File
 import com.oldguy.database.SqlValue
 import com.oldguy.kiscmp.SqlCipherTests
 import com.oldguy.kiscmp.SqliteEncoding
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import kotlinx.io.files.SystemTemporaryDirectory
-import kotlin.test.DefaultAsserter.assertTrue
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -63,7 +62,8 @@ class BasicTestsNative: SqlCipherTests() {
     @Test
     fun testEncryption1() {
         runBlocking {
-            testPasswordsAndUpgrade(SystemTemporaryDirectory.name)
+            val temp = File.tempDirectoryFile()
+            testPasswordsAndUpgrade(temp.fullPath)
         }
     }
 }
