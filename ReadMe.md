@@ -48,6 +48,18 @@ Dependencies are intentionally kept to a minimum and only using Kotlin multi-pla
 - Kotlinx IO
 - kmp-io
  
+## Publishing notes
+
+Prior to version 1.0.0, running the gradle publishToMavenLocal task on a MAC would properly publish all targets (including android and Linux) to the local Maven repo for inclusion in other projects. Starting with 1.0.0, changes to AGP 9, the introduction of the new Android Kotlin Multiplatform plugin, and the deprecation of the "com.android.lbrary" plugin in Kotlin Multiplatform modules, forced the JNI code required for Android to be separated into a separate module - kmp-android-jni. So starting with 1.0.0 an extra publishToMavenLocal step is required. 
+
+An overview of the publishing steps are:
+- if you change any of the sqlcipher gradle configuration block, then run the sqlcipherBuildAll task. If no changes, then skip this step as the built artifacts for the current versions of Sqlcipher and OpenSSL are already present in the repo. See the src/nativeInterop tree for the native link libraries, and src/androidMain/sqlcipher for the android link libraries. 
+- in the Gradle menu, for version 1.0.0 and later, locate the kmp-android-jni module and run its publishToMavenLocal task. This will build an android only library required by the main library.
+- in the Gradle menu, locate the kmp-sqlencrypt module and run its publishToMavenLocal task. This will use the previously built android library and publish all the targets.
+
+Google seems to be going down the path of using a new plugin for fusing multiple android libraries together into one.  As far as I can tell this plugin does not as yet support fusing an Android library that is part of a Kotlin Multiplatform library. So for now the only option forward is to publish two artifacts.
+
+
 
 ## Usage
 

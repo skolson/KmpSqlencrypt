@@ -13,6 +13,10 @@
   - forced moving the android-only and JVM wrapper stuff using NDK (android) and CMake to a separate android-only module, which uses the com.android.library plugin.
   - kmp-android-jni module contains JNI code and a small kotlin JniShims class
   - kmp-android-jni must currently be published as its own artifact, as the new plugin structure doesn't seem to support incorporating JNI/NDK logic into one Kotlin multiplatform android artifact, before the KmpSqlencrypt module can sync. If KmpSlencrypt just depends on the new module, the resulting published library has a dependency on the JNI module that can't be resolved.  So now the JNI module must be published, and the KmpSqlencrypt module must depend on that module.  And all consumers of kmp-sqlencrypt that are using android will also be using kmp-android-jni. Until such time as the support for this improves, or some other work-around is found. See https://issuetracker.google.com/issues/439746703
+- JUnit 6.0.2 used for android unit tests
+  - de.mannodermaus plugin 2.0.0 used to enable Junit5/6 for android device tests
+  - changes to the new withDeviceTest block in the new android kotlin multiplatform plugin configuration. 
+- renamed the main module directory from KmpSqlencrypt to kmp-sqlencrypt to match the publish name to avoid issue with unit test runs.
 
 ** 0.9.0 (2025-08)
 

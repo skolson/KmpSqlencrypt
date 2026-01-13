@@ -123,7 +123,15 @@ kotlin {
         withHostTest {}
         withDeviceTest {
             instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+            instrumentationRunnerArguments += mapOf(
+                "runnerBuilder" to "de.mannodermaus.junit5.AndroidJUnit5Builder"
+            )
             execution = "HOST"
+        }
+
+        packaging {
+            resources.excludes.add("META-INF/LICENSE.md")
+            resources.excludes.add("META-INF/LICENSE-notice.md")
         }
 
         optimization {
@@ -199,8 +207,7 @@ kotlin {
         }
         getByName("commonTest") {
             dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
+                implementation(libs.kotlin.test)
                 implementation(libs.kotlinx.coroutines.test)
             }
         }
@@ -211,17 +218,13 @@ kotlin {
         }
         getByName("androidHostTest") {
             dependencies {
-                implementation(kotlin("test-junit"))
-                implementation(libs.junit4)
-                implementation(libs.kotlinx.coroutines.core)
+                implementation(libs.bundles.androidx.test)
+                implementation(libs.kmp.io)
             }
         }
         getByName("androidDeviceTest") {
             dependencies {
-                implementation(kotlin("test-junit"))
-                implementation(libs.junit4)
-                implementation(libs.kotlinx.coroutines.core)
-                implementation(libs.kotlinx.coroutines.test)
+                implementation(libs.bundles.androidx.test)
                 implementation(libs.kmp.io)
             }
         }

@@ -10,7 +10,7 @@ plugins {
 val ndkVersionValue: String = libs.versions.androidNdk.get()
 val androidMinSdk: Int = libs.versions.androidSdkMinimum.get().toInt()
 val androidTargetSdkVersion: Int = libs.versions.androidSdk.get().toInt()
-val androidMainDirectory = projectDir.resolve("../KmpSqlencrypt/src/androidMain")
+val androidMainDirectory = projectDir.resolve("../kmp-sqlencrypt/src/androidMain")
 
 android {
     buildToolsVersion = libs.versions.androidBuildTools.get()
@@ -58,11 +58,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
-}
-
-dependencies {
-    testImplementation(libs.junit4)
-    androidTestImplementation(libs.androidx.test.ext)
 }
 val publishDomain = "io.github.skolson"
 val appVersion: String = libs.versions.appVersion.get()

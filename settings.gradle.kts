@@ -10,6 +10,5 @@ pluginManagement {
 val projectNameMavenName = "kmp-sqlencrypt"
 rootProject.name = projectNameMavenName
 
-include(":KmpSqlencrypt")
-project( ":KmpSqlencrypt" ).name = projectNameMavenName
+include(":kmp-sqlencrypt")
 include(":kmp-android-jni")

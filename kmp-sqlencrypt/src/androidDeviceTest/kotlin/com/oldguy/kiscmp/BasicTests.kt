@@ -1,17 +1,14 @@
 package com.oldguy.kiscmp
 
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry.getInstrumentation
 import com.oldguy.common.io.File
 import com.oldguy.database.SqlValue
-import kotlinx.coroutines.runBlocking
-import org.junit.Test
-import org.junit.runner.RunWith
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.Assertions.assertEquals
 
-@RunWith(AndroidJUnit4::class)
-class AndroidJunitTests: SqlCipherTests() {
+
+class BasicTests: SqlCipherTests() {
 
     /**
      * Run all unencrypted basic tests on UTF-8 encoded in-memory DB
@@ -64,7 +61,7 @@ class AndroidJunitTests: SqlCipherTests() {
     @Test
     fun testEncryption1() {
         File.appContext = getInstrumentation().targetContext.applicationContext
-        runBlocking {
+        runTest{
             testPasswordsAndUpgrade(File.tempDirectoryFile().fullPath)
         }
     }

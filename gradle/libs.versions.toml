@@ -2,7 +2,7 @@
 appVersion = "1.0.0"
 java = "21"
 
-androidGradlePlugin = "9.1.0-alpha02"
+androidGradlePlugin = "9.1.0-alpha04"
 
 kotlin = "2.3.0"
 kotlinCoroutines = "1.10.2"
@@ -20,19 +20,21 @@ sqlcipherBuildPlugin = "0.5.3"
 
 androidBuildTools = "36.1.0"
 androidSdk = "36"
-androidSdkMinimum = "26"
+# Use 26 for publishing. To avoid JUnit5/6 desugaring issues, use 35 for androidDeviceTest builds/tests
+#androidSdkMinimum = "26"
+androidSdkMinimum = "35"
 androidNdk = "29.0.14206865"
 cmake = "4.1.2"
 
 iosMinSdk = "14"
 
 dokkaPlugin = "2.1.0"
-junit = "4.13.2"
+junit5 = "6.0.2"
 androidxTestCore = "1.7.0"
 androidxTestRunner = "1.7.0"
 androidxTestExt = "1.3.0"
 versionCheck = "0.53.0"
-testMannodermausPlugin = "1.14.0.0"
+testMannodermausPlugin = "2.0.0"
 appcompat = "1.7.1"
 material = "1.13.0"
 
@@ -49,13 +51,19 @@ kmp-sqlencrypt-jni-android = { module = "io.github.skolson:kmp-android-jni", ver
 #testing libraries
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinCoroutines"}
 kotlinx-io-core = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinxIo"}
-junit4 = { module = "junit:junit", version.ref = "junit" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 androidx-test-core = { module = "androidx.test:core", version.ref = "androidxTestCore" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTestRunner" }
 androidx-test-ext = { module = "androidx.test.ext:junit", version.ref = "androidxTestExt" }
+junit5-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
+junit5-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit5" }
+junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
+android-junit5-test-runner = { module = "de.mannodermaus.junit5:android-test-runner", version.ref = "testMannodermausPlugin" }
+android-junit5-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit5" }
+android-junit5-suite-api = { module = "org.junit.platform:junit-platform-suite-api", version.ref = "junit5" }
 
 [bundles]
-androidx-test = [ "androidx-test-core", "androidx-test-runner", "androidx-test-ext" ]
+androidx-test = [ "kotlinx-coroutines-test", "kotlinx-coroutines-core", "junit5-api", "junit5-params", "junit5-engine", "androidx-test-runner", "android-junit5-test-runner", "android-junit5-launcher", "android-junit5-suite-api" ]
 
 [plugins]
 android-kmp-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "androidGradlePlugin" }
