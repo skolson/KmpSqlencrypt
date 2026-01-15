@@ -18,6 +18,7 @@ plugins {
         alias(it.versionCheck)
         alias(it.maven.publish.vannik)
         alias(it.kotlin.cocoapods)
+        // alias(it.android.jupiter)
     }
 }
 
