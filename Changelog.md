@@ -1,6 +1,6 @@
 ## KmpSqlencrypt Change Log
 
-** 1.0.1
+** 1.0.1 (in progress)
 
 - Gradle 9.4.0
 - AGP 9.2.0-alpha03
