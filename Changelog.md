@@ -4,7 +4,7 @@
 
 - Gradle 9.4.0
 - AGP 9.2.0-alpha03
-- Proguard rule addition for JNI release builds
+- Proguard rule addition for release builds to prevent obfuscation of the JNI classes, external functions, and fields.
 - Kotlin 2.3.10
 
 ** 1.0.0 (2026-01)
