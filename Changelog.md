@@ -1,5 +1,12 @@
 ## KmpSqlencrypt Change Log
 
+** 1.0.1
+
+- Gradle 9.4.0
+- AGP 9.2.0-alpha03
+- Proguard rule addition for JNI release builds
+- Kotlin 2.3.10
+
 ** 1.0.0 (2026-01)
 
 - Gradle 9.2.1
