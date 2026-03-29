@@ -8,7 +8,6 @@ kotlin = "2.3.20"
 kotlinCoroutines = "1.10.2"
 kotlinxAtomicfu = "0.32.1"
 kotlinxDatetime = "0.7.1"
-androidxCoreKtx = "1.18.0"
 bigDecimal = "0.3.10"
 kmpIo = "0.3.0"
 vannikTech = "0.36.0"
@@ -39,7 +38,6 @@ material = "1.13.0"
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinCoroutines" }
 kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "kotlinxAtomicfu"}
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime"}
-androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidxCoreKtx"}
 bigDecimal = { module = "com.ionspin.kotlin:bignum", version.ref = "bigDecimal"}
 kmp-io = { module = "io.github.skolson:kmp-io", version.ref = "kmpIo"}
 kmp-sqlencrypt-jni-android = { module = "io.github.skolson:kmp-android-jni", version.ref = "appVersion"}

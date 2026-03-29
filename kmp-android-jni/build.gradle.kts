@@ -1,5 +1,3 @@
-import com.vanniktech.maven.publish.JavadocJar
-import com.vanniktech.maven.publish.KotlinMultiplatform
 import org.gradle.internal.os.OperatingSystem
 
 plugins {
@@ -42,10 +40,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            proguardFiles("proguard-rules.pro")
         }
     }
     externalNativeBuild {
@@ -59,6 +54,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
 }
+
 val publishDomain = "io.github.skolson"
 val appVersion: String = libs.versions.appVersion.get()
 val githubUri = "skolson/KmpSqlencrypt"

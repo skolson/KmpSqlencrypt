@@ -80,6 +80,16 @@ Define the library as a gradle dependency:
         implementation("com.oldguy.kmpsc:kmp-sqlencrypt:0.9.0")
     }  
 ```
+### Android Release builds
+
+To prevent R8 from obfuscating the JNI class names in Release builds (not relevant for debug), their functions, and fields, include the following in proguard-rules.pro
+
+```
+-keepclasseswithmembers public class com.oldguy.sqlcipher.android.** {
+    *;
+}
+```
+See the kmp-android-jni/proguard-rules.pro file. Starting with 1.0.1 this clause will be published with the library for automatic use by R8
 
 ## Features
 
