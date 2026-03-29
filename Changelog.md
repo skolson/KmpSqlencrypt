@@ -8,6 +8,7 @@
 - OpenSSL 3.6.1
 - Migrated to gradle toolchain support
 - atomicfu 0.32.1
+- Note that the intel Apple platforms (X64) are being deprecated by Apple and Jetbrains.  Once I have an M5 Mac, these targets will be removed, likely in 1.2.0.  
 
 ** 1.0.0 (2026-01)
 

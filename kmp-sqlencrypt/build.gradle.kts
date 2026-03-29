@@ -4,6 +4,7 @@ import com.oldguy.gradle.OpensslExtension
 import com.oldguy.gradle.SqlcipherExtension
 import com.oldguy.gradle.BuildType
 import com.oldguy.gradle.HostOs
+import com.vanniktech.maven.publish.SourcesJar
 import org.jetbrains.kotlin.gradle.plugin.mpp.DefaultCInteropSettings
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeBuildType
@@ -265,7 +266,7 @@ mavenPublishing {
     configure(
         KotlinMultiplatform(
             JavadocJar.Dokka("dokkaGeneratePublicationHtml"),
-            true,
+            SourcesJar.Sources(),
             listOf("debug", "release")
         )
     )

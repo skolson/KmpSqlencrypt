@@ -84,8 +84,8 @@ class Columns {
     /**
      * Get a column by index using index operator, throws [IllegalArgumentException] if index is
      * out of bounds.
-     * @param name column name
-     * @return Column instance for the specified name
+     * @param index column number
+     * @return Column instance for the specified index
      */
     operator fun get(index: Int): Column {
         return columnsList[index]
