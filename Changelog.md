@@ -1,5 +1,14 @@
 ## KmpSqlencrypt Change Log
 
+** 1.1.0 (in progress)
+- Kotlin 2.3.20
+- Gradle 9.5.0-milestone-7 (required by the new AGP)
+- AGP 9.2.0-alpha06
+- SqlCipher 4.14.0 (Sqlite 3.51.3)
+- OpenSSL 3.6.1
+- Migrated to gradle toolchain support
+- atomicfu 0.32.1
+
 ** 1.0.0 (2026-01)
 
 - Gradle 9.2.1

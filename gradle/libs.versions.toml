@@ -1,20 +1,20 @@
 [versions]
-appVersion = "1.0.0"
+appVersion = "1.1.0"
 java = "21"
 
-androidGradlePlugin = "9.1.0-alpha04"
+androidGradlePlugin = "9.2.0-alpha06"
 
-kotlin = "2.3.0"
+kotlin = "2.3.20"
 kotlinCoroutines = "1.10.2"
-kotlinxAtomicfu = "0.29.0"
+kotlinxAtomicfu = "0.32.1"
 kotlinxDatetime = "0.7.1"
-androidxCoreKtx = "1.17.0"
+androidxCoreKtx = "1.18.0"
 bigDecimal = "0.3.10"
 kmpIo = "0.3.0"
-vannikTech = "0.35.0"
+vannikTech = "0.36.0"
 
-sqlcipher = "4.12.0"
-openssl = "3.6.0"
+sqlcipher = "4.14.0"
+openssl = "3.6.1"
 sqlcipherBuildPlugin = "0.5.3"
 
 androidBuildTools = "36.1.0"
@@ -27,8 +27,8 @@ cmake = "4.1.2"
 
 iosMinSdk = "14"
 
-dokkaPlugin = "2.1.0"
-jupiter = "6.0.2"
+dokkaPlugin = "2.2.0"
+jupiter = "6.0.3"
 testMannodermausPlugin = "2.0.1"
 androidxTestRunner = "1.7.0"
 versionCheck = "0.53.0"
