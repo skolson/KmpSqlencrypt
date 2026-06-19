@@ -315,13 +315,9 @@ Java_com_oldguy_sqlcipher_android_Sqlite3JniShim_lastInsertRowid(JNIEnv *env, jo
  * @return
  */
 JNIEXPORT jstring JNICALL
-Java_com_oldguy_sqlcipher_android_Sqlite3JniShim_version(JNIEnv *env, [[maybe_unused]] jobject thiz) {
-    int sz = sizeof(SQLITE_VERSION);
-    char *wrk = new char(sz + 1);
-    memcpy(wrk, SQLITE_VERSION, sz);
-    wrk[sz] = 0;
-    jstring s = getJString(env, wrk);
-    delete wrk;
+Java_com_oldguy_sqlcipher_android_Sqlite3JniShim_version(JNIEnv *env, jobject thiz) {
+    const char *wrk = sqlite3_libversion();
+    jstring s = env->NewStringUTF(wrk);
     return s;
 }
 

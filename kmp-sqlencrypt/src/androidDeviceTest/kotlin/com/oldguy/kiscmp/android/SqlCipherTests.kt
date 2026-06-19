@@ -41,8 +41,8 @@ fun LocalDateTime.truncateToMillisecond(): LocalDateTime {
 
 @OptIn(ExperimentalTime::class)
 open class SqlCipherTests {
-    val sqlCipherVersion = "4.14.0 community"
-    val sqlite3Version = "3.51.3"
+    val sqlCipherVersion = "4.16.0 community"
+    val sqlite3Version = "3.53.1"
     val testDate = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).truncateToMillisecond()
     val testString = "Any text1 4"
     val testString2 = "Other text"
@@ -118,7 +118,9 @@ open class SqlCipherTests {
     }
 
     fun testVersions() {
+        println("Calling version test")
         assertEquals(sqlite3Version, db.sqliteVersion, "sqliteVersion")
+        println("Called version test")
         assertEquals(sqlCipherVersion, db.sqlcipherVersion, "sqlcipherVersion")
         assertEquals(0, db.userVersion, "userVersion")
     }

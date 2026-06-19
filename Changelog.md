@@ -1,14 +1,20 @@
 ## KmpSqlencrypt Change Log
 
 ** 1.1.0 (in progress)
-- Kotlin 2.3.20
-- Gradle 9.5.0-rc-1 (required by the new AGP)
-- AGP 9.2.0-alpha06
-- SqlCipher 4.14.0 (Sqlite 3.51.3)
-- OpenSSL 3.6.1
+- Kotlin 2.3.21
+- Gradle 9.5.1 
+- AGP 9.3.0-alpha11
+- SqlCipher 4.16.0 (Sqlite 3.53.1)
+- OpenSSL 4.0.1
 - Migrated to gradle toolchain support
-- atomicfu 0.32.1
-- Note that the intel Apple platforms (X64) are being deprecated by Apple and Jetbrains.  Once I have an M5 Mac, these targets will be removed, likely in 1.2.0.  
+- kotlinCoroutines = "1.11.0"
+- kotlinxAtomicfu = "0.33.0"
+- kotlinxDatetime = "0.8.0"
+- SqlCipher build plugin 0.6.0
+  - remove openssl deprecated options no-engine and no-ssl3
+  - ensure output directories for builds are empty - macos is getting permission denied trying to overwrite previous versions of output files
+  - Allow macos to cross-compile linux targets
+- Note that the intel Apple platforms (X64) are being deprecated by Apple and Jetbrains.  Once I have an M5 Mac, these targets will be removed, sometime shortly after Kotlin 2.5.0 is released.  
 
 ** 1.0.0 (2026-01)
 

@@ -1,0 +1,6 @@
+Change plugin
+ ensure target directories are empty - macos is getting permission denied trying to overwrite previous versions of output files
+    exclude all SqlCipher.def in nativeInterop target subdirs
+  openssl build
+    ***** Deprecated options: no-engine, no-ssl3
+  Allow macos to cross-compile linux targets (assumes environment is set up for this)

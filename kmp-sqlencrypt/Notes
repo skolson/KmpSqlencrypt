@@ -1,7 +1,75 @@
 Issues
 ===================================
 
-BE:
-0x74006500730074003100  looks like LE even though it is BE
+Crash dumps during test create a tombstone file. pull it from device and format the dump with these terminal commands:
 
-LE:
+cd /Volumes/mnt/Library/Android/platform-tools/
+./adb pull /data/tombstones/tombstone_08
+../ndk/29.0.14206865/ndk-stack -sym /Volumes/mnt/Library/Android/system-images/android-37.0/google_apis_playstore_ps16k/x86_64 -dump tombstone_08
+
+Build fingerprint: 'google/sdk_gphone16k_x86_64/emu64xa16k:17/CE2A.260420.019/15611780:user/dev-keys'
+Abort message: 'FORTIFY: memcpy: prevented 7-byte write into 1-byte buffer'
+#00 0x0000000000059944 /apex/com.android.runtime/lib64/bionic/libc.so (__fortify_fatal(char const*, ...)+308) (BuildId: aa76614279c09bc4bbbbbec6ba4a811e)
+#01 0x00000000000c4f97 /apex/com.android.runtime/lib64/bionic/libc.so (__check_buffer_access(char const*, char const*, unsigned long, unsigned long) (.__uniq.12546621612038674872725417429299697508)+39) (BuildId: aa76614279c09bc4bbbbbec6ba4a811e)
+#02 0x00000000000c4fcf /apex/com.android.runtime/lib64/bionic/libc.so (__memcpy_chk_fail+47) (BuildId: aa76614279c09bc4bbbbbec6ba4a811e)
+#03 0x000000000001b6ef /data/app/~~8dPhkcZfgdwJbMFc0NSFsA==/com.oldguy.kiscmp.test-Qf-eNnk5XAO8ejt3hSoNxA==/base.apk!libsqlcipher-kotlin.so (offset 0x18000) (Java_com_oldguy_sqlcipher_android_Sqlite3JniShim_version+47) (BuildId: c29294325010710099db1c805a82042abbdf0ff1)
+#04 0x000000000022ccab /apex/com.android.art/lib64/libart.so (art_quick_generic_jni_trampoline+219) (BuildId: 6f501445ab44be8f30fb680128550143)
+#05 0x0000000000212274 /apex/com.android.art/lib64/libart.so (art_quick_invoke_stub+756) (BuildId: 6f501445ab44be8f30fb680128550143)
+#06 0x0000000000598231 /apex/com.android.art/lib64/libart.so (art::ArtMethod::Invoke(art::Thread*, unsigned int*, unsigned int, art::JValue*, char const*)+193) (BuildId: 6f501445ab44be8f30fb680128550143)
+#07 0x000000000073dd7c /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2300) (BuildId: 6f501445ab44be8f30fb680128550143)
+#08 0x0000000000233a2b /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+10523) (BuildId: 6f501445ab44be8f30fb680128550143)
+#09 0x0000000000210c55 /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+5) (BuildId: 6f501445ab44be8f30fb680128550143)
+WARNING:ndkstack:Frame has no file name or container offset, cannot find symbols:       #10 pc 0000000000009390  /data/app/~~8dPhkcZfgdwJbMFc0NSFsA==/com.oldguy.kiscmp.test-Qf-eNnk5XAO8ejt3hSoNxA==/base.apk (com.oldguy.kiscmp.SqliteDatabase.version+0)
+#10 0x0000000000009390 /data/app/~~8dPhkcZfgdwJbMFc0NSFsA==/com.oldguy.kiscmp.test-Qf-eNnk5XAO8ejt3hSoNxA==/base.apk (com.oldguy.kiscmp.SqliteDatabase.version+0)
+#11 0x00000000007350b1 /apex/com.android.art/lib64/libart.so (art::interpreter::Execute(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame&, art::JValue, bool, bool) (.__uniq.112435418011751916792819755956732575238)+513) (BuildId: 6f501445ab44be8f30fb680128550143)
+#12 0x000000000073d026 /apex/com.android.art/lib64/libart.so (art::interpreter::ArtInterpreterToInterpreterBridge(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame*, art::JValue*)+102) (BuildId: 6f501445ab44be8f30fb680128550143)
+#13 0x000000000073dd7c /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2300) (BuildId: 6f501445ab44be8f30fb680128550143)
+#14 0x0000000000233a2b /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+10523) (BuildId: 6f501445ab44be8f30fb680128550143)
+#15 0x0000000000210c55 /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+5) (BuildId: 6f501445ab44be8f30fb680128550143)
+WARNING:ndkstack:Frame has no file name or container offset, cannot find symbols:       #16 pc 0000000000007270  /data/app/~~8dPhkcZfgdwJbMFc0NSFsA==/com.oldguy.kiscmp.test-Qf-eNnk5XAO8ejt3hSoNxA==/base.apk (com.oldguy.kiscmp.SqlCipherDatabase.getSqliteVersion+0)
+#16 0x0000000000007270 /data/app/~~8dPhkcZfgdwJbMFc0NSFsA==/com.oldguy.kiscmp.test-Qf-eNnk5XAO8ejt3hSoNxA==/base.apk (com.oldguy.kiscmp.SqlCipherDatabase.getSqliteVersion+0)
+#17 0x00000000007350b1 /apex/com.android.art/lib64/libart.so (art::interpreter::Execute(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame&, art::JValue, bool, bool) (.__uniq.112435418011751916792819755956732575238)+513) (BuildId: 6f501445ab44be8f30fb680128550143)
+#18 0x000000000073d026 /apex/com.android.art/lib64/libart.so (art::interpreter::ArtInterpreterToInterpreterBridge(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame*, art::JValue*)+102) (BuildId: 6f501445ab44be8f30fb680128550143)
+#19 0x000000000073dd7c /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2300) (BuildId: 6f501445ab44be8f30fb680128550143)
+#20 0x0000000000233a2b /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+10523) (BuildId: 6f501445ab44be8f30fb680128550143)
+#21 0x0000000000210c55 /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+5) (BuildId: 6f501445ab44be8f30fb680128550143)
+#22 0x000000000000a9e8 /data/app/~~8dPhkcZfgdwJbMFc0NSFsA==/com.oldguy.kiscmp.test-Qf-eNnk5XAO8ejt3hSoNxA==/base.apk (offset 0x58000) (com.oldguy.kiscmp.android.SqlCipherTests.testVersions+0)
+#23 0x00000000007350b1 /apex/com.android.art/lib64/libart.so (art::interpreter::Execute(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame&, art::JValue, bool, bool) (.__uniq.112435418011751916792819755956732575238)+513) (BuildId: 6f501445ab44be8f30fb680128550143)
+#24 0x000000000073d026 /apex/com.android.art/lib64/libart.so (art::interpreter::ArtInterpreterToInterpreterBridge(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame*, art::JValue*)+102) (BuildId: 6f501445ab44be8f30fb680128550143)
+#25 0x000000000073dd7c /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2300) (BuildId: 6f501445ab44be8f30fb680128550143)
+#26 0x0000000000233a2b /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+10523) (BuildId: 6f501445ab44be8f30fb680128550143)
+#27 0x0000000000210c55 /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+5) (BuildId: 6f501445ab44be8f30fb680128550143)
+#28 0x000000000000942c /data/app/~~8dPhkcZfgdwJbMFc0NSFsA==/com.oldguy.kiscmp.test-Qf-eNnk5XAO8ejt3hSoNxA==/base.apk (offset 0x58000) (com.oldguy.kiscmp.android.SqlCipherTests.allTests+0)
+#29 0x00000000007350b1 /apex/com.android.art/lib64/libart.so (art::interpreter::Execute(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame&, art::JValue, bool, bool) (.__uniq.112435418011751916792819755956732575238)+513) (BuildId: 6f501445ab44be8f30fb680128550143)
+#30 0x000000000073d026 /apex/com.android.art/lib64/libart.so (art::interpreter::ArtInterpreterToInterpreterBridge(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame*, art::JValue*)+102) (BuildId: 6f501445ab44be8f30fb680128550143)
+#31 0x000000000073dd7c /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2300) (BuildId: 6f501445ab44be8f30fb680128550143)
+#32 0x0000000000233a2b /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+10523) (BuildId: 6f501445ab44be8f30fb680128550143)
+#33 0x0000000000210c55 /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+5) (BuildId: 6f501445ab44be8f30fb680128550143)
+#34 0x0000000000006a4c /data/app/~~8dPhkcZfgdwJbMFc0NSFsA==/com.oldguy.kiscmp.test-Qf-eNnk5XAO8ejt3hSoNxA==/base.apk (offset 0x58000) (com.oldguy.kiscmp.android.BasicTests$testOpenClose$1$1.invokeSuspend+0)
+#35 0x00000000007350b1 /apex/com.android.art/lib64/libart.so (art::interpreter::Execute(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame&, art::JValue, bool, bool) (.__uniq.112435418011751916792819755956732575238)+513) (BuildId: 6f501445ab44be8f30fb680128550143)
+#36 0x000000000073d026 /apex/com.android.art/lib64/libart.so (art::interpreter::ArtInterpreterToInterpreterBridge(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame*, art::JValue*)+102) (BuildId: 6f501445ab44be8f30fb680128550143)
+#37 0x000000000073dd7c /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2300) (BuildId: 6f501445ab44be8f30fb680128550143)
+#38 0x0000000000233a2b /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+10523) (BuildId: 6f501445ab44be8f30fb680128550143)
+#39 0x0000000000210c55 /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+5) (BuildId: 6f501445ab44be8f30fb680128550143)
+#40 0x00000000000069fc /data/app/~~8dPhkcZfgdwJbMFc0NSFsA==/com.oldguy.kiscmp.test-Qf-eNnk5XAO8ejt3hSoNxA==/base.apk (offset 0x58000) (com.oldguy.kiscmp.android.BasicTests$testOpenClose$1$1.invoke+0)
+#41 0x00000000007350b1 /apex/com.android.art/lib64/libart.so (art::interpreter::Execute(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame&, art::JValue, bool, bool) (.__uniq.112435418011751916792819755956732575238)+513) (BuildId: 6f501445ab44be8f30fb680128550143)
+#42 0x000000000073d026 /apex/com.android.art/lib64/libart.so (art::interpreter::ArtInterpreterToInterpreterBridge(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame*, art::JValue*)+102) (BuildId: 6f501445ab44be8f30fb680128550143)
+#43 0x000000000073dd7c /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2300) (BuildId: 6f501445ab44be8f30fb680128550143)
+#44 0x0000000000233a2b /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+10523) (BuildId: 6f501445ab44be8f30fb680128550143)
+#45 0x0000000000210c55 /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+5) (BuildId: 6f501445ab44be8f30fb680128550143)
+#46 0x0000000000006a28 /data/app/~~8dPhkcZfgdwJbMFc0NSFsA==/com.oldguy.kiscmp.test-Qf-eNnk5XAO8ejt3hSoNxA==/base.apk (offset 0x58000) (com.oldguy.kiscmp.android.BasicTests$testOpenClose$1$1.invoke+0)
+#47 0x00000000007350b1 /apex/com.android.art/lib64/libart.so (art::interpreter::Execute(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame&, art::JValue, bool, bool) (.__uniq.112435418011751916792819755956732575238)+513) (BuildId: 6f501445ab44be8f30fb680128550143)
+#48 0x000000000073d026 /apex/com.android.art/lib64/libart.so (art::interpreter::ArtInterpreterToInterpreterBridge(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame*, art::JValue*)+102) (BuildId: 6f501445ab44be8f30fb680128550143)
+#49 0x000000000073dd7c /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<false>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2300) (BuildId: 6f501445ab44be8f30fb680128550143)
+#50 0x0000000000234dc6 /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+15542) (BuildId: 6f501445ab44be8f30fb680128550143)
+#51 0x0000000000210c55 /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+5) (BuildId: 6f501445ab44be8f30fb680128550143)
+WARNING:ndkstack:Frame has no file name or container offset, cannot find symbols:       #52 pc 0000000000006e74  /data/app/~~8dPhkcZfgdwJbMFc0NSFsA==/com.oldguy.kiscmp.test-Qf-eNnk5XAO8ejt3hSoNxA==/base.apk (com.oldguy.kiscmp.SqlCipherDatabase.use+0)
+#52 0x0000000000006e74 /data/app/~~8dPhkcZfgdwJbMFc0NSFsA==/com.oldguy.kiscmp.test-Qf-eNnk5XAO8ejt3hSoNxA==/base.apk (com.oldguy.kiscmp.SqlCipherDatabase.use+0)
+#53 0x00000000007350b1 /apex/com.android.art/lib64/libart.so (art::interpreter::Execute(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame&, art::JValue, bool, bool) (.__uniq.112435418011751916792819755956732575238)+513) (BuildId: 6f501445ab44be8f30fb680128550143)
+#54 0x000000000073d026 /apex/com.android.art/lib64/libart.so (art::interpreter::ArtInterpreterToInterpreterBridge(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame*, art::JValue*)+102) (BuildId: 6f501445ab44be8f30fb680128550143)
+#55 0x000000000073eaf4 /apex/com.android.art/lib64/libart.so (bool art::interpreter::DoCall<true>(art::ArtMethod*, art::Thread*, art::ShadowFrame&, art::Instruction const*, unsigned short, bool, art::JValue*)+2484) (BuildId: 6f501445ab44be8f30fb680128550143)
+#56 0x0000000000234f0f /apex/com.android.art/lib64/libart.so (void art::interpreter::ExecuteSwitchImplCpp<false>(art::interpreter::SwitchImplContext*)+15871) (BuildId: 6f501445ab44be8f30fb680128550143)
+#57 0x0000000000210c55 /apex/com.android.art/lib64/libart.so (ExecuteSwitchImplAsm+5) (BuildId: 6f501445ab44be8f30fb680128550143)
+#58 0x0000000000006ed0 /data/app/~~8dPhkcZfgdwJbMFc0NSFsA==/com.oldguy.kiscmp.test-Qf-eNnk5XAO8ejt3hSoNxA==/base.apk (offset 0x68000) (com.oldguy.database.Database.use$default+0)
+#59 0x00000000007350b1 /apex/com.android.art/lib64/libart.so (art::interpreter::Execute(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame&, art::JValue, bool, bool) (.__uniq.112435418011751916792819755956732575238)+513) (BuildId: 6f501445ab44be8f30fb680128550143)
+#60 0x000000000073d026 /apex/com.android.art/lib64/libart.so (art::interpreter::ArtInterpreterToInterpreterBridge(art::Thread*, art::CodeItemDataAccessor const&, art::ShadowFrame*, art::JValue*)+102) (BuildId: 6f501445ab44be8f30fb680128550143)

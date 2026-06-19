@@ -2,37 +2,35 @@
 appVersion = "1.1.0"
 java = "21"
 
-androidGradlePlugin = "9.2.0-alpha06"
+androidGradlePlugin = "9.4.0-alpha01"
 
-kotlin = "2.3.20"
-kotlinCoroutines = "1.10.2"
-kotlinxAtomicfu = "0.32.1"
-kotlinxDatetime = "0.7.1"
+kotlin = "2.3.21"
+kotlinCoroutines = "1.11.0"
+kotlinxAtomicfu = "0.33.0"
+kotlinxDatetime = "0.8.0"
 bigDecimal = "0.3.10"
 kmpIo = "0.3.0"
 vannikTech = "0.36.0"
 
-sqlcipher = "4.14.0"
-openssl = "3.6.1"
+sqlcipher = "4.16.0"
+openssl = "4.0.1"
 sqlcipherBuildPlugin = "0.5.3"
 
-androidBuildTools = "36.1.0"
+androidBuildTools = "37.0.0"
 androidSdk = "36"
-# Use 26 for publishing. To avoid JUnit5/6 desugaring issues, use 35 for androidDeviceTest builds/tests
-androidSdkMinimum = "26"
-#androidSdkMinimum = "35"
+# Use 26 for publishing. To avoid JUnit5/6 desugaring issues, use 37 for androidDeviceTest builds/tests
+#androidSdkMinimum = "26"
+androidSdkMinimum = "35"
 androidNdk = "29.0.14206865"
 cmake = "4.1.2"
 
 iosMinSdk = "14"
 
 dokkaPlugin = "2.2.0"
-jupiter = "6.0.3"
+jupiter = "6.1.0"
 testMannodermausPlugin = "2.0.1"
 androidxTestRunner = "1.7.0"
-versionCheck = "0.53.0"
-appcompat = "1.7.1"
-material = "1.13.0"
+versionCheck = "0.54.0"
 
 [libraries]
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinCoroutines" }

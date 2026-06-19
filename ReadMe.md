@@ -77,7 +77,7 @@ Define the library as a gradle dependency:
 
 ```
     dependencies {
-        implementation("com.oldguy.kmpsc:kmp-sqlencrypt:0.9.0")
+        implementation("com.oldguy.kmpsc:kmp-sqlencrypt:1.1.0")
     }  
 ```
 ### Android Release builds
