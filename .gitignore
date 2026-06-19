@@ -9,7 +9,6 @@
 .cxx
 build
 local.properties
-src/androidMain/cpp/CMakeCache.txt
-src/androidMain/jniLibs/
 /.kotlin/
 /KmpSqlencrypt/src/nativeInterop/linuxX64/sqlite3
+/KmpSqlencrypt/src/nativeInterop/linuxArm64/sqlite3

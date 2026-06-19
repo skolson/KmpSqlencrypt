@@ -1,5 +1,5 @@
 # This file should be used when building against this OpenSSL build, and should never be installed
-prefix=/Volumes/mnt/Projects/KmpSqlencrypt/kmp-sqlencrypt/build/srcOpenssl/androidArm64/openssl-openssl-4.0.1
+prefix=/mnt/Projects/KmpSqlencrypt/kmp-sqlencrypt/build/srcOpenssl/androidArm64/openssl-openssl-4.0.1
 exec_prefix=${prefix}
 libdir=${exec_prefix}
 includedir=${prefix}/include ${prefix}/./include
