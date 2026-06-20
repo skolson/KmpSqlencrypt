@@ -14,7 +14,9 @@
   - remove openssl deprecated options no-engine and no-ssl3
   - ensure output directories for builds are empty - macos is getting permission denied trying to overwrite previous versions of output files
   - Allow macos to cross-compile linux targets
-- Note that the intel Apple platforms (X64) are being deprecated by Apple and Jetbrains.  Once I have an M5 Mac, these targets will be removed, sometime shortly after Kotlin 2.5.0 is released.  
+- Note that the intel Apple platforms (X64) are being deprecated by Apple and Jetbrains.  Once I have an M5 Mac, these targets will be removed, sometime shortly after Kotlin 2.5.0 is released.
+- Some safe JNI code started causing Fortify crashes due to the newer NDK's aggressive Fortify level.  These JNI functions were changed to increase safety without changing function, thus avoiding the Fortify crashes without having to disable or weaken Fortify checks on the datbase.cpp JNI code.
+  - version uses std::string before NewStringUTF
 
 ** 1.0.0 (2026-01)
 

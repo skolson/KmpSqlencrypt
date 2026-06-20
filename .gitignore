@@ -12,3 +12,5 @@ local.properties
 /.kotlin/
 /KmpSqlencrypt/src/nativeInterop/linuxX64/sqlite3
 /KmpSqlencrypt/src/nativeInterop/linuxArm64/sqlite3
+/kmp-sqlencrypt/src/nativeInterop/linuxX64/sqlite3
+/kmp-sqlencrypt/src/nativeInterop/linuxArm64/sqlite3

@@ -317,7 +317,8 @@ Java_com_oldguy_sqlcipher_android_Sqlite3JniShim_lastInsertRowid(JNIEnv *env, jo
 JNIEXPORT jstring JNICALL
 Java_com_oldguy_sqlcipher_android_Sqlite3JniShim_version(JNIEnv *env, jobject thiz) {
     const char *wrk = sqlite3_libversion();
-    jstring s = env->NewStringUTF(wrk);
+    std::string safe_str(wrk);
+    jstring s = env->NewStringUTF(safe_str.c_str());
     return s;
 }
 
