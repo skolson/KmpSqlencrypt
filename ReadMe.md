@@ -30,6 +30,7 @@ Supported platforms (KMM targets) all 64 bit only:
 - iosArm64Simulator
 
 ## Releases
+- Tag 1.1.0 is for SqlCipher 4.16.0, which uses Sqlite 3.53.1 and Kotlin 2.3.21. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 4.0.1. See the gradle.build.kts files for details.
 - Tag 1.0.0 is for SqlCipher 4.12.0, which uses Sqlite 3.51.1 and Kotlin 2.3.0. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.6.0. See the gradle.build.kts files for details.
 - Tag 0.9.0 is for SqlCipher 4.9.0, which uses Sqlite 3.49.2 and Kotlin 2.2.0. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.5.1. See the gradle.build.kts files for details.
 - Tag 0.8.1 is for SqlCipher 4.9.0, which uses Sqlite 3.49.2 and Kotlin 2.2.0. SqlCipher is built from source for each platform using the gradle plugin [GradleSqlCipher plugin](https://github.com/skolson/sqlcipher-openssl-build). The SqlCipher build in this version is built with OpenSSL 3.5.1. See the gradle.build.kts files for details.
