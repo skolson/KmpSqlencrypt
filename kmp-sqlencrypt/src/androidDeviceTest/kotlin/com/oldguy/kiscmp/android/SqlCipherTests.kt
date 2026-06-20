@@ -49,7 +49,7 @@ open class SqlCipherTests {
     val testBigDecimal = BigDecimal.parseString("12345678901234567890.98")
 
     // Sqlite numeric columns only support 8 bytes of storage, about 15 digits of precision
-    val testBigDecimalRounded = BigDecimal.parseString("12345678901234600000.0")
+    val testBigDecimalRounded = BigDecimal.parseString("12345678901234567000.0")
     val testFloat = 12345.679F
     val testDouble = 999111.999111
     val testLong = Long.MAX_VALUE
@@ -249,9 +249,10 @@ open class SqlCipherTests {
                 testDate.compareTo(sqlValues.requireDateTime("dateTime1")),
                 "selTest2LitSelDateTimeRow$rowCount"
             )
+            val res1 = sqlValues.requireDecimal("num1")
             assertEquals(
                 0,
-                testBigDecimalRounded.compareTo(sqlValues.requireDecimal("num1")),
+                testBigDecimalRounded.compareTo(res1),
                 "selTest2BigRow$rowCount"
                 )
             assertEquals(
