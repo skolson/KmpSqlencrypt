@@ -1,8 +1,0 @@
-Issues
-===================================
-
-Crash dumps during test create a tombstone file. pull it from device and format the dump with these terminal commands:
-
-cd /Volumes/mnt/Library/Android/platform-tools/
-./adb pull /data/tombstones/tombstone_08
-../ndk/29.0.14206865/ndk-stack -sym /Volumes/mnt/Library/Android/system-images/android-37.0/google_apis_playstore_ps16k/x86_64 -dump tombstone_08
